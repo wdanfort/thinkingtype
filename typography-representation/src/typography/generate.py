@@ -50,10 +50,6 @@ def generate_artifacts(config: TypographyConfig, logger) -> Path:
             variant_id = str(variant["variant_id"])
             font_family = variant.get("font_family")
             font_path = variant.get("font_path")
-            if pd.isna(font_family):
-                font_family = None
-            if pd.isna(font_path):
-                font_path = None
             font_size = int(variant.get("font_size", 48))
             uppercase = bool(variant.get("uppercase", False))
 

@@ -5,8 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Optional, Tuple
 
-import pandas as pd
-
 from matplotlib import font_manager
 from PIL import Image, ImageDraw, ImageFont
 
@@ -34,18 +32,7 @@ def wrap_text(text: str, font: ImageFont.FreeTypeFont, max_width: int, draw: Ima
     return lines
 
 
-def _clean_font_value(value: Optional[str]) -> Optional[str]:
-    if value is None:
-        return None
-    if isinstance(value, float) and pd.isna(value):
-        return None
-    value_str = str(value).strip()
-    return value_str or None
-
-
 def resolve_font_path(font_family: Optional[str], font_path: Optional[str]) -> Tuple[Optional[str], Optional[str]]:
-    font_path = _clean_font_value(font_path)
-    font_family = _clean_font_value(font_family)
     if font_path:
         path = Path(font_path)
         if path.exists():
