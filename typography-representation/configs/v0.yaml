@@ -1,0 +1,30 @@
+artifact_set_id: sentences_v0
+sentences_csv: data/sentences_v0.csv
+variants_csv: data/variants_v0.csv
+output_dir: artifacts/sentences_v0
+rendering:
+  canvas_width: 1200
+  max_text_width: 1000
+  background_color: "white"
+  text_color: "black"
+  line_spacing: 1.25
+  container_pad_x: 80
+  container_pad_y: 40
+  container_radius: 24
+  container_fill: [245, 246, 248]
+  container_outline: [220, 223, 228]
+  container_outline_width: 3
+  title_multiplier: 1.0
+inference:
+  provider_text: openai
+  model_text: gpt-4o-mini
+  provider_image: openai
+  model_image: gpt-4o
+  temperature: 0.0
+  max_retries: 6
+  timeout: 30
+  rate_limit_sleep: 1.5
+  fail_fast: false
+output:
+  runs_root: runs
+  artifacts_root: artifacts

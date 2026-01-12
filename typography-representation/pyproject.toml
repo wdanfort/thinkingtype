@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "typography-representation"
+version = "0.1.0"
+description = "Typography, Representation, and AI Interpretation pipeline"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{name = "Typography Team"}]
+license = {text = "MIT"}
+dependencies = []
+
+[project.scripts]
+typography = "typography.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
