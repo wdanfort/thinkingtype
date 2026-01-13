@@ -1,10 +1,10 @@
-variant_id,font_family,font_path,font_size,uppercase,is_bold
-T1_times_regular,Liberation Serif,,48,false,false
-T2_times_bold,Liberation Serif,,48,false,true
-T3_arial_regular,Liberation Sans,,48,false,false
-T4_arial_bold,Liberation Sans,,48,false,true
-T5_arial_all_caps,Liberation Sans,,48,true,true
-T6_monospace,Liberation Mono,,48,false,false
-T7_comic,Comic Neue,,48,false,false
-T8_small_text,Liberation Sans,,28,false,false
-A1_opendyslexic_regular,OpenDyslexic,,48,false,false
+variant_id,font_key,font_family,font_path,font_size,uppercase,is_bold
+T1_Liberation_Serif,source_serif_4,Source Serif 4,,48,false,false
+T2_Merriweather_Bold,merriweather,Merriweather,,48,false,true
+T3_Inter_Regular,inter,Inter,,48,false,false
+T4_Montserrat_Bold,montserrat,Montserrat,,48,false,true
+T5_Bebas_Neue_All_Caps,bebas_neue,Bebas Neue,,48,true,true
+T6_JetBrains_Mono,jetbrains_mono,JetBrains Mono,,48,false,false
+T7_Comic_Neue,comic_neue,Comic Neue,,48,false,false
+T8_Source_Sans_3_Small,source_sans_3,Source Sans 3,,28,false,false
+A1_opendyslexic_regular,opendyslexic,OpenDyslexic,,48,false,false
