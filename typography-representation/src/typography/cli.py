@@ -35,12 +35,23 @@ def _setup_logger(run_dir: Path | None) -> logging.Logger:
     return logger
 
 
-def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[2]
+def _resolve_fontset_path(fontset_path: str) -> Path:
+    candidate = Path(fontset_path).expanduser()
+    if candidate.is_absolute():
+        return candidate
+    return (Path.cwd() / candidate).resolve()
 
 
-def _load_fontset_or_exit(fontset_path: str, repo_root: Path, logger: logging.Logger) -> dict:
-    fontset = load_fontset(fontset_path)
+def _derive_repo_root(fontset_path: Path) -> Path:
+    if fontset_path.parent.name == "configs":
+        return fontset_path.parent.parent
+    return Path.cwd()
+
+
+def _load_fontset_or_exit(fontset_path: str, logger: logging.Logger) -> tuple[dict, Path]:
+    resolved_path = _resolve_fontset_path(fontset_path)
+    fontset = load_fontset(resolved_path)
+    repo_root = _derive_repo_root(resolved_path)
     missing = validate_fontset(repo_root, fontset)
     fontset_id = fontset.get("fontset_id", "unknown")
     fonts_count = len(fontset.get("fonts", {}))
@@ -52,7 +63,7 @@ def _load_fontset_or_exit(fontset_path: str, repo_root: Path, logger: logging.Lo
             f"{fontset_id}:\n{missing_list}\n"
             "Place the files under assets/fonts/... or run scripts/fetch_fonts.py."
         )
-    return fontset
+    return fontset, repo_root
 
 
 def _load_config_from_run(run_id: str, runs_root: str) -> TypographyConfig:
@@ -106,7 +117,7 @@ def main() -> None:
     if args.command == "generate":
         config = resolve_paths(load_config(args.config))
         logger = _setup_logger(None)
-        fontset = _load_fontset_or_exit(args.fontset, repo_root, logger)
+        fontset, repo_root = _load_fontset_or_exit(args.fontset, logger)
         generate_artifacts(config, logger, fontset, repo_root, allow_system_fonts=args.allow_system_fonts)
         return
 
@@ -137,7 +148,7 @@ def main() -> None:
         config_path = args.config or str(DEFAULT_CONFIG_PATH)
         config = resolve_paths(load_config(config_path))
         logger = _setup_logger(None)
-        fontset = _load_fontset_or_exit(args.fontset, repo_root, logger)
+        fontset, repo_root = _load_fontset_or_exit(args.fontset, logger)
         generate_artifacts(config, logger, fontset, repo_root, allow_system_fonts=args.allow_system_fonts)
         run_id = infer(config, None, args.temperature, logger)
         analyze_run(run_id, config.output.runs_root, config.output.artifacts_root, logger)
@@ -145,7 +156,7 @@ def main() -> None:
 
     if args.command == "fonts":
         logger = _setup_logger(None)
-        _load_fontset_or_exit(args.fontset, repo_root, logger)
+        _load_fontset_or_exit(args.fontset, logger)
         logger.info("Fontset check passed.")
         return
 
