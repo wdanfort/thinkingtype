@@ -89,6 +89,7 @@ def _load_config_from_run(run_id: str, runs_root: str) -> TypographyConfig:
 
 def main() -> None:
     load_dotenv()
+    repo_root = _repo_root()
     parser = argparse.ArgumentParser(prog="typography")
     subparsers = parser.add_subparsers(dest="command")
 
