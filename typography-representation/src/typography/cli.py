@@ -48,6 +48,11 @@ def _derive_repo_root(fontset_path: Path) -> Path:
     return Path.cwd()
 
 
+def _repo_root() -> Path:
+    """Backward-compatible repo root helper for older entrypoints."""
+    return Path.cwd()
+
+
 def _load_fontset_or_exit(fontset_path: str, logger: logging.Logger) -> tuple[dict, Path]:
     resolved_path = _resolve_fontset_path(fontset_path)
     fontset = load_fontset(resolved_path)
