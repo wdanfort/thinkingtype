@@ -42,10 +42,17 @@ def _resolve_fontset_path(fontset_path: str) -> Path:
     return (Path.cwd() / candidate).resolve()
 
 
+def _find_repo_root(start: Path) -> Path | None:
+    for candidate in [start, *start.parents]:
+        if (candidate / "configs").exists() and (candidate / "assets").exists():
+            return candidate
+    return None
+
+
 def _derive_repo_root(fontset_path: Path) -> Path:
     if fontset_path.parent.name == "configs":
         return fontset_path.parent.parent
-    return Path.cwd()
+    return _find_repo_root(fontset_path.parent) or Path.cwd()
 
 
 def _repo_root() -> Path:
