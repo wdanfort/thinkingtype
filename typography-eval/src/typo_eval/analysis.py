@@ -1,0 +1,450 @@
+"""Analysis and plotting utilities."""
+
+from __future__ import annotations
+
+import json
+import logging
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+
+from typo_eval.config import TypoEvalConfig
+from typo_eval.prompts import coerce_to_binary
+
+logger = logging.getLogger(__name__)
+sns.set_theme(style="whitegrid")
+
+
+def load_results(jsonl_path: Path) -> pd.DataFrame:
+    """Load results from JSONL file."""
+    records = []
+    with jsonl_path.open("r") as f:
+        for line in f:
+            try:
+                records.append(json.loads(line.strip()))
+            except json.JSONDecodeError:
+                continue
+    return pd.DataFrame(records)
+
+
+def build_delta_table(
+    results: pd.DataFrame,
+    sentences_df: Optional[pd.DataFrame] = None,
+) -> pd.DataFrame:
+    """
+    Build paired comparison table between OCR baseline and image variants.
+
+    Returns DataFrame with columns:
+    - sentence_id/artifact_id
+    - variant_id
+    - dimension_id (for dimensions mode)
+    - ocr_response (baseline)
+    - image_response
+    - delta (image - ocr)
+    - flip (1 if different, 0 otherwise)
+    """
+    results = results.copy()
+
+    # Coerce parsed_response to binary
+    results["response_01"] = results["parsed_response"].apply(coerce_to_binary)
+    results = results.dropna(subset=["response_01"]).copy()
+    results["response_01"] = results["response_01"].astype(int)
+
+    # Separate OCR and image results
+    ocr_rows = results[results["representation"] == "ocr"]
+    image_rows = results[results["representation"] == "image"]
+
+    # Build OCR baseline (deduped)
+    if "dimension_id" in results.columns and results["dimension_id"].notna().any():
+        # Dimensions mode
+        ocr_base = (
+            ocr_rows.groupby(["sentence_id", "dimension_id"])["response_01"]
+            .mean()
+            .reset_index()
+        )
+        ocr_base["response_01"] = ocr_base["response_01"].round().astype(int)
+        ocr_base = ocr_base.rename(columns={"response_01": "ocr"})
+
+        image_agg = (
+            image_rows.groupby(["sentence_id", "variant_id", "dimension_id"])["response_01"]
+            .mean()
+            .reset_index()
+        )
+        image_agg["response_01"] = image_agg["response_01"].round().astype(int)
+        image_agg = image_agg.rename(columns={"response_01": "image"})
+
+        paired = image_agg.merge(ocr_base, on=["sentence_id", "dimension_id"], how="left")
+    else:
+        # Decision mode (no dimension_id)
+        ocr_base = (
+            ocr_rows.groupby(["sentence_id"])["response_01"]
+            .mean()
+            .reset_index()
+        )
+        ocr_base["response_01"] = ocr_base["response_01"].round().astype(int)
+        ocr_base = ocr_base.rename(columns={"response_01": "ocr"})
+
+        image_agg = (
+            image_rows.groupby(["sentence_id", "variant_id"])["response_01"]
+            .mean()
+            .reset_index()
+        )
+        image_agg["response_01"] = image_agg["response_01"].round().astype(int)
+        image_agg = image_agg.rename(columns={"response_01": "image"})
+
+        paired = image_agg.merge(ocr_base, on=["sentence_id"], how="left")
+
+    # Filter rows with missing OCR baseline
+    paired = paired.dropna(subset=["ocr"]).copy()
+    paired["ocr"] = paired["ocr"].astype(int)
+
+    # Compute delta and flip
+    paired["delta"] = paired["image"] - paired["ocr"]
+    paired["abs_delta"] = paired["delta"].abs()
+    paired["flip"] = (paired["image"] != paired["ocr"]).astype(int)
+
+    # Add category from sentences_df if available
+    if sentences_df is not None and "category" in sentences_df.columns:
+        meta_unique = sentences_df.drop_duplicates(subset=["sentence_id"])
+        paired = paired.merge(
+            meta_unique[["sentence_id", "category"]],
+            on="sentence_id",
+            how="left",
+        )
+
+    return paired
+
+
+def compute_flip_rates(paired: pd.DataFrame) -> Dict[str, pd.DataFrame]:
+    """
+    Compute flip rates by variant, sentence, and optionally dimension/artifact type.
+
+    Returns dict of DataFrames.
+    """
+    results = {}
+
+    # Overall flip rate
+    overall = pd.DataFrame([{
+        "flip_rate": paired["flip"].mean(),
+        "n": len(paired),
+    }])
+    results["overall"] = overall
+
+    # By variant
+    by_variant = (
+        paired.groupby("variant_id")
+        .agg(flip_rate=("flip", "mean"), n=("flip", "size"))
+        .reset_index()
+        .sort_values("flip_rate", ascending=False)
+    )
+    results["by_variant"] = by_variant
+
+    # By sentence
+    by_sentence = (
+        paired.groupby("sentence_id")
+        .agg(flip_rate=("flip", "mean"), n=("flip", "size"))
+        .reset_index()
+        .sort_values("flip_rate", ascending=False)
+    )
+    results["by_sentence"] = by_sentence
+
+    # By dimension (if available)
+    if "dimension_id" in paired.columns:
+        by_dimension = (
+            paired.groupby("dimension_id")
+            .agg(flip_rate=("flip", "mean"), n=("flip", "size"))
+            .reset_index()
+            .sort_values("flip_rate", ascending=False)
+        )
+        results["by_dimension"] = by_dimension
+
+    # By category (if available)
+    if "category" in paired.columns and paired["category"].notna().any():
+        by_category = (
+            paired.groupby("category")
+            .agg(flip_rate=("flip", "mean"), n=("flip", "size"))
+            .reset_index()
+            .sort_values("flip_rate", ascending=False)
+        )
+        results["by_category"] = by_category
+
+    return results
+
+
+def bootstrap_ci(
+    paired: pd.DataFrame,
+    column: str = "flip",
+    group_col: Optional[str] = None,
+    n_boot: int = 2000,
+    alpha: float = 0.05,
+    seed: int = 42,
+) -> pd.DataFrame:
+    """
+    Compute bootstrap confidence intervals by resampling sentences.
+
+    Returns DataFrame with mean, ci_low, ci_high, n per group.
+    """
+    rng = np.random.default_rng(seed)
+    sentences = paired["sentence_id"].unique()
+
+    if group_col:
+        groups = paired[group_col].unique()
+        point_estimates = paired.groupby(group_col)[column].mean()
+    else:
+        groups = [None]
+        point_estimates = pd.Series({"overall": paired[column].mean()})
+
+    boot_results = {g: [] for g in groups}
+
+    for _ in range(n_boot):
+        # Resample sentences with replacement
+        sample_sentences = rng.choice(sentences, size=len(sentences), replace=True)
+        boot_df = paired[paired["sentence_id"].isin(sample_sentences)]
+
+        if group_col:
+            boot_means = boot_df.groupby(group_col)[column].mean()
+            for g in groups:
+                if g in boot_means.index:
+                    boot_results[g].append(boot_means[g])
+        else:
+            boot_results[None].append(boot_df[column].mean())
+
+    # Compute CIs
+    rows = []
+    for g, vals in boot_results.items():
+        if not vals:
+            continue
+        vals = np.array(vals)
+        lo, hi = np.nanpercentile(vals, [100 * alpha / 2, 100 * (1 - alpha / 2)])
+
+        if group_col:
+            mean_val = point_estimates.get(g, np.nan)
+            n_val = len(paired[paired[group_col] == g])
+        else:
+            mean_val = point_estimates.iloc[0]
+            n_val = len(paired)
+
+        row = {
+            "mean": float(mean_val),
+            "ci_low": float(lo),
+            "ci_high": float(hi),
+            "n": int(n_val),
+        }
+        if group_col:
+            row[group_col] = g
+
+        rows.append(row)
+
+    return pd.DataFrame(rows)
+
+
+def plot_flip_rate_by_variant(df: pd.DataFrame, output_path: Path) -> None:
+    """Plot flip rate by variant as horizontal bar chart."""
+    plt.figure(figsize=(10, max(5, len(df) * 0.3)))
+    df_sorted = df.sort_values("flip_rate", ascending=True)
+    plt.barh(df_sorted["variant_id"], df_sorted["flip_rate"], color="darkorange")
+    plt.xlabel("Flip Rate")
+    plt.title("Flip Rate vs OCR Baseline by Typography Variant")
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=200)
+    plt.close()
+
+
+def plot_heatmap_sentence_variant(paired: pd.DataFrame, output_path: Path) -> None:
+    """Plot heatmap of flips by sentence x variant."""
+    pivot = paired.pivot_table(
+        index="sentence_id",
+        columns="variant_id",
+        values="flip",
+        aggfunc="mean",
+        fill_value=0,
+    )
+
+    plt.figure(figsize=(12, max(6, len(pivot) * 0.25)))
+    sns.heatmap(pivot, cmap="Reds", cbar=True, linewidths=0.3)
+    plt.title("Flip vs OCR Baseline (Sentence x Variant)")
+    plt.xlabel("Variant")
+    plt.ylabel("Sentence ID")
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=200)
+    plt.close()
+
+
+def plot_mean_delta_by_dimension(df: pd.DataFrame, output_path: Path) -> None:
+    """Plot mean delta by dimension."""
+    plt.figure(figsize=(10, 4.5))
+    df_sorted = df.sort_values("mean")
+    plt.bar(df_sorted["dimension_id"], df_sorted["mean"], color="steelblue")
+    plt.axhline(0, color="gray", linewidth=1)
+    plt.xticks(rotation=45, ha="right")
+    plt.ylabel("Mean Delta (Image - OCR)")
+    plt.title("Mean Delta by Dimension")
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=200)
+    plt.close()
+
+
+def plot_bootstrap_ci(df: pd.DataFrame, group_col: str, output_path: Path) -> None:
+    """Plot bootstrap confidence intervals."""
+    plt.figure(figsize=(10, 4.5))
+    x = np.arange(len(df))
+    y = df["mean"].to_numpy()
+    yerr_low = y - df["ci_low"].to_numpy()
+    yerr_high = df["ci_high"].to_numpy() - y
+
+    plt.errorbar(x, y, yerr=[yerr_low, yerr_high], fmt="o", capsize=4, color="black")
+    plt.axhline(0, color="gray", linewidth=1)
+    plt.xticks(x, df[group_col], rotation=45, ha="right")
+    plt.ylabel("Value")
+    plt.title(f"Bootstrap 95% CI by {group_col}")
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=200)
+    plt.close()
+
+
+def analyze_run(
+    config: TypoEvalConfig,
+    run_id: str,
+    run_dir: Path,
+    sentences_df: Optional[pd.DataFrame] = None,
+) -> Path:
+    """
+    Run full analysis on inference results.
+
+    Writes CSVs, PNGs, and summary.md to analysis directory.
+    """
+    jsonl_path = run_dir / "raw" / "responses.jsonl"
+    if not jsonl_path.exists():
+        raise FileNotFoundError(f"Results file not found: {jsonl_path}")
+
+    results = load_results(jsonl_path)
+    logger.info(f"Loaded {len(results)} results from {jsonl_path}")
+
+    analysis_dir = run_dir / "analysis"
+    analysis_dir.mkdir(parents=True, exist_ok=True)
+    figures_dir = analysis_dir / "figures"
+    figures_dir.mkdir(exist_ok=True)
+
+    # Build paired comparison table
+    paired = build_delta_table(results, sentences_df)
+
+    # Compute flip rates
+    flip_rates = compute_flip_rates(paired)
+
+    # Save flip rate CSVs
+    for name, df in flip_rates.items():
+        df.to_csv(analysis_dir / f"flip_{name}.csv", index=False)
+
+    # Bootstrap CIs for overall and by variant
+    bootstrap_cfg = config.analysis.bootstrap
+    overall_ci = bootstrap_ci(
+        paired,
+        column="flip",
+        n_boot=bootstrap_cfg.n_boot,
+        alpha=bootstrap_cfg.alpha,
+    )
+    overall_ci.to_csv(analysis_dir / "bootstrap_ci.csv", index=False)
+
+    if "variant_id" in paired.columns:
+        variant_ci = bootstrap_ci(
+            paired,
+            column="flip",
+            group_col="variant_id",
+            n_boot=bootstrap_cfg.n_boot,
+            alpha=bootstrap_cfg.alpha,
+        )
+        variant_ci.to_csv(analysis_dir / "bootstrap_ci_by_variant.csv", index=False)
+
+    # Generate figures
+    if config.analysis.outputs.get("save_png", True):
+        if "by_variant" in flip_rates:
+            plot_flip_rate_by_variant(
+                flip_rates["by_variant"],
+                figures_dir / "flip_rate_by_variant.png",
+            )
+
+        if config.analysis.compute_heatmaps:
+            plot_heatmap_sentence_variant(
+                paired,
+                figures_dir / "heatmap_sentence_variant.png",
+            )
+
+    # Generate summary markdown
+    if config.analysis.outputs.get("save_md", True):
+        summary = generate_summary_md(
+            run_id=run_id,
+            config=config,
+            results=results,
+            paired=paired,
+            flip_rates=flip_rates,
+            overall_ci=overall_ci,
+        )
+        (analysis_dir / "summary.md").write_text(summary)
+
+    logger.info(f"Analysis written to {analysis_dir}")
+    return analysis_dir
+
+
+def generate_summary_md(
+    run_id: str,
+    config: TypoEvalConfig,
+    results: pd.DataFrame,
+    paired: pd.DataFrame,
+    flip_rates: Dict[str, pd.DataFrame],
+    overall_ci: pd.DataFrame,
+) -> str:
+    """Generate summary markdown report."""
+    lines = [
+        "# Analysis Summary",
+        "",
+        f"## Run Metadata",
+        "",
+        f"- **Run ID**: {run_id}",
+        f"- **Total responses**: {len(results)}",
+        f"- **Paired comparisons**: {len(paired)}",
+        f"- **Inference mode**: {config.inference.mode}",
+        f"- **Temperature**: {config.inference.temperature}",
+        "",
+        "## Headline Results",
+        "",
+    ]
+
+    # Overall flip rate with CI
+    if len(overall_ci) > 0:
+        row = overall_ci.iloc[0]
+        lines.append(
+            f"- **Overall flip rate**: {row['mean']:.3f} "
+            f"(95% CI: [{row['ci_low']:.3f}, {row['ci_high']:.3f}], n={row['n']})"
+        )
+        lines.append("")
+
+    # Top variants by flip rate
+    if "by_variant" in flip_rates:
+        lines.append("## Top Variants by Flip Rate")
+        lines.append("")
+        for _, row in flip_rates["by_variant"].head(10).iterrows():
+            lines.append(f"- **{row['variant_id']}**: {row['flip_rate']:.3f}")
+        lines.append("")
+
+    # Top boundary sentences
+    if "by_sentence" in flip_rates:
+        lines.append("## Top Boundary Sentences")
+        lines.append("")
+        for _, row in flip_rates["by_sentence"].head(10).iterrows():
+            lines.append(f"- Sentence {int(row['sentence_id'])}: {row['flip_rate']:.3f}")
+        lines.append("")
+
+    # Figure links
+    lines.extend([
+        "## Figures",
+        "",
+        "- [Flip Rate by Variant](figures/flip_rate_by_variant.png)",
+        "- [Heatmap: Sentence x Variant](figures/heatmap_sentence_variant.png)",
+        "",
+    ])
+
+    return "\n".join(lines)
