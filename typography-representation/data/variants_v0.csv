@@ -1,0 +1,10 @@
+variant_id,font_family,font_path,font_size,uppercase,is_bold
+T1_times_regular,Liberation Serif,,48,false,false
+T2_times_bold,Liberation Serif,,48,false,true
+T3_arial_regular,Liberation Sans,,48,false,false
+T4_arial_bold,Liberation Sans,,48,false,true
+T5_arial_all_caps,Liberation Sans,,48,true,true
+T6_monospace,Liberation Mono,,48,false,false
+T7_comic,Comic Neue,,48,false,false
+T8_small_text,Liberation Sans,,28,false,false
+A1_opendyslexic_regular,OpenDyslexic,,48,false,false
