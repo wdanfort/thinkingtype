@@ -11,6 +11,7 @@ from matplotlib import font_manager
 from PIL import Image, ImageDraw, ImageFont
 
 from typography.config import RenderingConfig
+from typography.fontset import get_font_path
 
 
 def wrap_text(text: str, font: ImageFont.FreeTypeFont, max_width: int, draw: ImageDraw.ImageDraw) -> list[str]:
@@ -34,7 +35,7 @@ def wrap_text(text: str, font: ImageFont.FreeTypeFont, max_width: int, draw: Ima
     return lines
 
 
-def _clean_font_value(value: Optional[str]) -> Optional[str]:
+def _clean_font_value(value: Optional[object]) -> Optional[str]:
     if value is None:
         return None
     if isinstance(value, float) and pd.isna(value):
@@ -43,29 +44,75 @@ def _clean_font_value(value: Optional[str]) -> Optional[str]:
     return value_str or None
 
 
-def resolve_font_path(font_family: Optional[str], font_path: Optional[str]) -> Tuple[Optional[str], Optional[str]]:
-    font_path = _clean_font_value(font_path)
-    font_family = _clean_font_value(font_family)
-    if font_path:
-        path = Path(font_path)
+def _find_font_key_by_family(font_family: str, fontset: dict) -> Optional[str]:
+    for font_key, entry in fontset.get("fonts", {}).items():
+        family = entry.get("family")
+        if isinstance(family, str) and family.lower() == font_family.lower():
+            return font_key
+    return None
+
+
+def resolve_font_path(
+    font_family: Optional[str],
+    font_path: Optional[str],
+    font_key: Optional[str],
+    fontset: Optional[dict],
+    repo_root: Optional[Path],
+    allow_system_fonts: bool = False,
+    default_font_key: str = "inter",
+) -> Tuple[Optional[Path], Optional[str]]:
+    font_path_clean = _clean_font_value(font_path)
+    font_family_clean = _clean_font_value(font_family)
+    font_key_clean = _clean_font_value(font_key)
+
+    if font_path_clean:
+        path = Path(font_path_clean)
         if path.exists():
-            return str(path), None
-        return None, f"Font path not found: {font_path}"
-    if font_family:
-        path = font_manager.findfont(font_family, fallback_to_default=False)
-        if path:
             return path, None
-        return None, f"Font family not found in system registry: {font_family}"
-    return None, "No font_family or font_path provided."
+        return None, f"Font path not found: {font_path_clean}"
+
+    if font_key_clean and fontset and repo_root:
+        try:
+            path = get_font_path(font_key_clean, repo_root, fontset)
+            if path.exists():
+                return path, None
+            return None, f"Vendored font missing for key {font_key_clean}: {path}"
+        except (KeyError, ValueError) as exc:
+            return None, str(exc)
+
+    if font_family_clean and fontset and repo_root:
+        font_key = _find_font_key_by_family(font_family_clean, fontset)
+        if font_key:
+            path = get_font_path(font_key, repo_root, fontset)
+            if path.exists():
+                return path, None
+            return None, f"Vendored font missing for family {font_family_clean}: {path}"
+
+    if font_family_clean and allow_system_fonts:
+        path = font_manager.findfont(font_family_clean, fallback_to_default=False)
+        if path:
+            return Path(path), None
+        return None, f"Font family not found in system registry: {font_family_clean}"
+
+    if fontset and repo_root:
+        try:
+            path = get_font_path(default_font_key, repo_root, fontset)
+            if path.exists():
+                return path, f"Using default vendored font: {default_font_key}"
+            return None, f"Default vendored font missing: {path}"
+        except (KeyError, ValueError) as exc:
+            return None, str(exc)
+
+    return None, "No font_path provided and no vendored fontset loaded."
 
 
-def fallback_font_path() -> str:
-    return font_manager.findfont("DejaVu Sans")
+def fallback_font_path(fontset: dict, repo_root: Path, default_font_key: str = "inter") -> Path:
+    return get_font_path(default_font_key, repo_root, fontset)
 
 
 def render_text_image(
     text: str,
-    font_path: str,
+    font_path: str | Path,
     font_size: int,
     uppercase: bool,
     render_cfg: RenderingConfig,
@@ -75,7 +122,7 @@ def render_text_image(
     temp_img = Image.new("RGB", (render_cfg.canvas_width, 1200), render_cfg.background_color)
     draw = ImageDraw.Draw(temp_img)
 
-    font = ImageFont.truetype(font_path, font_size)
+    font = ImageFont.truetype(str(font_path), font_size)
     lines = wrap_text(display_text, font, render_cfg.max_text_width, draw)
 
     line_bbox = draw.textbbox((0, 0), "Ag", font=font)

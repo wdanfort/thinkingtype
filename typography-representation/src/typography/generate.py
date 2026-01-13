@@ -9,10 +9,16 @@ import pandas as pd
 
 from typography.config import TypographyConfig
 from typography.io import ensure_dir
-from typography.render import fallback_font_path, render_text_image, resolve_font_path
+from typography.render import _clean_font_value, render_text_image, resolve_font_path
 
 
-def generate_artifacts(config: TypographyConfig, logger) -> Path:
+def generate_artifacts(
+    config: TypographyConfig,
+    logger,
+    fontset: dict,
+    repo_root: Path,
+    allow_system_fonts: bool = False,
+) -> Path:
     sentences = pd.read_csv(config.sentences_csv)
     variants = pd.read_csv(config.variants_csv)
 
@@ -48,23 +54,24 @@ def generate_artifacts(config: TypographyConfig, logger) -> Path:
 
         for _, variant in variants.iterrows():
             variant_id = str(variant["variant_id"])
-            font_family = variant.get("font_family")
-            font_path = variant.get("font_path")
-            if pd.isna(font_family):
-                font_family = None
-            if pd.isna(font_path):
-                font_path = None
-            if isinstance(font_family, str) and not font_family.strip():
-                font_family = None
-            if isinstance(font_path, str) and not font_path.strip():
-                font_path = None
+            font_key = _clean_font_value(variant.get("font_key"))
+            font_family = _clean_font_value(variant.get("font_family"))
+            font_path = _clean_font_value(variant.get("font_path"))
             font_size = int(variant.get("font_size", 48))
             uppercase = bool(variant.get("uppercase", False))
 
-            resolved_path, warning = resolve_font_path(font_family, font_path)
+            resolved_path, warning = resolve_font_path(
+                font_family,
+                font_path,
+                font_key,
+                fontset,
+                repo_root,
+                allow_system_fonts=allow_system_fonts,
+            )
             if warning:
-                logger.warning("%s Falling back to DejaVu Sans for variant %s", warning, variant_id)
-                resolved_path = fallback_font_path()
+                logger.warning("%s for variant %s", warning, variant_id)
+            if resolved_path is None:
+                raise RuntimeError(f"Unable to resolve font for variant {variant_id}.")
 
             image_path = item_image_dir / f"{variant_id}.png"
             if not image_path.exists():
