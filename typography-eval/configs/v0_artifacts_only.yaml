@@ -1,0 +1,145 @@
+# Typography Evaluation Harness v0 - Artifacts Only Configuration
+# Runs only on artifacts, no sentences
+
+run_id: null
+seed: 42
+
+inputs:
+  sentences:
+    enabled: false
+    n_sentences: 0
+    categories: []
+    source: synthetic
+    path: null
+  artifacts:
+    enabled: true
+    n_each_type: 6
+    types:
+      - email
+      - notification
+      - alert
+      - form
+    source: synthetic
+    path: null
+
+typography_variants:
+  - id: T1_times_regular
+    font_file: LiberationSerif-Regular.ttf
+    size: 48
+    weight: regular
+    uppercase: false
+    line_spacing: 1.25
+
+  - id: T2_times_bold
+    font_file: LiberationSerif-Bold.ttf
+    size: 48
+    weight: bold
+    uppercase: false
+    line_spacing: 1.25
+
+  - id: T3_arial_regular
+    font_file: LiberationSans-Regular.ttf
+    size: 48
+    weight: regular
+    uppercase: false
+    line_spacing: 1.25
+
+  - id: T4_arial_bold
+    font_file: LiberationSans-Bold.ttf
+    size: 48
+    weight: bold
+    uppercase: false
+    line_spacing: 1.25
+
+  - id: T5_arial_all_caps
+    font_file: LiberationSans-Bold.ttf
+    size: 48
+    weight: bold
+    uppercase: true
+    line_spacing: 1.25
+
+  - id: T6_monospace
+    font_file: LiberationMono-Regular.ttf
+    size: 48
+    weight: regular
+    uppercase: false
+    line_spacing: 1.25
+
+  - id: T7_comic
+    font_file: ComicNeue-Regular.ttf
+    size: 48
+    weight: regular
+    uppercase: false
+    line_spacing: 1.25
+
+  - id: T8_small_text
+    font_file: LiberationSans-Regular.ttf
+    size: 28
+    weight: regular
+    uppercase: false
+    line_spacing: 1.25
+
+  - id: A1_opendyslexic_regular
+    font_file: OpenDyslexic-Regular.otf
+    size: 48
+    weight: regular
+    uppercase: false
+    line_spacing: 1.25
+
+render:
+  image_width: 1200
+  container:
+    padding: 80
+    radius: 24
+    fill: [245, 246, 248]
+    outline: [220, 223, 228]
+  margins: 40
+  max_text_width: 1000
+
+ocr:
+  enabled: true
+  tesseract_lang: eng
+
+providers:
+  openai:
+    api_key_env: OPENAI_API_KEY
+    model_text: gpt-4o-mini
+    model_vision: gpt-4o
+  anthropic:
+    api_key_env: ANTHROPIC_API_KEY
+    model_text: claude-3-5-sonnet-20241022
+    model_vision: claude-3-5-sonnet-20241022
+  google:
+    api_key_env: GOOGLE_API_KEY
+    model_text: gemini-1.5-flash
+    model_vision: gemini-1.5-flash
+
+inference:
+  mode: both
+  temperature: 0.0
+  repeats: 1
+  dimensions:
+    - urgent
+    - immediate_action
+    - formal
+    - trustworthy
+    - persuasive
+    - emotional
+    - professional
+    - high_risk
+    - confident
+    - form_dependent
+  decision_prompt_id: escalation_v1
+  max_retries: 6
+  rate_limit_sleep: 1.5
+  fail_fast: false
+
+analysis:
+  compute_heatmaps: true
+  bootstrap:
+    n_boot: 2000
+    alpha: 0.05
+  outputs:
+    save_csv: true
+    save_png: true
+    save_md: true
