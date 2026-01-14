@@ -9,7 +9,7 @@ A reproducible CLI pipeline for evaluating how AI vision models interpret typogr
 pip install -e .
 
 # Run the full pipeline (requires API keys)
-typo-eval all --config configs/v0_default.yaml
+typo-eval --config configs/v0_default.yaml all
 
 # Or run individual steps
 typo-eval generate --config configs/v0_default.yaml
@@ -144,46 +144,45 @@ Outputs:
 ## Directory Structure
 
 ```
-typography-eval/
-  configs/
-    v0_default.yaml
-  assets/
-    fonts/           # Bundled open-source fonts
-  data/
-    inputs/          # Generated sentences/artifacts
-    rendered/        # Typography images
-    ocr/             # OCR text baselines
-    manifests/       # Run metadata
-  results/
-    runs/<run_id>/
-      raw/           # responses.jsonl, responses.csv
-      analysis/      # CSVs, figures, summary.md
-  src/typo_eval/
-    cli.py           # CLI entrypoint
-    config.py        # Configuration schema
-    render.py        # Image rendering
-    ocr.py           # Tesseract OCR
-    inference.py     # Model inference
-    analysis.py      # Analysis and plotting
-    providers/       # OpenAI, Anthropic, Google
-  scripts/
-    fetch_fonts.py
-    install_tesseract.sh
-  tests/
+configs/
+  v0_default.yaml
+assets/
+  fonts/           # Bundled open-source fonts
+data/
+  inputs/          # Generated sentences/artifacts
+  rendered/        # Typography images
+  ocr/             # OCR text baselines
+  manifests/       # Run metadata
+results/
+  runs/<run_id>/
+    raw/           # responses.jsonl, responses.csv
+    analysis/      # CSVs, figures, summary.md
+src/typo_eval/
+  cli.py           # CLI entrypoint
+  config.py        # Configuration schema
+  render.py        # Image rendering
+  ocr.py           # Tesseract OCR
+  inference.py     # Model inference
+  analysis.py      # Analysis and plotting
+  providers/       # OpenAI, Anthropic, Google
+scripts/
+  fetch_fonts.py
+  install_tesseract.sh
+tests/
 ```
 
 ## CLI Reference
 
 ```bash
 # Full pipeline
-typo-eval all --config <config.yaml>
+typo-eval --config <config.yaml> all
 
 # Individual commands
-typo-eval generate --config <config.yaml>
-typo-eval render --config <config.yaml>
-typo-eval ocr --config <config.yaml>
-typo-eval run --config <config.yaml> [--provider openai|anthropic|google] [--dry-run] [--limit N]
-typo-eval analyze --config <config.yaml> [--run <run_id>]
+typo-eval --config <config.yaml> generate
+typo-eval --config <config.yaml> render
+typo-eval --config <config.yaml> ocr
+typo-eval --config <config.yaml> run [--provider openai|anthropic|google] [--dry-run] [--limit N]
+typo-eval --config <config.yaml> analyze [--run <run_id>]
 ```
 
 ### Options
