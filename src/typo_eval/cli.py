@@ -327,7 +327,9 @@ def cmd_all(args: argparse.Namespace, config: TypoEvalConfig, logger: logging.Lo
 
 def main() -> None:
     """Main CLI entrypoint."""
-    load_dotenv()
+    repo_root = get_repo_root()
+    env_file = repo_root / ".env"
+    load_dotenv(env_file)
 
     parser = argparse.ArgumentParser(
         prog="typo-eval",
