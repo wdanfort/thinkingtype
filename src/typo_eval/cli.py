@@ -266,6 +266,52 @@ def cmd_analyze(args: argparse.Namespace, config: TypoEvalConfig, logger: loggin
     logger.info(f"Analysis complete. Results saved to {analysis_dir}")
 
 
+def cmd_compare(args: argparse.Namespace, config: TypoEvalConfig, logger: logging.Logger) -> None:
+    """Run cross-run comparison analysis."""
+    import pandas as pd
+    from typo_eval.comparison import run_comparison_analysis
+
+    repo_root = get_repo_root()
+    data_dir = repo_root / "data"
+    results_dir = repo_root / "results" / "runs"
+    comparison_dir = repo_root / "results" / "comparisons"
+    comparison_dir.mkdir(parents=True, exist_ok=True)
+
+    # Generate comparison output directory name
+    timestamp = dt.datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    output_dir = comparison_dir / f"comparison_{timestamp}"
+
+    # Parse arguments
+    run_ids = args.run_ids if hasattr(args, "run_ids") and args.run_ids else None
+    provider_filter = args.provider if hasattr(args, "provider") and args.provider else None
+    model_filter = args.model if hasattr(args, "model") and args.model else None
+
+    # Load sentences for category info
+    sentences_df = None
+    sentences_path = data_dir / "inputs" / "sentences.csv"
+    if sentences_path.exists():
+        sentences_df = pd.read_csv(sentences_path)
+
+    logger.info("Running cross-run comparison analysis...")
+    if run_ids:
+        logger.info(f"Filtering to run IDs: {run_ids}")
+    if provider_filter:
+        logger.info(f"Filtering to provider: {provider_filter}")
+    if model_filter:
+        logger.info(f"Filtering to model containing: {model_filter}")
+
+    run_comparison_analysis(
+        output_dir=output_dir,
+        run_ids=run_ids,
+        provider_filter=provider_filter,
+        model_filter=model_filter,
+        sentences_df=sentences_df,
+        results_dir=results_dir,
+    )
+
+    logger.info(f"Comparison analysis complete. Results saved to {output_dir}")
+
+
 def cmd_all(args: argparse.Namespace, config: TypoEvalConfig, logger: logging.Logger) -> None:
     """Run full pipeline: generate -> render -> ocr -> run -> analyze."""
     logger.info("Running full pipeline...")
@@ -321,6 +367,12 @@ def main() -> None:
     analyze_parser = subparsers.add_parser("analyze", help="Analyze inference results")
     analyze_parser.add_argument("--run", dest="run_id", help="Run ID to analyze")
 
+    # compare command
+    compare_parser = subparsers.add_parser("compare", help="Compare multiple runs across providers/models")
+    compare_parser.add_argument("--run-ids", nargs="+", help="Specific run IDs to compare")
+    compare_parser.add_argument("--provider", choices=["openai", "anthropic", "google"], help="Filter to specific provider")
+    compare_parser.add_argument("--model", help="Filter to models containing this substring")
+
     # all command
     all_parser = subparsers.add_parser("all", help="Run full pipeline")
     all_parser.add_argument("--dry-run", action="store_true", help="Print planned calls without executing")
@@ -354,6 +406,7 @@ def main() -> None:
         "ocr": cmd_ocr,
         "run": cmd_run,
         "analyze": cmd_analyze,
+        "compare": cmd_compare,
         "all": cmd_all,
     }
 
