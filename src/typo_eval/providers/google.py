@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import google.generativeai as genai
+import google.genai as genai
 from PIL import Image
 
 from typo_eval.providers.base import Provider
@@ -18,7 +18,6 @@ class GoogleProvider(Provider):
 
     def __init__(self) -> None:
         # API key should be set via GOOGLE_API_KEY env var
-        # genai.configure() is called automatically when API key is in env
         pass
 
     def infer_text(
@@ -30,13 +29,16 @@ class GoogleProvider(Provider):
         system_prompt: str,
     ) -> str:
         """Run inference on text input using Gemini."""
-        gemini_model = genai.GenerativeModel(
-            model,
-            system_instruction=system_prompt,
-            generation_config=genai.types.GenerationConfig(temperature=temperature),
-        )
+        client = genai.Client()
         prompt = make_text_prompt(input_text, question)
-        response = gemini_model.generate_content(prompt)
+        response = client.models.generate_content(
+            model=model,
+            contents=prompt,
+            config=genai.types.GenerateContentConfig(
+                temperature=temperature,
+                system_instruction=system_prompt,
+            ),
+        )
         return response.text if response.text else ""
 
     def infer_image(
@@ -48,12 +50,15 @@ class GoogleProvider(Provider):
         system_prompt: str,
     ) -> str:
         """Run inference on image input using Gemini."""
-        gemini_model = genai.GenerativeModel(
-            model,
-            system_instruction=system_prompt,
-            generation_config=genai.types.GenerationConfig(temperature=temperature),
-        )
+        client = genai.Client()
         img = Image.open(image_path)
         prompt = make_image_prompt(question)
-        response = gemini_model.generate_content([prompt, img])
+        response = client.models.generate_content(
+            model=model,
+            contents=[prompt, img],
+            config=genai.types.GenerateContentConfig(
+                temperature=temperature,
+                system_instruction=system_prompt,
+            ),
+        )
         return response.text if response.text else ""
