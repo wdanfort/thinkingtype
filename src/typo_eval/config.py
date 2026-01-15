@@ -78,13 +78,13 @@ class ProvidersConfig(BaseModel):
     ))
     anthropic: ProviderConfig = Field(default_factory=lambda: ProviderConfig(
         api_key_env="ANTHROPIC_API_KEY",
-        model_text="claude-3-5-sonnet-20241022",
-        model_vision="claude-3-5-sonnet-20241022",
+        model_text="claude-sonnet-4-20250514",
+        model_vision="claude-sonnet-4-20250514",
     ))
     google: ProviderConfig = Field(default_factory=lambda: ProviderConfig(
         api_key_env="GOOGLE_API_KEY",
-        model_text="gemini-1.5-flash",
-        model_vision="gemini-1.5-flash",
+        model_text="gemini-1.5-pro",
+        model_vision="gemini-1.5-pro",
     ))
 
 

@@ -31,6 +31,7 @@ class AnthropicProvider(Provider):
         resp = self.client.messages.create(
             model=model,
             max_tokens=100,
+            temperature=temperature,
             system=system_prompt,
             messages=[
                 {"role": "user", "content": make_text_prompt(input_text, question)},
@@ -53,6 +54,7 @@ class AnthropicProvider(Provider):
         resp = self.client.messages.create(
             model=model,
             max_tokens=100,
+            temperature=temperature,
             system=system_prompt,
             messages=[
                 {

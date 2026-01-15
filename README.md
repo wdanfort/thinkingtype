@@ -93,6 +93,12 @@ providers:
   openai:
     model_text: gpt-4o-mini
     model_vision: gpt-4o
+  anthropic:
+    model_text: claude-sonnet-4-20250514
+    model_vision: claude-sonnet-4-20250514
+  google:
+    model_text: gemini-1.5-pro
+    model_vision: gemini-1.5-pro
 ```
 
 ## Pipeline Phases
@@ -141,6 +147,19 @@ Outputs:
 - `results/runs/<run_id>/analysis/flip_*.csv`
 - `results/runs/<run_id>/analysis/figures/*.png`
 
+### 6. Compare (`typo-eval compare`)
+
+Compares multiple runs across different providers, models, or configurations:
+- Overall flip rates by provider
+- Flip rates by variant across providers
+- Flip rates by dimension across providers
+- Statistical comparisons
+
+Outputs:
+- `results/comparisons/comparison_<timestamp>/comparison_*.csv`
+- `results/comparisons/comparison_<timestamp>/figures/*.png`
+- `results/comparisons/comparison_<timestamp>/comparison_summary.md`
+
 ## Directory Structure
 
 ```
@@ -157,6 +176,7 @@ results/
   runs/<run_id>/
     raw/           # responses.jsonl, responses.csv
     analysis/      # CSVs, figures, summary.md
+  comparisons/     # Cross-run comparisons
 src/typo_eval/
   cli.py           # CLI entrypoint
   config.py        # Configuration schema
@@ -183,6 +203,7 @@ typo-eval --config <config.yaml> render
 typo-eval --config <config.yaml> ocr
 typo-eval --config <config.yaml> run [--provider openai|anthropic|google] [--dry-run] [--limit N]
 typo-eval --config <config.yaml> analyze [--run <run_id>]
+typo-eval --config <config.yaml> compare [--run-ids RUN1 RUN2 ...] [--provider openai|anthropic|google] [--model MODEL_SUBSTRING]
 ```
 
 ### Options
@@ -192,6 +213,8 @@ typo-eval --config <config.yaml> analyze [--run <run_id>]
 - `--dry-run` - Print planned calls without executing
 - `--limit N` - Limit number of inference calls
 - `--run <run_id>` - Specify run ID for analysis
+- `--run-ids` - List of specific run IDs to compare
+- `--model` - Filter comparison to models containing this substring
 
 ## API Keys
 
@@ -202,6 +225,16 @@ export OPENAI_API_KEY=sk-...
 export ANTHROPIC_API_KEY=sk-ant-...
 export GOOGLE_API_KEY=...
 ```
+
+## Supported Model Providers
+
+The harness supports three major AI vision model providers with the latest models:
+
+- **OpenAI**: GPT-4o (vision), GPT-4o-mini (text)
+- **Anthropic**: Claude Sonnet 4 (vision and text) - Latest model with improved vision capabilities
+- **Google**: Gemini 1.5 Pro (vision and text) - Advanced production model with vision support
+
+All providers support configurable temperature (default 0.0 for reproducibility) and both text (OCR baseline) and vision (rendered images) inference modes.
 
 ## Key Design Decisions
 
