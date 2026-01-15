@@ -51,9 +51,9 @@ def render_text_image(
     line_spacing: float = 1.25,
 ) -> Image.Image:
     """
-    Render text as an image with container framing.
+    Render text as an image on a single line with container framing.
 
-    Uses container styling to prevent clipping issues (the "poster effect" fix).
+    All text is rendered on a single line for experiment consistency.
     """
     display_text = text.upper() if uppercase else text
 
@@ -62,36 +62,30 @@ def render_text_image(
     pad_x = container.get("padding", 80)
     pad_y = render_cfg.margins
     radius = container.get("radius", 24)
-    fill = tuple(container.get("fill", [245, 246, 248]))
-    outline = tuple(container.get("outline", [220, 223, 228]))
-    outline_width = 3
+    fill = None  # Transparent - no fill color
+    outline = None  # Transparent - no outline
 
     # Create temporary canvas for measurement
     temp_img = Image.new("RGB", (render_cfg.image_width, 1200), "white")
     draw = ImageDraw.Draw(temp_img)
 
     font = ImageFont.truetype(str(font_path), font_size)
-    lines = wrap_text(display_text, font, render_cfg.max_text_width, draw)
 
-    # Calculate line height
+    # Calculate line height from base font
     line_bbox = draw.textbbox((0, 0), "Ag", font=font)
     base_line_height = line_bbox[3] - line_bbox[1]
     line_height = int(base_line_height * line_spacing)
 
-    # Calculate max line width
-    max_line_w = 0
-    for line in lines:
-        bbox = draw.textbbox((0, 0), line, font=font)
-        max_line_w = max(max_line_w, bbox[2] - bbox[0])
+    # Calculate width of text on a single line
+    text_bbox = draw.textbbox((0, 0), display_text, font=font)
+    text_width = text_bbox[2] - text_bbox[0]
 
-    text_block_h = line_height * len(lines)
-
-    # Container size
+    # Container size (single line)
     container_w = min(
         render_cfg.image_width - 2 * pad_x,
-        max_line_w + 2 * pad_x,
+        text_width + 2 * pad_x,
     )
-    container_h = text_block_h + 2 * pad_y
+    container_h = line_height + 2 * pad_y
 
     # Final image
     total_height = container_h + 80
@@ -104,23 +98,20 @@ def render_text_image(
     cx1 = cx0 + container_w
     cy1 = cy0 + container_h
 
-    # Draw rounded rectangle container
+    # Draw rounded rectangle container (transparent - no fill or outline)
     draw.rounded_rectangle(
         (cx0, cy0, cx1, cy1),
         radius=radius,
         fill=fill,
         outline=outline,
-        width=outline_width,
     )
 
-    # Draw text centered in container
-    y = cy0 + (container_h - text_block_h) // 2
-    for line in lines:
-        bbox = draw.textbbox((0, 0), line, font=font)
-        w = bbox[2] - bbox[0]
-        x = (render_cfg.image_width - w) // 2
-        draw.text((x, y), line, fill="black", font=font)
-        y += line_height
+    # Draw text centered in container (single line)
+    y = cy0 + (container_h - line_height) // 2
+    bbox = draw.textbbox((0, 0), display_text, font=font)
+    w = bbox[2] - bbox[0]
+    x = (render_cfg.image_width - w) // 2
+    draw.text((x, y), display_text, fill="black", font=font)
 
     return img
 

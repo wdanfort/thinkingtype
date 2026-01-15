@@ -82,8 +82,8 @@ class TestRenderTextImage:
         assert img.height > 0
         assert img.mode == "RGB"
 
-    def test_render_long_sentence_no_clipping(self, tmp_path):
-        """Long sentences should render fully within container (no clipping)."""
+    def test_render_long_sentence_single_line(self, tmp_path):
+        """Long sentences should render on a single line for consistency."""
         import glob
 
         font_paths = glob.glob("/usr/share/fonts/**/*.ttf", recursive=True)
@@ -94,9 +94,8 @@ class TestRenderTextImage:
         render_cfg = RenderConfig()
 
         long_text = (
-            "This is a very long sentence that tests whether the container "
-            "properly wraps and contains text without clipping at the edges "
-            "which was an issue in earlier versions of the rendering code."
+            "This is a very long sentence that tests single line rendering "
+            "for experiment consistency without text wrapping."
         )
 
         img = render_text_image(
@@ -109,8 +108,8 @@ class TestRenderTextImage:
 
         # Check that image was created with reasonable dimensions
         assert img.width == render_cfg.image_width
-        # Height should be dynamic based on text
-        assert img.height > 100  # Should be tall enough for wrapped text
+        # Height should be for a single line only
+        assert img.height > 0  # Should have positive height
 
     def test_render_uppercase_transformation(self, tmp_path):
         """Uppercase flag should transform text to uppercase."""
@@ -158,6 +157,6 @@ class TestContainerStyling:
         assert "radius" in container
         assert container["radius"] > 0
         assert "fill" in container
-        assert len(container["fill"]) == 3  # RGB tuple
+        assert container["fill"] is None  # Transparent - no fill
         assert "outline" in container
-        assert len(container["outline"]) == 3  # RGB tuple
+        assert container["outline"] is None  # Transparent - no outline
