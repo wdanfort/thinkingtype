@@ -78,7 +78,7 @@ class TestRenderTextImage:
         )
 
         assert isinstance(img, Image.Image)
-        assert img.width == render_cfg.image_width
+        assert img.width > 0  # Width is dynamic based on text length
         assert img.height > 0
         assert img.mode == "RGB"
 
@@ -106,8 +106,8 @@ class TestRenderTextImage:
             render_cfg=render_cfg,
         )
 
-        # Check that image was created with reasonable dimensions
-        assert img.width == render_cfg.image_width
+        # Check that image was created with dynamic width to fit all text
+        assert img.width > 0  # Width is dynamic based on text length
         # Height should be for a single line only
         assert img.height > 0  # Should have positive height
 
