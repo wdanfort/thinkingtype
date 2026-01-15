@@ -158,6 +158,6 @@ class TestContainerStyling:
         assert "radius" in container
         assert container["radius"] > 0
         assert "fill" in container
-        assert len(container["fill"]) == 3  # RGB tuple
+        assert container["fill"] is None  # Transparent - no fill
         assert "outline" in container
-        assert len(container["outline"]) == 3  # RGB tuple
+        assert container["outline"] is None  # Transparent - no outline

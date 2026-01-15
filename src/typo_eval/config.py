@@ -46,8 +46,8 @@ class RenderConfig(BaseModel):
     container: Dict[str, Any] = Field(default_factory=lambda: {
         "padding": 80,
         "radius": 24,
-        "fill": [245, 246, 248],
-        "outline": [220, 223, 228],
+        "fill": None,  # Transparent - no fill
+        "outline": None,  # Transparent - no outline
     })
     margins: int = 40
     max_text_width: int = 1000

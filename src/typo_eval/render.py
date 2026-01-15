@@ -62,9 +62,8 @@ def render_text_image(
     pad_x = container.get("padding", 80)
     pad_y = render_cfg.margins
     radius = container.get("radius", 24)
-    fill = tuple(container.get("fill", [245, 246, 248]))
-    outline = tuple(container.get("outline", [220, 223, 228]))
-    outline_width = 3
+    fill = None  # Transparent - no fill color
+    outline = None  # Transparent - no outline
 
     # Create temporary canvas for measurement
     temp_img = Image.new("RGB", (render_cfg.image_width, 1200), "white")
@@ -104,13 +103,12 @@ def render_text_image(
     cx1 = cx0 + container_w
     cy1 = cy0 + container_h
 
-    # Draw rounded rectangle container
+    # Draw rounded rectangle container (transparent - no fill or outline)
     draw.rounded_rectangle(
         (cx0, cy0, cx1, cy1),
         radius=radius,
         fill=fill,
         outline=outline,
-        width=outline_width,
     )
 
     # Draw text centered in container
