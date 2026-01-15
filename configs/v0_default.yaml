@@ -79,13 +79,6 @@ typography_variants:
     uppercase: false
     line_spacing: 1.25
 
-  - id: T8_small_text
-    font_file: LiberationSans-Regular.ttf
-    size: 28
-    weight: regular
-    uppercase: false
-    line_spacing: 1.25
-
   - id: A1_opendyslexic_regular
     font_file: OpenDyslexic-Regular.otf
     size: 48
@@ -98,8 +91,8 @@ render:
   container:
     padding: 80
     radius: 24
-    fill: [245, 246, 248]
-    outline: [220, 223, 228]
+    fill: null  # Transparent - no fill
+    outline: null  # Transparent - no outline
   margins: 40
   max_text_width: 1000
 

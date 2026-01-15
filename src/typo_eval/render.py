@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
@@ -40,6 +40,59 @@ def wrap_text(
         lines.append(current_line)
 
     return lines
+
+
+def normalize_font_sizes(
+    font_paths: List[Path],
+    requested_size: int,
+) -> Dict[str, int]:
+    """
+    Normalize font sizes so all fonts render at the same visual height.
+
+    Measures each font at the requested size, finds the maximum visual height,
+    then scales each font's point size so they all render at that same height.
+
+    Args:
+        font_paths: List of font file paths to normalize
+        requested_size: The requested point size (baseline for measurement)
+
+    Returns:
+        Dictionary mapping font path (as string) to normalized point size
+    """
+    if not font_paths:
+        return {}
+
+    # Measure visual heights at requested size
+    visual_heights: Dict[str, int] = {}
+    temp_img = Image.new("RGB", (1000, 1000), "white")
+    draw = ImageDraw.Draw(temp_img)
+
+    for font_path in font_paths:
+        try:
+            font = ImageFont.truetype(str(font_path), requested_size)
+            # Measure visual height using "Ag" which includes ascenders/descenders
+            bbox = draw.textbbox((0, 0), "Ag", font=font)
+            visual_height = bbox[3] - bbox[1]
+            visual_heights[str(font_path)] = visual_height
+        except Exception as e:
+            logger.warning(f"Could not measure font {font_path}: {e}")
+            visual_heights[str(font_path)] = 0
+
+    # Find max visual height
+    max_height = max(visual_heights.values()) if visual_heights else requested_size
+
+    # Calculate normalization factors
+    normalized_sizes: Dict[str, int] = {}
+    for font_path_str, current_height in visual_heights.items():
+        if current_height > 0:
+            # Scale: new_size = requested_size * (max_height / current_height)
+            scale_factor = max_height / current_height
+            normalized_size = max(1, int(round(requested_size * scale_factor)))
+            normalized_sizes[font_path_str] = normalized_size
+        else:
+            normalized_sizes[font_path_str] = requested_size
+
+    return normalized_sizes
 
 
 def render_text_image(
@@ -80,20 +133,18 @@ def render_text_image(
     text_bbox = draw.textbbox((0, 0), display_text, font=font)
     text_width = text_bbox[2] - text_bbox[0]
 
-    # Container size (single line)
-    container_w = min(
-        render_cfg.image_width - 2 * pad_x,
-        text_width + 2 * pad_x,
-    )
+    # Container size (single line) - dynamic width to fit all text
+    container_w = text_width + 2 * pad_x
     container_h = line_height + 2 * pad_y
 
-    # Final image
-    total_height = container_h + 80
-    img = Image.new("RGB", (render_cfg.image_width, total_height), "white")
+    # Final image dimensions - width expands to fit text
+    image_width = container_w + 80  # Add margins on sides
+    total_height = container_h + 80  # Add margins on top/bottom
+    img = Image.new("RGB", (image_width, total_height), "white")
     draw = ImageDraw.Draw(img)
 
     # Container position (centered)
-    cx0 = (render_cfg.image_width - container_w) // 2
+    cx0 = (image_width - container_w) // 2
     cy0 = (total_height - container_h) // 2
     cx1 = cx0 + container_w
     cy1 = cy0 + container_h
@@ -110,7 +161,7 @@ def render_text_image(
     y = cy0 + (container_h - line_height) // 2
     bbox = draw.textbbox((0, 0), display_text, font=font)
     w = bbox[2] - bbox[0]
-    x = (render_cfg.image_width - w) // 2
+    x = (image_width - w) // 2
     draw.text((x, y), display_text, fill="black", font=font)
 
     return img
@@ -125,9 +176,28 @@ def render_sentences(
     """
     Render all sentences for all typography variants.
 
+    Font sizes are normalized so all fonts at the same size level render
+    at consistent visual heights for experimental consistency.
+
     Returns metadata DataFrame with paths to rendered images.
     """
     metadata_rows = []
+
+    # Pre-compute normalized font sizes for all variants grouped by size
+    size_to_normalized: Dict[int, Dict[str, int]] = {}
+    for variant in config.typography_variants:
+        if variant.size not in size_to_normalized:
+            # Collect all font paths for this size
+            font_paths = []
+            for v in config.typography_variants:
+                if v.size == variant.size:
+                    font_path = resolve_font_path(v.font_file, repo_root)
+                    if font_path.exists():
+                        font_paths.append(font_path)
+
+            # Normalize sizes for all fonts at this size level
+            if font_paths:
+                size_to_normalized[variant.size] = normalize_font_sizes(font_paths, variant.size)
 
     for _, row in tqdm(sentences_df.iterrows(), total=len(sentences_df), desc="Rendering sentences"):
         sentence_id = row["sentence_id"]
@@ -147,10 +217,15 @@ def render_sentences(
             image_path = sentence_dir / f"{variant.id}.png"
 
             if not image_path.exists():
+                # Use normalized font size
+                normalized_size = size_to_normalized.get(variant.size, {}).get(
+                    str(font_path), variant.size
+                )
+
                 img = render_text_image(
                     text,
                     font_path,
-                    variant.size,
+                    normalized_size,
                     variant.uppercase,
                     config.render,
                     variant.line_spacing,
@@ -176,9 +251,28 @@ def render_artifacts(
     """
     Render all artifacts for all typography variants.
 
+    Font sizes are normalized so all fonts at the same size level render
+    at consistent visual heights for experimental consistency.
+
     Returns metadata DataFrame with paths to rendered images.
     """
     metadata_rows = []
+
+    # Pre-compute normalized font sizes for all variants grouped by size
+    size_to_normalized: Dict[int, Dict[str, int]] = {}
+    for variant in config.typography_variants:
+        if variant.size not in size_to_normalized:
+            # Collect all font paths for this size
+            font_paths = []
+            for v in config.typography_variants:
+                if v.size == variant.size:
+                    font_path = resolve_font_path(v.font_file, repo_root)
+                    if font_path.exists():
+                        font_paths.append(font_path)
+
+            # Normalize sizes for all fonts at this size level
+            if font_paths:
+                size_to_normalized[variant.size] = normalize_font_sizes(font_paths, variant.size)
 
     for _, row in tqdm(artifacts_df.iterrows(), total=len(artifacts_df), desc="Rendering artifacts"):
         artifact_id = row["artifact_id"]
@@ -198,10 +292,15 @@ def render_artifacts(
             image_path = artifact_dir / f"{variant.id}.png"
 
             if not image_path.exists():
+                # Use normalized font size
+                normalized_size = size_to_normalized.get(variant.size, {}).get(
+                    str(font_path), variant.size
+                )
+
                 img = render_text_image(
                     text,
                     font_path,
-                    variant.size,
+                    normalized_size,
                     variant.uppercase,
                     config.render,
                     variant.line_spacing,
