@@ -157,8 +157,11 @@ def cmd_run(args: argparse.Namespace, config: TypoEvalConfig, logger: logging.Lo
     data_dir = repo_root / "data"
     results_dir = repo_root / "results" / "runs"
 
-    # Generate or use provided run_id
-    run_id = config.run_id or _generate_run_id(config)
+    # Generate or use provided run_id (args --run-id takes precedence)
+    if hasattr(args, "run_id") and args.run_id:
+        run_id = args.run_id
+    else:
+        run_id = config.run_id or _generate_run_id(config)
     run_dir = results_dir / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
 
@@ -348,6 +351,7 @@ def main() -> None:
 
     # run command (inference)
     run_parser = subparsers.add_parser("run", help="Run inference on all inputs")
+    run_parser.add_argument("--run-id", help="Run ID to resume (generates new if not specified)")
     run_parser.add_argument("--dry-run", action="store_true", help="Print planned calls without executing")
     run_parser.add_argument("--limit", type=int, help="Limit number of inference calls")
     run_parser.add_argument(
