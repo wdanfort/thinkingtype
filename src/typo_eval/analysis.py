@@ -46,6 +46,9 @@ def build_delta_table(
     - image_response
     - delta (image - ocr)
     - flip (1 if different, 0 otherwise)
+    - approval_ocr (YES rate for OCR baseline)
+    - approval_image (YES rate for image variant)
+    - flip_direction (NO→YES, YES→NO, or no_flip)
     """
     results = results.copy()
 
@@ -106,6 +109,15 @@ def build_delta_table(
     paired["delta"] = paired["image"] - paired["ocr"]
     paired["abs_delta"] = paired["delta"].abs()
     paired["flip"] = (paired["image"] != paired["ocr"]).astype(int)
+
+    # Add approval rate columns (YES = 1, NO = 0)
+    paired["approval_ocr"] = paired["ocr"]
+    paired["approval_image"] = paired["image"]
+
+    # Add flip directionality
+    paired["flip_direction"] = paired["delta"].apply(
+        lambda x: "NO→YES" if x == 1 else "YES→NO" if x == -1 else "no_flip"
+    )
 
     # Add category from sentences_df if available
     if sentences_df is not None and "category" in sentences_df.columns:
@@ -169,6 +181,142 @@ def compute_flip_rates(paired: pd.DataFrame) -> Dict[str, pd.DataFrame]:
             .agg(flip_rate=("flip", "mean"), n=("flip", "size"))
             .reset_index()
             .sort_values("flip_rate", ascending=False)
+        )
+        results["by_category"] = by_category
+
+    return results
+
+
+def compute_approval_rates(paired: pd.DataFrame) -> Dict[str, pd.DataFrame]:
+    """
+    Compute approval rates (% YES judgments) by variant, sentence, dimension, and category.
+
+    Returns dict of DataFrames with approval_rate_ocr, approval_rate_image, and n.
+    """
+    results = {}
+
+    # Overall approval rate
+    overall = pd.DataFrame([{
+        "approval_rate_ocr": paired["approval_ocr"].mean(),
+        "approval_rate_image": paired["approval_image"].mean(),
+        "n": len(paired),
+    }])
+    results["overall"] = overall
+
+    # By variant
+    by_variant = (
+        paired.groupby("variant_id")
+        .agg(
+            approval_rate_ocr=("approval_ocr", "mean"),
+            approval_rate_image=("approval_image", "mean"),
+            n=("approval_ocr", "size")
+        )
+        .reset_index()
+        .sort_values("approval_rate_image", ascending=False)
+    )
+    results["by_variant"] = by_variant
+
+    # By sentence
+    by_sentence = (
+        paired.groupby("sentence_id")
+        .agg(
+            approval_rate_ocr=("approval_ocr", "mean"),
+            approval_rate_image=("approval_image", "mean"),
+            n=("approval_ocr", "size")
+        )
+        .reset_index()
+        .sort_values("approval_rate_image", ascending=False)
+    )
+    results["by_sentence"] = by_sentence
+
+    # By dimension (if available)
+    if "dimension_id" in paired.columns:
+        by_dimension = (
+            paired.groupby("dimension_id")
+            .agg(
+                approval_rate_ocr=("approval_ocr", "mean"),
+                approval_rate_image=("approval_image", "mean"),
+                n=("approval_ocr", "size")
+            )
+            .reset_index()
+            .sort_values("approval_rate_image", ascending=False)
+        )
+        results["by_dimension"] = by_dimension
+
+    # By category (if available)
+    if "category" in paired.columns and paired["category"].notna().any():
+        by_category = (
+            paired.groupby("category")
+            .agg(
+                approval_rate_ocr=("approval_ocr", "mean"),
+                approval_rate_image=("approval_image", "mean"),
+                n=("approval_ocr", "size")
+            )
+            .reset_index()
+            .sort_values("approval_rate_image", ascending=False)
+        )
+        results["by_category"] = by_category
+
+    return results
+
+
+def compute_flip_directionality(paired: pd.DataFrame) -> Dict[str, pd.DataFrame]:
+    """
+    Compute flip directionality (NO→YES vs YES→NO) breakdown.
+
+    Returns dict of DataFrames with counts and rates for each direction.
+    """
+    results = {}
+
+    # Filter to only flips
+    flipped = paired[paired["flip"] == 1].copy()
+
+    if len(flipped) == 0:
+        # No flips, return empty DataFrames
+        return results
+
+    # Overall directionality
+    overall = (
+        flipped.groupby("flip_direction")
+        .size()
+        .reset_index(name="count")
+    )
+    overall["rate"] = overall["count"] / overall["count"].sum()
+    results["overall"] = overall
+
+    # By variant
+    by_variant = (
+        flipped.groupby(["variant_id", "flip_direction"])
+        .size()
+        .reset_index(name="count")
+    )
+    # Calculate rate within each variant
+    by_variant["rate"] = by_variant.groupby("variant_id")["count"].transform(
+        lambda x: x / x.sum()
+    )
+    results["by_variant"] = by_variant
+
+    # By dimension (if available)
+    if "dimension_id" in flipped.columns:
+        by_dimension = (
+            flipped.groupby(["dimension_id", "flip_direction"])
+            .size()
+            .reset_index(name="count")
+        )
+        by_dimension["rate"] = by_dimension.groupby("dimension_id")["count"].transform(
+            lambda x: x / x.sum()
+        )
+        results["by_dimension"] = by_dimension
+
+    # By category (if available)
+    if "category" in flipped.columns and flipped["category"].notna().any():
+        by_category = (
+            flipped.groupby(["category", "flip_direction"])
+            .size()
+            .reset_index(name="count")
+        )
+        by_category["rate"] = by_category.groupby("category")["count"].transform(
+            lambda x: x / x.sum()
         )
         results["by_category"] = by_category
 
@@ -306,6 +454,82 @@ def plot_bootstrap_ci(df: pd.DataFrame, group_col: str, output_path: Path) -> No
     plt.close()
 
 
+def plot_approval_rate_by_variant(df: pd.DataFrame, output_path: Path) -> None:
+    """Plot approval rates by variant (OCR vs Image)."""
+    plt.figure(figsize=(12, max(5, len(df) * 0.4)))
+
+    # Sort by image approval rate
+    df_sorted = df.sort_values("approval_rate_image", ascending=True)
+
+    x = np.arange(len(df_sorted))
+    width = 0.35
+
+    plt.barh(x - width/2, df_sorted["approval_rate_ocr"], width, label="OCR Baseline", color="steelblue")
+    plt.barh(x + width/2, df_sorted["approval_rate_image"], width, label="Image Variant", color="darkorange")
+
+    plt.yticks(x, df_sorted["variant_id"])
+    plt.xlabel("Approval Rate (% YES)")
+    plt.title("Approval Rates by Typography Variant")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=200)
+    plt.close()
+
+
+def plot_flip_directionality_heatmap(paired: pd.DataFrame, output_path: Path) -> None:
+    """Plot heatmap of flip directions by variant."""
+    # Filter to only flips
+    flipped = paired[paired["flip"] == 1].copy()
+
+    if len(flipped) == 0:
+        # No flips to plot
+        return
+
+    # Create pivot: variants x flip_direction
+    pivot = flipped.pivot_table(
+        index="variant_id",
+        columns="flip_direction",
+        values="flip",
+        aggfunc="size",
+        fill_value=0,
+    )
+
+    # Reorder columns if both directions present
+    desired_order = ["NO→YES", "YES→NO"]
+    pivot = pivot[[col for col in desired_order if col in pivot.columns]]
+
+    plt.figure(figsize=(8, max(6, len(pivot) * 0.4)))
+    sns.heatmap(pivot, annot=True, fmt="d", cmap="RdYlGn", cbar=True, linewidths=0.5)
+    plt.title("Flip Directionality by Variant")
+    plt.xlabel("Flip Direction")
+    plt.ylabel("Variant")
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=200)
+    plt.close()
+
+
+def plot_approval_rate_by_dimension(df: pd.DataFrame, output_path: Path) -> None:
+    """Plot approval rates by dimension (OCR vs Image)."""
+    plt.figure(figsize=(12, 5))
+
+    # Sort by image approval rate
+    df_sorted = df.sort_values("approval_rate_image", ascending=False)
+
+    x = np.arange(len(df_sorted))
+    width = 0.35
+
+    plt.bar(x - width/2, df_sorted["approval_rate_ocr"], width, label="OCR Baseline", color="steelblue")
+    plt.bar(x + width/2, df_sorted["approval_rate_image"], width, label="Image Variant", color="darkorange")
+
+    plt.xticks(x, df_sorted["dimension_id"], rotation=45, ha="right")
+    plt.ylabel("Approval Rate (% YES)")
+    plt.title("Approval Rates by Dimension")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=200)
+    plt.close()
+
+
 def analyze_run(
     config: TypoEvalConfig,
     run_id: str,
@@ -339,7 +563,21 @@ def analyze_run(
     for name, df in flip_rates.items():
         df.to_csv(analysis_dir / f"flip_{name}.csv", index=False)
 
-    # Bootstrap CIs for overall and by variant
+    # Compute approval rates
+    approval_rates = compute_approval_rates(paired)
+
+    # Save approval rate CSVs
+    for name, df in approval_rates.items():
+        df.to_csv(analysis_dir / f"approval_rate_{name}.csv", index=False)
+
+    # Compute flip directionality
+    directionality = compute_flip_directionality(paired)
+
+    # Save directionality CSVs
+    for name, df in directionality.items():
+        df.to_csv(analysis_dir / f"bias_direction_{name}.csv", index=False)
+
+    # Bootstrap CIs for overall and by variant (flip rates)
     bootstrap_cfg = config.analysis.bootstrap
     overall_ci = bootstrap_ci(
         paired,
@@ -359,6 +597,35 @@ def analyze_run(
         )
         variant_ci.to_csv(analysis_dir / "bootstrap_ci_by_variant.csv", index=False)
 
+    # Bootstrap CIs for approval rates
+    approval_ci = bootstrap_ci(
+        paired,
+        column="approval_image",
+        n_boot=bootstrap_cfg.n_boot,
+        alpha=bootstrap_cfg.alpha,
+    )
+    approval_ci.to_csv(analysis_dir / "bootstrap_ci_approval.csv", index=False)
+
+    if "variant_id" in paired.columns:
+        approval_variant_ci = bootstrap_ci(
+            paired,
+            column="approval_image",
+            group_col="variant_id",
+            n_boot=bootstrap_cfg.n_boot,
+            alpha=bootstrap_cfg.alpha,
+        )
+        approval_variant_ci.to_csv(analysis_dir / "bootstrap_ci_approval_by_variant.csv", index=False)
+
+    if "dimension_id" in paired.columns:
+        approval_dimension_ci = bootstrap_ci(
+            paired,
+            column="approval_image",
+            group_col="dimension_id",
+            n_boot=bootstrap_cfg.n_boot,
+            alpha=bootstrap_cfg.alpha,
+        )
+        approval_dimension_ci.to_csv(analysis_dir / "bootstrap_ci_approval_by_dimension.csv", index=False)
+
     # Generate figures
     if config.analysis.outputs.get("save_png", True):
         if "by_variant" in flip_rates:
@@ -373,6 +640,25 @@ def analyze_run(
                 figures_dir / "heatmap_sentence_variant.png",
             )
 
+        # Approval rate plots
+        if "by_variant" in approval_rates:
+            plot_approval_rate_by_variant(
+                approval_rates["by_variant"],
+                figures_dir / "approval_rate_by_variant.png",
+            )
+
+        if "by_dimension" in approval_rates:
+            plot_approval_rate_by_dimension(
+                approval_rates["by_dimension"],
+                figures_dir / "approval_rate_by_dimension.png",
+            )
+
+        # Flip directionality plot
+        plot_flip_directionality_heatmap(
+            paired,
+            figures_dir / "bias_direction_heatmap.png",
+        )
+
     # Generate summary markdown
     if config.analysis.outputs.get("save_md", True):
         summary = generate_summary_md(
@@ -381,7 +667,10 @@ def analyze_run(
             results=results,
             paired=paired,
             flip_rates=flip_rates,
+            approval_rates=approval_rates,
+            directionality=directionality,
             overall_ci=overall_ci,
+            approval_ci=approval_ci,
         )
         (analysis_dir / "summary.md").write_text(summary)
 
@@ -395,7 +684,10 @@ def generate_summary_md(
     results: pd.DataFrame,
     paired: pd.DataFrame,
     flip_rates: Dict[str, pd.DataFrame],
+    approval_rates: Dict[str, pd.DataFrame],
+    directionality: Dict[str, pd.DataFrame],
     overall_ci: pd.DataFrame,
+    approval_ci: pd.DataFrame,
 ) -> str:
     """Generate summary markdown report."""
     lines = [
@@ -422,12 +714,47 @@ def generate_summary_md(
         )
         lines.append("")
 
+    # Overall approval rate with CI
+    if len(approval_ci) > 0:
+        row = approval_ci.iloc[0]
+        lines.append(
+            f"- **Overall approval rate (image)**: {row['mean']:.3f} "
+            f"(95% CI: [{row['ci_low']:.3f}, {row['ci_high']:.3f}], n={row['n']})"
+        )
+        lines.append("")
+
+    # Overall approval rates (OCR vs Image)
+    if "overall" in approval_rates:
+        row = approval_rates["overall"].iloc[0]
+        lines.append(f"- **Approval rate (OCR baseline)**: {row['approval_rate_ocr']:.3f}")
+        lines.append(f"- **Approval rate (Image variants)**: {row['approval_rate_image']:.3f}")
+        lines.append("")
+
+    # Flip directionality summary
+    if "overall" in directionality and len(directionality["overall"]) > 0:
+        lines.append("### Flip Directionality")
+        lines.append("")
+        for _, row in directionality["overall"].iterrows():
+            lines.append(f"- **{row['flip_direction']}**: {row['count']} flips ({row['rate']:.1%})")
+        lines.append("")
+
     # Top variants by flip rate
     if "by_variant" in flip_rates:
         lines.append("## Top Variants by Flip Rate")
         lines.append("")
         for _, row in flip_rates["by_variant"].head(10).iterrows():
             lines.append(f"- **{row['variant_id']}**: {row['flip_rate']:.3f}")
+        lines.append("")
+
+    # Top variants by approval rate
+    if "by_variant" in approval_rates:
+        lines.append("## Top Variants by Approval Rate (Image)")
+        lines.append("")
+        for _, row in approval_rates["by_variant"].head(10).iterrows():
+            lines.append(
+                f"- **{row['variant_id']}**: {row['approval_rate_image']:.3f} "
+                f"(OCR: {row['approval_rate_ocr']:.3f})"
+            )
         lines.append("")
 
     # Top boundary sentences
@@ -442,8 +769,16 @@ def generate_summary_md(
     lines.extend([
         "## Figures",
         "",
+        "### Flip Rates",
         "- [Flip Rate by Variant](figures/flip_rate_by_variant.png)",
         "- [Heatmap: Sentence x Variant](figures/heatmap_sentence_variant.png)",
+        "",
+        "### Approval Rates",
+        "- [Approval Rate by Variant](figures/approval_rate_by_variant.png)",
+        "- [Approval Rate by Dimension](figures/approval_rate_by_dimension.png)",
+        "",
+        "### Flip Directionality",
+        "- [Directionality Heatmap](figures/bias_direction_heatmap.png)",
         "",
     ])
 

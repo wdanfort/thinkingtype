@@ -1,0 +1,15 @@
+2026-01-17 08:48:19,089 [INFO] Starting inference run: run_20260117_164819
+2026-01-17 08:48:19,161 [INFO] Loaded 0 existing records for resume
+2026-01-17 08:49:43,285 [WARNING] Retry 1/6: 429 Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details., sleeping 1.9s
+2026-01-17 09:07:09,825 [WARNING] Retry 1/6: 504 Deadline Exceeded, sleeping 1.8s
+2026-01-17 09:15:41,808 [WARNING] Retry 1/6: 429 Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details., sleeping 1.6s
+2026-01-17 09:16:44,319 [WARNING] Retry 1/6: 429 Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details., sleeping 1.5s
+2026-01-17 09:22:04,741 [WARNING] Retry 1/6: 429 Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details., sleeping 1.4s
+2026-01-17 10:07:05,533 [WARNING] Retry 1/6: 504 Deadline Exceeded, sleeping 1.7s
+2026-01-17 10:20:33,474 [WARNING] Retry 1/6: 504 Deadline Exceeded, sleeping 1.6s
+2026-01-17 10:39:52,135 [WARNING] Retry 1/6: 504 Deadline Exceeded, sleeping 1.6s
+2026-01-17 11:08:09,666 [WARNING] Retry 1/6: 504 Deadline Exceeded, sleeping 1.7s
+2026-01-17 12:04:22,040 [WARNING] Retry 1/6: 504 Deadline Exceeded, sleeping 1.7s
+2026-01-17 13:16:19,079 [WARNING] Retry 1/6: 504 Deadline Exceeded, sleeping 1.5s
+2026-01-17 13:19:05,204 [INFO] Completed 3960 calls, skipped 0 (already done)
+2026-01-17 13:19:05,449 [INFO] Inference complete. Results saved to /Users/wdanforth/Desktop/thinkingtype/results/runs/run_20260117_164819

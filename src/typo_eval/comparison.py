@@ -294,6 +294,126 @@ def compare_by_dimension(
     return pd.DataFrame(comparison_rows)
 
 
+def compare_approval_rates(
+    run_ids: Optional[List[str]] = None,
+    provider_filter: Optional[str] = None,
+    model_filter: Optional[str] = None,
+    sentences_df: Optional[pd.DataFrame] = None,
+    results_dir: Optional[Path] = None,
+) -> pd.DataFrame:
+    """
+    Compare approval rates across multiple runs.
+
+    Returns DataFrame with columns:
+        - run_id
+        - provider
+        - model
+        - variant_id
+        - approval_rate_ocr
+        - approval_rate_image
+        - n
+    """
+    from typo_eval.analysis import compute_approval_rates
+
+    all_results = load_all_runs(run_ids, provider_filter, model_filter, results_dir)
+
+    if len(all_results) == 0:
+        return pd.DataFrame()
+
+    comparison_rows = []
+
+    for run_id in all_results["run_id"].unique():
+        run_results = all_results[all_results["run_id"] == run_id]
+
+        try:
+            paired = build_delta_table(run_results, sentences_df)
+            approval_rates = compute_approval_rates(paired)
+
+            if "by_variant" in approval_rates:
+                by_variant = approval_rates["by_variant"]
+
+                # Extract metadata
+                first_record = run_results.iloc[0]
+                provider = first_record.get("provider", "unknown")
+                model = first_record.get("model", "unknown")
+
+                for _, row in by_variant.iterrows():
+                    comparison_rows.append({
+                        "run_id": run_id,
+                        "provider": provider,
+                        "model": model,
+                        "variant_id": row["variant_id"],
+                        "approval_rate_ocr": row["approval_rate_ocr"],
+                        "approval_rate_image": row["approval_rate_image"],
+                        "n": row["n"],
+                    })
+        except Exception as exc:
+            logger.warning(f"Failed to analyze run {run_id}: {exc}")
+            continue
+
+    return pd.DataFrame(comparison_rows)
+
+
+def compare_flip_directionality(
+    run_ids: Optional[List[str]] = None,
+    provider_filter: Optional[str] = None,
+    model_filter: Optional[str] = None,
+    sentences_df: Optional[pd.DataFrame] = None,
+    results_dir: Optional[Path] = None,
+) -> pd.DataFrame:
+    """
+    Compare flip directionality across multiple runs.
+
+    Returns DataFrame with columns:
+        - run_id
+        - provider
+        - model
+        - variant_id
+        - flip_direction
+        - count
+        - rate
+    """
+    from typo_eval.analysis import compute_flip_directionality
+
+    all_results = load_all_runs(run_ids, provider_filter, model_filter, results_dir)
+
+    if len(all_results) == 0:
+        return pd.DataFrame()
+
+    comparison_rows = []
+
+    for run_id in all_results["run_id"].unique():
+        run_results = all_results[all_results["run_id"] == run_id]
+
+        try:
+            paired = build_delta_table(run_results, sentences_df)
+            directionality = compute_flip_directionality(paired)
+
+            if "by_variant" in directionality:
+                by_variant = directionality["by_variant"]
+
+                # Extract metadata
+                first_record = run_results.iloc[0]
+                provider = first_record.get("provider", "unknown")
+                model = first_record.get("model", "unknown")
+
+                for _, row in by_variant.iterrows():
+                    comparison_rows.append({
+                        "run_id": run_id,
+                        "provider": provider,
+                        "model": model,
+                        "variant_id": row["variant_id"],
+                        "flip_direction": row["flip_direction"],
+                        "count": row["count"],
+                        "rate": row["rate"],
+                    })
+        except Exception as exc:
+            logger.warning(f"Failed to analyze run {run_id}: {exc}")
+            continue
+
+    return pd.DataFrame(comparison_rows)
+
+
 def plot_provider_comparison(
     comparison_df: pd.DataFrame,
     output_path: Path,
@@ -386,6 +506,76 @@ def plot_dimension_comparison(
     logger.info(f"Saved dimension comparison plot to {output_path}")
 
 
+def plot_approval_rate_comparison(
+    approval_df: pd.DataFrame,
+    output_path: Path,
+    title: str = "Approval Rates by Provider",
+) -> None:
+    """Plot comparison of approval rates across providers."""
+    if len(approval_df) == 0:
+        logger.warning("No data to plot")
+        return
+
+    # Aggregate by provider
+    provider_agg = approval_df.groupby("provider").agg({
+        "approval_rate_ocr": "mean",
+        "approval_rate_image": "mean",
+    }).reset_index()
+
+    plt.figure(figsize=(10, 6))
+    x = np.arange(len(provider_agg))
+    width = 0.35
+
+    plt.bar(x - width/2, provider_agg["approval_rate_ocr"], width, label="OCR Baseline", color="steelblue")
+    plt.bar(x + width/2, provider_agg["approval_rate_image"], width, label="Image Variant", color="darkorange")
+
+    plt.xticks(x, provider_agg["provider"])
+    plt.ylabel("Approval Rate (% YES)")
+    plt.title(title)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=200)
+    plt.close()
+    logger.info(f"Saved approval rate comparison plot to {output_path}")
+
+
+def plot_directionality_comparison(
+    directionality_df: pd.DataFrame,
+    output_path: Path,
+    title: str = "Flip Directionality by Provider",
+) -> None:
+    """Plot comparison of flip directionality across providers."""
+    if len(directionality_df) == 0:
+        logger.warning("No data to plot")
+        return
+
+    # Aggregate counts by provider and direction
+    provider_agg = directionality_df.groupby(["provider", "flip_direction"])["count"].sum().reset_index()
+
+    # Pivot for stacked bar chart
+    pivot = provider_agg.pivot(
+        index="provider",
+        columns="flip_direction",
+        values="count"
+    ).fillna(0)
+
+    # Reorder columns
+    desired_order = ["NO→YES", "YES→NO"]
+    pivot = pivot[[col for col in desired_order if col in pivot.columns]]
+
+    plt.figure(figsize=(10, 6))
+    pivot.plot(kind="bar", stacked=True, color=["green", "red"], ax=plt.gca())
+    plt.xlabel("Provider")
+    plt.ylabel("Flip Count")
+    plt.title(title)
+    plt.legend(title="Direction")
+    plt.xticks(rotation=0)
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=200)
+    plt.close()
+    logger.info(f"Saved directionality comparison plot to {output_path}")
+
+
 def run_comparison_analysis(
     output_dir: Path,
     run_ids: Optional[List[str]] = None,
@@ -447,6 +637,34 @@ def run_comparison_analysis(
             figures_dir / "comparison_by_dimension.png",
         )
 
+    # Approval rate comparison
+    approval_comparison = compare_approval_rates(
+        run_ids, provider_filter, model_filter, sentences_df, results_dir
+    )
+    if len(approval_comparison) > 0:
+        approval_comparison.to_csv(output_dir / "comparison_approval_rates.csv", index=False)
+        logger.info(f"Saved approval rate comparison to {output_dir / 'comparison_approval_rates.csv'}")
+
+        # Plot approval rate comparison
+        plot_approval_rate_comparison(
+            approval_comparison,
+            figures_dir / "comparison_approval_rates.png",
+        )
+
+    # Flip directionality comparison
+    directionality_comparison = compare_flip_directionality(
+        run_ids, provider_filter, model_filter, sentences_df, results_dir
+    )
+    if len(directionality_comparison) > 0:
+        directionality_comparison.to_csv(output_dir / "comparison_directionality.csv", index=False)
+        logger.info(f"Saved directionality comparison to {output_dir / 'comparison_directionality.csv'}")
+
+        # Plot directionality comparison
+        plot_directionality_comparison(
+            directionality_comparison,
+            figures_dir / "comparison_directionality.png",
+        )
+
     # Generate summary report
     summary_lines = [
         "# Cross-Run Comparison Analysis",
@@ -458,21 +676,52 @@ def run_comparison_analysis(
     if len(overall_comparison) > 0:
         summary_lines.append(f"Total runs: {len(overall_comparison)}")
         summary_lines.append("")
-        summary_lines.append("| Run ID | Provider | Model | Flip Rate | N |")
-        summary_lines.append("|--------|----------|-------|-----------|---|")
+
+        # Add directionality stats to main table
+        summary_lines.append("| Run ID | Provider | Model | Flip Rate | Approval (Image) | NO→YES | YES→NO | N |")
+        summary_lines.append("|--------|----------|-------|-----------|------------------|--------|--------|---|")
+
         for _, row in overall_comparison.iterrows():
+            run_id = row['run_id']
+
+            # Get approval rate for this run
+            approval_rate = "N/A"
+            if len(approval_comparison) > 0:
+                run_approval = approval_comparison[approval_comparison['run_id'] == run_id]
+                if len(run_approval) > 0:
+                    approval_rate = f"{run_approval['approval_rate_image'].mean():.3f}"
+
+            # Get directionality for this run
+            no_yes, yes_no = "N/A", "N/A"
+            if len(directionality_comparison) > 0:
+                run_dir = directionality_comparison[directionality_comparison['run_id'] == run_id]
+                if len(run_dir) > 0:
+                    no_yes_count = run_dir[run_dir['flip_direction'] == 'NO→YES']['count'].sum()
+                    yes_no_count = run_dir[run_dir['flip_direction'] == 'YES→NO']['count'].sum()
+                    total_flips = no_yes_count + yes_no_count
+                    if total_flips > 0:
+                        no_yes = f"{no_yes_count/total_flips:.1%}"
+                        yes_no = f"{yes_no_count/total_flips:.1%}"
+
             summary_lines.append(
-                f"| {row['run_id']} | {row['provider']} | {row['model']} | "
-                f"{row['overall_flip_rate']:.3f} | {row['n_comparisons']} |"
+                f"| {run_id} | {row['provider']} | {row['model']} | "
+                f"{row['overall_flip_rate']:.3f} | {approval_rate} | {no_yes} | {yes_no} | {row['n_comparisons']} |"
             )
         summary_lines.append("")
 
     summary_lines.extend([
         "## Figures",
         "",
+        "### Flip Rates",
         "- [Overall Comparison](figures/comparison_overall.png)",
         "- [Variant Comparison](figures/comparison_by_variant.png)",
         "- [Dimension Comparison](figures/comparison_by_dimension.png)",
+        "",
+        "### Approval Rates",
+        "- [Approval Rate Comparison](figures/comparison_approval_rates.png)",
+        "",
+        "### Flip Directionality",
+        "- [Directionality Comparison](figures/comparison_directionality.png)",
         "",
     ])
 
