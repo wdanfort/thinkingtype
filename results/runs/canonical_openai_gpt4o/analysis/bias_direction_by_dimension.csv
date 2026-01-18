@@ -1,0 +1,14 @@
+dimension_id,flip_direction,count,rate
+confident,NO→YES,27,0.26732673267326734
+confident,YES→NO,74,0.7326732673267327
+emotional,NO→YES,2,1.0
+formal,YES→NO,84,1.0
+high_risk,YES→NO,126,1.0
+immediate_action,NO→YES,10,0.29411764705882354
+immediate_action,YES→NO,24,0.7058823529411765
+persuasive,NO→YES,42,0.8936170212765957
+persuasive,YES→NO,5,0.10638297872340426
+professional,YES→NO,87,1.0
+trustworthy,YES→NO,139,1.0
+urgent,NO→YES,2,0.25
+urgent,YES→NO,6,0.75

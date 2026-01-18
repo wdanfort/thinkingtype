@@ -53,7 +53,11 @@ data/inputs/artifacts_ocr.csv
 data/manifests/
 
 # Results (users should commit their own analysis results if desired)
-results/runs/
+results/runs/*
+!results/runs/canonical_*
+
+results/comparisons/*
+!results/comparisons/canonical_*
 
 # Jupyter
 .ipynb_checkpoints/
