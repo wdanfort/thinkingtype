@@ -172,8 +172,8 @@ def cmd_run(args: argparse.Namespace, config: TypoEvalConfig, logger: logging.Lo
     # Load input data
     sentences_df = None
     artifacts_df = None
-    ocr_sentences_df = None
-    ocr_artifacts_df = None
+    text_sentences_df = None
+    text_artifacts_df = None
     sentences_metadata_df = None
     artifacts_metadata_df = None
 
@@ -181,10 +181,8 @@ def cmd_run(args: argparse.Namespace, config: TypoEvalConfig, logger: logging.Lo
         sentences_path = data_dir / "inputs" / "sentences.csv"
         if sentences_path.exists():
             sentences_df = pd.read_csv(sentences_path)
-
-        ocr_path = data_dir / "inputs" / "sentences_ocr.csv"
-        if ocr_path.exists():
-            ocr_sentences_df = pd.read_csv(ocr_path)
+            # Use sentences directly as text input (no OCR needed)
+            text_sentences_df = sentences_df.copy()
 
         metadata_path = data_dir / "inputs" / "sentences_metadata.csv"
         if metadata_path.exists():
@@ -194,10 +192,8 @@ def cmd_run(args: argparse.Namespace, config: TypoEvalConfig, logger: logging.Lo
         artifacts_path = data_dir / "inputs" / "artifacts.csv"
         if artifacts_path.exists():
             artifacts_df = pd.read_csv(artifacts_path)
-
-        ocr_path = data_dir / "inputs" / "artifacts_ocr.csv"
-        if ocr_path.exists():
-            ocr_artifacts_df = pd.read_csv(ocr_path)
+            # Use artifacts directly as text input (no OCR needed)
+            text_artifacts_df = artifacts_df.copy()
 
         metadata_path = data_dir / "inputs" / "artifacts_metadata.csv"
         if metadata_path.exists():
@@ -218,8 +214,8 @@ def cmd_run(args: argparse.Namespace, config: TypoEvalConfig, logger: logging.Lo
         run_dir=run_dir,
         sentences_df=sentences_df,
         artifacts_df=artifacts_df,
-        ocr_sentences_df=ocr_sentences_df,
-        ocr_artifacts_df=ocr_artifacts_df,
+        text_sentences_df=text_sentences_df,
+        text_artifacts_df=text_artifacts_df,
         sentences_metadata_df=sentences_metadata_df,
         artifacts_metadata_df=artifacts_metadata_df,
         provider_name=provider,

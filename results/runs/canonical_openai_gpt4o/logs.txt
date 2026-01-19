@@ -38,3 +38,9 @@
 2026-01-15 14:45:17,477 [WARNING] Retry 1/6: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}, sleeping 1.8s
 2026-01-15 15:28:23,238 [INFO] Completed 3564 calls, skipped 0 (already done)
 2026-01-15 15:28:23,425 [INFO] Inference complete. Results saved to /Users/wdanforth/Desktop/thinkingtype/results/runs/run_20260115_222423
+2026-01-19 13:34:02,421 [INFO] Starting inference run: run_20260115_222423
+2026-01-19 13:34:02,571 [INFO] Loaded 3564 existing records for resume
+2026-01-19 14:19:00,946 [INFO] Starting inference run: run_20260115_222423
+2026-01-19 14:19:01,083 [INFO] Loaded 3512 existing records for resume
+2026-01-19 14:22:44,039 [INFO] Completed 448 calls, skipped 3512 (already done)
+2026-01-19 14:22:44,156 [INFO] Inference complete. Results saved to /Users/wdanforth/Desktop/thinkingtype/results/runs/run_20260115_222423

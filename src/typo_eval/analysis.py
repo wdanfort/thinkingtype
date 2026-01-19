@@ -36,17 +36,17 @@ def build_delta_table(
     sentences_df: Optional[pd.DataFrame] = None,
 ) -> pd.DataFrame:
     """
-    Build paired comparison table between OCR baseline and image variants.
+    Build paired comparison table between text baseline and image variants.
 
     Returns DataFrame with columns:
     - sentence_id/artifact_id
     - variant_id
     - dimension_id (for dimensions mode)
-    - ocr_response (baseline)
-    - image_response
-    - delta (image - ocr)
+    - text (baseline response)
+    - image (image variant response)
+    - delta (image - text)
     - flip (1 if different, 0 otherwise)
-    - approval_ocr (YES rate for OCR baseline)
+    - approval_text (YES rate for text baseline)
     - approval_image (YES rate for image variant)
     - flip_direction (NO→YES, YES→NO, or no_flip)
     """
@@ -57,8 +57,8 @@ def build_delta_table(
     results = results.dropna(subset=["response_01"]).copy()
     results["response_01"] = results["response_01"].astype(int)
 
-    # Separate OCR and image results
-    ocr_rows = results[results["representation"] == "ocr"]
+    # Separate text and image results
+    text_rows = results[results["representation"] == "text"]
     image_rows = results[results["representation"] == "image"]
 
     # Process dimensions mode and decision mode separately, then concatenate
@@ -66,21 +66,21 @@ def build_delta_table(
 
     # Process dimensions mode (has dimension_id)
     if "dimension_id" in results.columns:
-        dims_ocr = ocr_rows[ocr_rows["dimension_id"].notna()]
+        dims_text = text_rows[text_rows["dimension_id"].notna()]
         dims_image = image_rows[image_rows["dimension_id"].notna()]
 
-        if len(dims_ocr) > 0 and len(dims_image) > 0:
-            ocr_base = (
-                dims_ocr.groupby(["sentence_id", "dimension_id"])["response_01"]
+        if len(dims_text) > 0 and len(dims_image) > 0:
+            text_base = (
+                dims_text.groupby(["sentence_id", "dimension_id"])["response_01"]
                 .mean()
                 .reset_index()
             )
-            ocr_base["response_01"] = ocr_base["response_01"].round().astype(int)
-            ocr_base = ocr_base.rename(columns={"response_01": "ocr"})
+            text_base["response_01"] = text_base["response_01"].round().astype(int)
+            text_base = text_base.rename(columns={"response_01": "text"})
 
             # Get mode from first occurrence per sentence/dimension
-            mode_map = dims_ocr.groupby(["sentence_id", "dimension_id"])["mode"].first().reset_index()
-            ocr_base = ocr_base.merge(mode_map, on=["sentence_id", "dimension_id"], how="left")
+            mode_map = dims_text.groupby(["sentence_id", "dimension_id"])["mode"].first().reset_index()
+            text_base = text_base.merge(mode_map, on=["sentence_id", "dimension_id"], how="left")
 
             image_agg = (
                 dims_image.groupby(["sentence_id", "variant_id", "dimension_id"])["response_01"]
@@ -90,25 +90,25 @@ def build_delta_table(
             image_agg["response_01"] = image_agg["response_01"].round().astype(int)
             image_agg = image_agg.rename(columns={"response_01": "image"})
 
-            paired_dims = image_agg.merge(ocr_base, on=["sentence_id", "dimension_id"], how="left")
+            paired_dims = image_agg.merge(text_base, on=["sentence_id", "dimension_id"], how="left")
             paired_parts.append(paired_dims)
 
     # Process decision mode (no dimension_id or dimension_id is null)
-    decision_ocr = ocr_rows[ocr_rows["dimension_id"].isna() if "dimension_id" in ocr_rows.columns else ocr_rows.index]
+    decision_text = text_rows[text_rows["dimension_id"].isna() if "dimension_id" in text_rows.columns else text_rows.index]
     decision_image = image_rows[image_rows["dimension_id"].isna() if "dimension_id" in image_rows.columns else image_rows.index]
 
-    if len(decision_ocr) > 0 and len(decision_image) > 0:
-        ocr_base = (
-            decision_ocr.groupby(["sentence_id"])["response_01"]
+    if len(decision_text) > 0 and len(decision_image) > 0:
+        text_base = (
+            decision_text.groupby(["sentence_id"])["response_01"]
             .mean()
             .reset_index()
         )
-        ocr_base["response_01"] = ocr_base["response_01"].round().astype(int)
-        ocr_base = ocr_base.rename(columns={"response_01": "ocr"})
+        text_base["response_01"] = text_base["response_01"].round().astype(int)
+        text_base = text_base.rename(columns={"response_01": "text"})
 
         # Get mode from first occurrence per sentence
-        mode_map = decision_ocr.groupby(["sentence_id"])["mode"].first().reset_index()
-        ocr_base = ocr_base.merge(mode_map, on=["sentence_id"], how="left")
+        mode_map = decision_text.groupby(["sentence_id"])["mode"].first().reset_index()
+        text_base = text_base.merge(mode_map, on=["sentence_id"], how="left")
 
         image_agg = (
             decision_image.groupby(["sentence_id", "variant_id"])["response_01"]
@@ -118,7 +118,7 @@ def build_delta_table(
         image_agg["response_01"] = image_agg["response_01"].round().astype(int)
         image_agg = image_agg.rename(columns={"response_01": "image"})
 
-        paired_decision = image_agg.merge(ocr_base, on=["sentence_id"], how="left")
+        paired_decision = image_agg.merge(text_base, on=["sentence_id"], how="left")
         # Add dimension_id column as None for consistency
         if "dimension_id" not in paired_decision.columns:
             paired_decision["dimension_id"] = None
@@ -129,17 +129,17 @@ def build_delta_table(
         raise ValueError("No valid paired comparisons found")
     paired = pd.concat(paired_parts, ignore_index=True)
 
-    # Filter rows with missing OCR baseline
-    paired = paired.dropna(subset=["ocr"]).copy()
-    paired["ocr"] = paired["ocr"].astype(int)
+    # Filter rows with missing text baseline
+    paired = paired.dropna(subset=["text"]).copy()
+    paired["text"] = paired["text"].astype(int)
 
     # Compute delta and flip
-    paired["delta"] = paired["image"] - paired["ocr"]
+    paired["delta"] = paired["image"] - paired["text"]
     paired["abs_delta"] = paired["delta"].abs()
-    paired["flip"] = (paired["image"] != paired["ocr"]).astype(int)
+    paired["flip"] = (paired["image"] != paired["text"]).astype(int)
 
     # Add approval rate columns (YES = 1, NO = 0)
-    paired["approval_ocr"] = paired["ocr"]
+    paired["approval_text"] = paired["text"]
     paired["approval_image"] = paired["image"]
 
     # Add flip directionality
@@ -219,13 +219,13 @@ def compute_approval_rates(paired: pd.DataFrame) -> Dict[str, pd.DataFrame]:
     """
     Compute approval rates (% YES judgments) by variant, sentence, dimension, and category.
 
-    Returns dict of DataFrames with approval_rate_ocr, approval_rate_image, and n.
+    Returns dict of DataFrames with approval_rate_text, approval_rate_image, and n.
     """
     results = {}
 
     # Overall approval rate
     overall = pd.DataFrame([{
-        "approval_rate_ocr": paired["approval_ocr"].mean(),
+        "approval_rate_text": paired["approval_text"].mean(),
         "approval_rate_image": paired["approval_image"].mean(),
         "n": len(paired),
     }])
@@ -235,9 +235,9 @@ def compute_approval_rates(paired: pd.DataFrame) -> Dict[str, pd.DataFrame]:
     by_variant = (
         paired.groupby("variant_id")
         .agg(
-            approval_rate_ocr=("approval_ocr", "mean"),
+            approval_rate_text=("approval_text", "mean"),
             approval_rate_image=("approval_image", "mean"),
-            n=("approval_ocr", "size")
+            n=("approval_text", "size")
         )
         .reset_index()
         .sort_values("approval_rate_image", ascending=False)
@@ -248,9 +248,9 @@ def compute_approval_rates(paired: pd.DataFrame) -> Dict[str, pd.DataFrame]:
     by_sentence = (
         paired.groupby("sentence_id")
         .agg(
-            approval_rate_ocr=("approval_ocr", "mean"),
+            approval_rate_text=("approval_text", "mean"),
             approval_rate_image=("approval_image", "mean"),
-            n=("approval_ocr", "size")
+            n=("approval_text", "size")
         )
         .reset_index()
         .sort_values("approval_rate_image", ascending=False)
@@ -262,9 +262,9 @@ def compute_approval_rates(paired: pd.DataFrame) -> Dict[str, pd.DataFrame]:
         by_dimension = (
             paired.groupby("dimension_id")
             .agg(
-                approval_rate_ocr=("approval_ocr", "mean"),
+                approval_rate_text=("approval_text", "mean"),
                 approval_rate_image=("approval_image", "mean"),
-                n=("approval_ocr", "size")
+                n=("approval_text", "size")
             )
             .reset_index()
             .sort_values("approval_rate_image", ascending=False)
@@ -276,9 +276,9 @@ def compute_approval_rates(paired: pd.DataFrame) -> Dict[str, pd.DataFrame]:
         by_category = (
             paired.groupby("category")
             .agg(
-                approval_rate_ocr=("approval_ocr", "mean"),
+                approval_rate_text=("approval_text", "mean"),
                 approval_rate_image=("approval_image", "mean"),
-                n=("approval_ocr", "size")
+                n=("approval_text", "size")
             )
             .reset_index()
             .sort_values("approval_rate_image", ascending=False)
@@ -492,7 +492,7 @@ def plot_approval_rate_by_variant(df: pd.DataFrame, output_path: Path) -> None:
     x = np.arange(len(df_sorted))
     width = 0.35
 
-    plt.barh(x - width/2, df_sorted["approval_rate_ocr"], width, label="OCR Baseline", color="steelblue")
+    plt.barh(x - width/2, df_sorted["approval_rate_text"], width, label="Text Baseline", color="steelblue")
     plt.barh(x + width/2, df_sorted["approval_rate_image"], width, label="Image Variant", color="darkorange")
 
     plt.yticks(x, df_sorted["variant_id"])
@@ -546,7 +546,7 @@ def plot_approval_rate_by_dimension(df: pd.DataFrame, output_path: Path) -> None
     x = np.arange(len(df_sorted))
     width = 0.35
 
-    plt.bar(x - width/2, df_sorted["approval_rate_ocr"], width, label="OCR Baseline", color="steelblue")
+    plt.bar(x - width/2, df_sorted["approval_rate_text"], width, label="Text Baseline", color="steelblue")
     plt.bar(x + width/2, df_sorted["approval_rate_image"], width, label="Image Variant", color="darkorange")
 
     plt.xticks(x, df_sorted["dimension_id"], rotation=45, ha="right")
@@ -857,7 +857,7 @@ def generate_summary_md(
     # Overall approval rates (OCR vs Image)
     if "overall" in approval_rates:
         row = approval_rates["overall"].iloc[0]
-        lines.append(f"- **Approval rate (OCR baseline)**: {row['approval_rate_ocr']:.3f}")
+        lines.append(f"- **Approval rate (OCR baseline)**: {row['approval_rate_text']:.3f}")
         lines.append(f"- **Approval rate (Image variants)**: {row['approval_rate_image']:.3f}")
         lines.append("")
 
@@ -884,7 +884,7 @@ def generate_summary_md(
         for _, row in approval_rates["by_variant"].head(10).iterrows():
             lines.append(
                 f"- **{row['variant_id']}**: {row['approval_rate_image']:.3f} "
-                f"(OCR: {row['approval_rate_ocr']:.3f})"
+                f"(Text: {row['approval_rate_text']:.3f})"
             )
         lines.append("")
 
@@ -945,7 +945,7 @@ def generate_summary_md(
         # Decision approval rates (OCR vs Image)
         if "overall" in decision_approval_rates:
             row = decision_approval_rates["overall"].iloc[0]
-            lines.append(f"- **Decision approval rate (OCR baseline)**: {row['approval_rate_ocr']:.3f}")
+            lines.append(f"- **Decision approval rate (OCR baseline)**: {row['approval_rate_text']:.3f}")
             lines.append(f"- **Decision approval rate (Image variants)**: {row['approval_rate_image']:.3f}")
             lines.append("")
 
@@ -972,7 +972,7 @@ def generate_summary_md(
             for _, row in decision_approval_rates["by_variant"].head(10).iterrows():
                 lines.append(
                     f"- **{row['variant_id']}**: {row['approval_rate_image']:.3f} "
-                    f"(OCR: {row['approval_rate_ocr']:.3f})"
+                    f"(Text: {row['approval_rate_text']:.3f})"
                 )
             lines.append("")
 

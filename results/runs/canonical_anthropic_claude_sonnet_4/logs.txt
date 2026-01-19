@@ -1,0 +1,20 @@
+2026-01-16 06:44:44,658 [INFO] Starting inference run: run_20260116_144444
+2026-01-16 06:44:44,730 [INFO] Loaded 0 existing records for resume
+2026-01-16 13:29:32,172 [INFO] Starting inference run: run_20260116_144444
+2026-01-16 13:29:32,285 [INFO] Loaded 2472 existing records for resume
+2026-01-16 13:49:33,913 [INFO] Starting inference run: run_20260116_144444
+2026-01-16 13:49:34,021 [INFO] Loaded 2573 existing records for resume
+2026-01-16 14:57:35,067 [INFO] Starting inference run: run_20260116_144444
+2026-01-16 14:57:35,189 [INFO] Loaded 2963 existing records for resume
+2026-01-16 15:18:51,579 [INFO] Starting inference run: run_20260116_144444
+2026-01-16 15:18:51,702 [INFO] Loaded 3039 existing records for resume
+2026-01-16 15:41:59,186 [INFO] Starting inference run: run_20260116_144444
+2026-01-16 15:41:59,306 [INFO] Loaded 3238 existing records for resume
+2026-01-16 20:16:06,639 [INFO] Starting inference run: run_20260116_144444
+2026-01-16 20:16:06,788 [INFO] Loaded 3319 existing records for resume
+2026-01-16 20:25:07,175 [INFO] Completed 245 calls, skipped 3319 (already done)
+2026-01-16 20:25:07,283 [INFO] Inference complete. Results saved to /Users/wdanforth/Desktop/thinkingtype/results/runs/run_20260116_144444
+2026-01-19 14:22:48,328 [INFO] Starting inference run: run_20260116_144444
+2026-01-19 14:22:48,468 [INFO] Loaded 3168 existing records for resume
+2026-01-19 14:45:30,746 [INFO] Starting inference run: run_20260116_144444
+2026-01-19 14:45:30,887 [INFO] Loaded 3470 existing records for resume

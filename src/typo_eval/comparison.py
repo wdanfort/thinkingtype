@@ -309,7 +309,7 @@ def compare_approval_rates(
         - provider
         - model
         - variant_id
-        - approval_rate_ocr
+        - approval_rate_text
         - approval_rate_image
         - n
     """
@@ -343,7 +343,7 @@ def compare_approval_rates(
                         "provider": provider,
                         "model": model,
                         "variant_id": row["variant_id"],
-                        "approval_rate_ocr": row["approval_rate_ocr"],
+                        "approval_rate_text": row["approval_rate_text"],
                         "approval_rate_image": row["approval_rate_image"],
                         "n": row["n"],
                     })
@@ -518,7 +518,7 @@ def plot_approval_rate_comparison(
 
     # Aggregate by provider
     provider_agg = approval_df.groupby("provider").agg({
-        "approval_rate_ocr": "mean",
+        "approval_rate_text": "mean",
         "approval_rate_image": "mean",
     }).reset_index()
 
@@ -526,7 +526,7 @@ def plot_approval_rate_comparison(
     x = np.arange(len(provider_agg))
     width = 0.35
 
-    plt.bar(x - width/2, provider_agg["approval_rate_ocr"], width, label="OCR Baseline", color="steelblue")
+    plt.bar(x - width/2, provider_agg["approval_rate_text"], width, label="Text Baseline", color="steelblue")
     plt.bar(x + width/2, provider_agg["approval_rate_image"], width, label="Image Variant", color="darkorange")
 
     plt.xticks(x, provider_agg["provider"])

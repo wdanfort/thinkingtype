@@ -1,0 +1,10 @@
+variant_id,flip_direction,count,rate
+A1_opendyslexic_regular,YES→NO,4,1.0
+T1_times_regular,YES→NO,4,1.0
+T2_times_bold,YES→NO,4,1.0
+T3_arial_regular,YES→NO,4,1.0
+T4_arial_bold,YES→NO,4,1.0
+T5_arial_all_caps,YES→NO,4,1.0
+T6_monospace,YES→NO,4,1.0
+T7_comic,YES→NO,4,1.0
+T8_small_text,YES→NO,4,1.0

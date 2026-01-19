@@ -15,3 +15,5 @@ T6_monospace,NO→YES,1,0.125
 T6_monospace,YES→NO,7,0.875
 T7_comic,NO→YES,1,0.125
 T7_comic,YES→NO,7,0.875
+T8_small_text,NO→YES,1,0.125
+T8_small_text,YES→NO,7,0.875

@@ -38,11 +38,11 @@ class InferenceRecord:
     model: str
     temperature: float
     mode: str  # "dimensions" or "decision"
-    representation: str  # "ocr" or "image"
+    representation: str  # "text" or "image"
     input_type: str  # "sentence" or "artifact"
     sentence_id: Optional[int] = None
     artifact_id: Optional[str] = None
-    variant_id: str = "__ocr__"  # "__ocr__" for OCR baseline
+    variant_id: str = "__text__"  # "__text__" for text baseline
     dimension_id: Optional[str] = None
     prompt_id: str = ""
     prompt_hash: str = ""
@@ -139,8 +139,8 @@ def run_inference(
     run_dir: Path,
     sentences_df: Optional[pd.DataFrame] = None,
     artifacts_df: Optional[pd.DataFrame] = None,
-    ocr_sentences_df: Optional[pd.DataFrame] = None,
-    ocr_artifacts_df: Optional[pd.DataFrame] = None,
+    text_sentences_df: Optional[pd.DataFrame] = None,
+    text_artifacts_df: Optional[pd.DataFrame] = None,
     sentences_metadata_df: Optional[pd.DataFrame] = None,
     artifacts_metadata_df: Optional[pd.DataFrame] = None,
     provider_name: str = "openai",
@@ -176,21 +176,21 @@ def run_inference(
 
     # Process sentences
     if sentences_df is not None and config.inputs.sentences.get("enabled", True):
-        # OCR baseline (deduped - one per sentence)
-        if ocr_sentences_df is not None:
+        # Text baseline (deduped - one per sentence)
+        if text_sentences_df is not None:
             for _, row in tqdm(
-                ocr_sentences_df.iterrows(),
-                total=len(ocr_sentences_df),
-                desc="OCR inference (sentences)",
+                text_sentences_df.iterrows(),
+                total=len(text_sentences_df),
+                desc="Text inference (sentences)",
             ):
                 sentence_id = int(row["sentence_id"])
-                ocr_text = row["ocr_text"]
-                input_hash = compute_input_hash(ocr_text)
+                text = row["text"]
+                input_hash = compute_input_hash(text)
 
                 if limit and total_calls >= limit:
                     break
 
-                # Dimensions mode - OCR
+                # Dimensions mode - Text
                 if run_dimensions:
                     for dim_id in inference_cfg.dimensions:
                         question = DIMENSIONS.get(dim_id, "")
@@ -203,10 +203,10 @@ def run_inference(
                             model=provider_config.model_text,
                             temperature=temperature,
                             mode="dimensions",
-                            representation="ocr",
+                            representation="text",
                             input_type="sentence",
                             sentence_id=sentence_id,
-                            variant_id="__ocr__",
+                            variant_id="__text__",
                             dimension_id=dim_id,
                             prompt_id=dim_id,
                             prompt_hash=prompt_hash,
@@ -226,7 +226,7 @@ def run_inference(
                                 lambda: provider.infer_text(
                                     provider_config.model_text,
                                     temperature,
-                                    ocr_text,
+                                    text,
                                     question,
                                     DIMENSIONS_SYSTEM_PROMPT,
                                 ),
@@ -244,7 +244,7 @@ def run_inference(
                         append_jsonl(jsonl_path, record)
                         existing_keys.add(record.get_key())
 
-                # Decision mode - OCR
+                # Decision mode - Text
                 if run_decision:
                     decision_prompt_id = inference_cfg.decision_prompt_id
                     question = DECISION_PROMPTS.get(decision_prompt_id, "")
@@ -257,10 +257,10 @@ def run_inference(
                         model=provider_config.model_text,
                         temperature=temperature,
                         mode="decision",
-                        representation="ocr",
+                        representation="text",
                         input_type="sentence",
                         sentence_id=sentence_id,
-                        variant_id="__ocr__",
+                        variant_id="__text__",
                         prompt_id=decision_prompt_id,
                         prompt_hash=prompt_hash,
                         input_hash=input_hash,
@@ -279,7 +279,7 @@ def run_inference(
                             lambda: provider.infer_text(
                                 provider_config.model_text,
                                 temperature,
-                                ocr_text,
+                                text,
                                 question,
                                 DECISION_SYSTEM_PROMPT,
                             ),
