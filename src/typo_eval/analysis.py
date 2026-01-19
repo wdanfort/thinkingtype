@@ -61,45 +61,73 @@ def build_delta_table(
     ocr_rows = results[results["representation"] == "ocr"]
     image_rows = results[results["representation"] == "image"]
 
-    # Build OCR baseline (deduped)
-    if "dimension_id" in results.columns and results["dimension_id"].notna().any():
-        # Dimensions mode
+    # Process dimensions mode and decision mode separately, then concatenate
+    paired_parts = []
+
+    # Process dimensions mode (has dimension_id)
+    if "dimension_id" in results.columns:
+        dims_ocr = ocr_rows[ocr_rows["dimension_id"].notna()]
+        dims_image = image_rows[image_rows["dimension_id"].notna()]
+
+        if len(dims_ocr) > 0 and len(dims_image) > 0:
+            ocr_base = (
+                dims_ocr.groupby(["sentence_id", "dimension_id"])["response_01"]
+                .mean()
+                .reset_index()
+            )
+            ocr_base["response_01"] = ocr_base["response_01"].round().astype(int)
+            ocr_base = ocr_base.rename(columns={"response_01": "ocr"})
+
+            # Get mode from first occurrence per sentence/dimension
+            mode_map = dims_ocr.groupby(["sentence_id", "dimension_id"])["mode"].first().reset_index()
+            ocr_base = ocr_base.merge(mode_map, on=["sentence_id", "dimension_id"], how="left")
+
+            image_agg = (
+                dims_image.groupby(["sentence_id", "variant_id", "dimension_id"])["response_01"]
+                .mean()
+                .reset_index()
+            )
+            image_agg["response_01"] = image_agg["response_01"].round().astype(int)
+            image_agg = image_agg.rename(columns={"response_01": "image"})
+
+            paired_dims = image_agg.merge(ocr_base, on=["sentence_id", "dimension_id"], how="left")
+            paired_parts.append(paired_dims)
+
+    # Process decision mode (no dimension_id or dimension_id is null)
+    decision_ocr = ocr_rows[ocr_rows["dimension_id"].isna() if "dimension_id" in ocr_rows.columns else ocr_rows.index]
+    decision_image = image_rows[image_rows["dimension_id"].isna() if "dimension_id" in image_rows.columns else image_rows.index]
+
+    if len(decision_ocr) > 0 and len(decision_image) > 0:
         ocr_base = (
-            ocr_rows.groupby(["sentence_id", "dimension_id"])["response_01"]
+            decision_ocr.groupby(["sentence_id"])["response_01"]
             .mean()
             .reset_index()
         )
         ocr_base["response_01"] = ocr_base["response_01"].round().astype(int)
         ocr_base = ocr_base.rename(columns={"response_01": "ocr"})
 
+        # Get mode from first occurrence per sentence
+        mode_map = decision_ocr.groupby(["sentence_id"])["mode"].first().reset_index()
+        ocr_base = ocr_base.merge(mode_map, on=["sentence_id"], how="left")
+
         image_agg = (
-            image_rows.groupby(["sentence_id", "variant_id", "dimension_id"])["response_01"]
+            decision_image.groupby(["sentence_id", "variant_id"])["response_01"]
             .mean()
             .reset_index()
         )
         image_agg["response_01"] = image_agg["response_01"].round().astype(int)
         image_agg = image_agg.rename(columns={"response_01": "image"})
 
-        paired = image_agg.merge(ocr_base, on=["sentence_id", "dimension_id"], how="left")
-    else:
-        # Decision mode (no dimension_id)
-        ocr_base = (
-            ocr_rows.groupby(["sentence_id"])["response_01"]
-            .mean()
-            .reset_index()
-        )
-        ocr_base["response_01"] = ocr_base["response_01"].round().astype(int)
-        ocr_base = ocr_base.rename(columns={"response_01": "ocr"})
+        paired_decision = image_agg.merge(ocr_base, on=["sentence_id"], how="left")
+        # Add dimension_id column as None for consistency
+        if "dimension_id" not in paired_decision.columns:
+            paired_decision["dimension_id"] = None
+        paired_parts.append(paired_decision)
 
-        image_agg = (
-            image_rows.groupby(["sentence_id", "variant_id"])["response_01"]
-            .mean()
-            .reset_index()
-        )
-        image_agg["response_01"] = image_agg["response_01"].round().astype(int)
-        image_agg = image_agg.rename(columns={"response_01": "image"})
-
-        paired = image_agg.merge(ocr_base, on=["sentence_id"], how="left")
+    # Concatenate all parts
+    if len(paired_parts) == 0:
+        raise ValueError("No valid paired comparisons found")
+    paired = pd.concat(paired_parts, ignore_index=True)
 
     # Filter rows with missing OCR baseline
     paired = paired.dropna(subset=["ocr"]).copy()
@@ -556,40 +584,66 @@ def analyze_run(
     # Build paired comparison table
     paired = build_delta_table(results, sentences_df)
 
+    # Separate dimensions and decision mode data
+    paired_dimensions = paired[paired["mode"] == "dimensions"].copy() if "mode" in paired.columns else paired.copy()
+    paired_decision = paired[paired["mode"] == "decision"].copy() if "mode" in paired.columns else pd.DataFrame()
+
+    # === DIMENSIONS MODE ANALYSIS ===
     # Compute flip rates
-    flip_rates = compute_flip_rates(paired)
+    flip_rates = compute_flip_rates(paired_dimensions)
 
     # Save flip rate CSVs
     for name, df in flip_rates.items():
         df.to_csv(analysis_dir / f"flip_{name}.csv", index=False)
 
     # Compute approval rates
-    approval_rates = compute_approval_rates(paired)
+    approval_rates = compute_approval_rates(paired_dimensions)
 
     # Save approval rate CSVs
     for name, df in approval_rates.items():
         df.to_csv(analysis_dir / f"approval_rate_{name}.csv", index=False)
 
     # Compute flip directionality
-    directionality = compute_flip_directionality(paired)
+    directionality = compute_flip_directionality(paired_dimensions)
 
     # Save directionality CSVs
     for name, df in directionality.items():
         df.to_csv(analysis_dir / f"bias_direction_{name}.csv", index=False)
 
-    # Bootstrap CIs for overall and by variant (flip rates)
+    # === DECISION MODE ANALYSIS ===
+    decision_flip_rates = {}
+    decision_approval_rates = {}
+    decision_directionality = {}
+
+    if len(paired_decision) > 0:
+        # Compute decision mode metrics
+        decision_flip_rates = compute_flip_rates(paired_decision)
+        decision_approval_rates = compute_approval_rates(paired_decision)
+        decision_directionality = compute_flip_directionality(paired_decision)
+
+        # Save decision mode CSVs
+        for name, df in decision_flip_rates.items():
+            df.to_csv(analysis_dir / f"decision_flip_{name}.csv", index=False)
+
+        for name, df in decision_approval_rates.items():
+            df.to_csv(analysis_dir / f"decision_approval_rate_{name}.csv", index=False)
+
+        for name, df in decision_directionality.items():
+            df.to_csv(analysis_dir / f"decision_bias_direction_{name}.csv", index=False)
+
+    # === BOOTSTRAP CIs FOR DIMENSIONS MODE ===
     bootstrap_cfg = config.analysis.bootstrap
     overall_ci = bootstrap_ci(
-        paired,
+        paired_dimensions,
         column="flip",
         n_boot=bootstrap_cfg.n_boot,
         alpha=bootstrap_cfg.alpha,
     )
     overall_ci.to_csv(analysis_dir / "bootstrap_ci.csv", index=False)
 
-    if "variant_id" in paired.columns:
+    if "variant_id" in paired_dimensions.columns:
         variant_ci = bootstrap_ci(
-            paired,
+            paired_dimensions,
             column="flip",
             group_col="variant_id",
             n_boot=bootstrap_cfg.n_boot,
@@ -599,16 +653,16 @@ def analyze_run(
 
     # Bootstrap CIs for approval rates
     approval_ci = bootstrap_ci(
-        paired,
+        paired_dimensions,
         column="approval_image",
         n_boot=bootstrap_cfg.n_boot,
         alpha=bootstrap_cfg.alpha,
     )
     approval_ci.to_csv(analysis_dir / "bootstrap_ci_approval.csv", index=False)
 
-    if "variant_id" in paired.columns:
+    if "variant_id" in paired_dimensions.columns:
         approval_variant_ci = bootstrap_ci(
-            paired,
+            paired_dimensions,
             column="approval_image",
             group_col="variant_id",
             n_boot=bootstrap_cfg.n_boot,
@@ -616,9 +670,9 @@ def analyze_run(
         )
         approval_variant_ci.to_csv(analysis_dir / "bootstrap_ci_approval_by_variant.csv", index=False)
 
-    if "dimension_id" in paired.columns:
+    if "dimension_id" in paired_dimensions.columns:
         approval_dimension_ci = bootstrap_ci(
-            paired,
+            paired_dimensions,
             column="approval_image",
             group_col="dimension_id",
             n_boot=bootstrap_cfg.n_boot,
@@ -626,8 +680,53 @@ def analyze_run(
         )
         approval_dimension_ci.to_csv(analysis_dir / "bootstrap_ci_approval_by_dimension.csv", index=False)
 
-    # Generate figures
+    # === BOOTSTRAP CIs FOR DECISION MODE ===
+    decision_overall_ci = pd.DataFrame()
+    decision_variant_ci = pd.DataFrame()
+    decision_approval_ci = pd.DataFrame()
+    decision_approval_variant_ci = pd.DataFrame()
+
+    if len(paired_decision) > 0:
+        decision_overall_ci = bootstrap_ci(
+            paired_decision,
+            column="flip",
+            n_boot=bootstrap_cfg.n_boot,
+            alpha=bootstrap_cfg.alpha,
+        )
+        decision_overall_ci.to_csv(analysis_dir / "decision_bootstrap_ci.csv", index=False)
+
+        if "variant_id" in paired_decision.columns:
+            decision_variant_ci = bootstrap_ci(
+                paired_decision,
+                column="flip",
+                group_col="variant_id",
+                n_boot=bootstrap_cfg.n_boot,
+                alpha=bootstrap_cfg.alpha,
+            )
+            decision_variant_ci.to_csv(analysis_dir / "decision_bootstrap_ci_by_variant.csv", index=False)
+
+        # Decision approval CIs
+        decision_approval_ci = bootstrap_ci(
+            paired_decision,
+            column="approval_image",
+            n_boot=bootstrap_cfg.n_boot,
+            alpha=bootstrap_cfg.alpha,
+        )
+        decision_approval_ci.to_csv(analysis_dir / "decision_bootstrap_ci_approval.csv", index=False)
+
+        if "variant_id" in paired_decision.columns:
+            decision_approval_variant_ci = bootstrap_ci(
+                paired_decision,
+                column="approval_image",
+                group_col="variant_id",
+                n_boot=bootstrap_cfg.n_boot,
+                alpha=bootstrap_cfg.alpha,
+            )
+            decision_approval_variant_ci.to_csv(analysis_dir / "decision_bootstrap_ci_approval_by_variant.csv", index=False)
+
+    # === GENERATE FIGURES ===
     if config.analysis.outputs.get("save_png", True):
+        # Dimensions mode figures
         if "by_variant" in flip_rates:
             plot_flip_rate_by_variant(
                 flip_rates["by_variant"],
@@ -636,7 +735,7 @@ def analyze_run(
 
         if config.analysis.compute_heatmaps:
             plot_heatmap_sentence_variant(
-                paired,
+                paired_dimensions,
                 figures_dir / "heatmap_sentence_variant.png",
             )
 
@@ -655,9 +754,28 @@ def analyze_run(
 
         # Flip directionality plot
         plot_flip_directionality_heatmap(
-            paired,
+            paired_dimensions,
             figures_dir / "bias_direction_heatmap.png",
         )
+
+        # Decision mode figures
+        if len(paired_decision) > 0:
+            if "by_variant" in decision_flip_rates:
+                plot_flip_rate_by_variant(
+                    decision_flip_rates["by_variant"],
+                    figures_dir / "decision_flip_rate_by_variant.png",
+                )
+
+            if "by_variant" in decision_approval_rates:
+                plot_approval_rate_by_variant(
+                    decision_approval_rates["by_variant"],
+                    figures_dir / "decision_approval_rate_by_variant.png",
+                )
+
+            plot_flip_directionality_heatmap(
+                paired_decision,
+                figures_dir / "decision_bias_direction_heatmap.png",
+            )
 
     # Generate summary markdown
     if config.analysis.outputs.get("save_md", True):
@@ -665,12 +783,18 @@ def analyze_run(
             run_id=run_id,
             config=config,
             results=results,
-            paired=paired,
+            paired_dimensions=paired_dimensions,
+            paired_decision=paired_decision,
             flip_rates=flip_rates,
             approval_rates=approval_rates,
             directionality=directionality,
             overall_ci=overall_ci,
             approval_ci=approval_ci,
+            decision_flip_rates=decision_flip_rates,
+            decision_approval_rates=decision_approval_rates,
+            decision_directionality=decision_directionality,
+            decision_overall_ci=decision_overall_ci,
+            decision_approval_ci=decision_approval_ci,
         )
         (analysis_dir / "summary.md").write_text(summary)
 
@@ -682,12 +806,18 @@ def generate_summary_md(
     run_id: str,
     config: TypoEvalConfig,
     results: pd.DataFrame,
-    paired: pd.DataFrame,
+    paired_dimensions: pd.DataFrame,
+    paired_decision: pd.DataFrame,
     flip_rates: Dict[str, pd.DataFrame],
     approval_rates: Dict[str, pd.DataFrame],
     directionality: Dict[str, pd.DataFrame],
     overall_ci: pd.DataFrame,
     approval_ci: pd.DataFrame,
+    decision_flip_rates: Dict[str, pd.DataFrame],
+    decision_approval_rates: Dict[str, pd.DataFrame],
+    decision_directionality: Dict[str, pd.DataFrame],
+    decision_overall_ci: pd.DataFrame,
+    decision_approval_ci: pd.DataFrame,
 ) -> str:
     """Generate summary markdown report."""
     lines = [
@@ -697,11 +827,12 @@ def generate_summary_md(
         "",
         f"- **Run ID**: {run_id}",
         f"- **Total responses**: {len(results)}",
-        f"- **Paired comparisons**: {len(paired)}",
+        f"- **Paired comparisons (dimensions)**: {len(paired_dimensions)}",
+        f"- **Paired comparisons (decision)**: {len(paired_decision)}",
         f"- **Inference mode**: {config.inference.mode}",
         f"- **Temperature**: {config.inference.temperature}",
         "",
-        "## Headline Results",
+        "## Headline Results - Dimensions Mode",
         "",
     ]
 
@@ -781,5 +912,78 @@ def generate_summary_md(
         "- [Directionality Heatmap](figures/bias_direction_heatmap.png)",
         "",
     ])
+
+    # === DECISION MODE SECTION ===
+    if len(paired_decision) > 0:
+        lines.extend([
+            "---",
+            "",
+            "## Decision Mode Results",
+            "",
+            "Analysis of escalation decisions (binary: escalate vs. don't escalate).",
+            "",
+        ])
+
+        # Decision flip rate with CI
+        if len(decision_overall_ci) > 0:
+            row = decision_overall_ci.iloc[0]
+            lines.append(
+                f"- **Decision flip rate**: {row['mean']:.3f} "
+                f"(95% CI: [{row['ci_low']:.3f}, {row['ci_high']:.3f}], n={row['n']})"
+            )
+            lines.append("")
+
+        # Decision approval rate with CI
+        if len(decision_approval_ci) > 0:
+            row = decision_approval_ci.iloc[0]
+            lines.append(
+                f"- **Decision approval rate (image)**: {row['mean']:.3f} "
+                f"(95% CI: [{row['ci_low']:.3f}, {row['ci_high']:.3f}], n={row['n']})"
+            )
+            lines.append("")
+
+        # Decision approval rates (OCR vs Image)
+        if "overall" in decision_approval_rates:
+            row = decision_approval_rates["overall"].iloc[0]
+            lines.append(f"- **Decision approval rate (OCR baseline)**: {row['approval_rate_ocr']:.3f}")
+            lines.append(f"- **Decision approval rate (Image variants)**: {row['approval_rate_image']:.3f}")
+            lines.append("")
+
+        # Decision directionality summary
+        if "overall" in decision_directionality and len(decision_directionality["overall"]) > 0:
+            lines.append("### Decision Flip Directionality")
+            lines.append("")
+            for _, row in decision_directionality["overall"].iterrows():
+                lines.append(f"- **{row['flip_direction']}**: {row['count']} flips ({row['rate']:.1%})")
+            lines.append("")
+
+        # Top variants by decision flip rate
+        if "by_variant" in decision_flip_rates:
+            lines.append("### Top Variants by Decision Flip Rate")
+            lines.append("")
+            for _, row in decision_flip_rates["by_variant"].head(10).iterrows():
+                lines.append(f"- **{row['variant_id']}**: {row['flip_rate']:.3f}")
+            lines.append("")
+
+        # Top variants by decision approval rate
+        if "by_variant" in decision_approval_rates:
+            lines.append("### Top Variants by Decision Approval Rate")
+            lines.append("")
+            for _, row in decision_approval_rates["by_variant"].head(10).iterrows():
+                lines.append(
+                    f"- **{row['variant_id']}**: {row['approval_rate_image']:.3f} "
+                    f"(OCR: {row['approval_rate_ocr']:.3f})"
+                )
+            lines.append("")
+
+        # Decision mode figures
+        lines.extend([
+            "### Decision Mode Figures",
+            "",
+            "- [Decision Flip Rate by Variant](figures/decision_flip_rate_by_variant.png)",
+            "- [Decision Approval Rate by Variant](figures/decision_approval_rate_by_variant.png)",
+            "- [Decision Directionality Heatmap](figures/decision_bias_direction_heatmap.png)",
+            "",
+        ])
 
     return "\n".join(lines)

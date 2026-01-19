@@ -1,0 +1,235 @@
+{
+  "run_id": "run_20260113_231629",
+  "created_at": "2026-01-13T23:16:29.951451",
+  "config": {
+    "run_id": null,
+    "seed": 42,
+    "inputs": {
+      "sentences": {
+        "enabled": true,
+        "n_sentences": 36,
+        "categories": [
+          "neutral",
+          "cta",
+          "authority",
+          "warning",
+          "promo",
+          "procedural"
+        ],
+        "source": "synthetic",
+        "path": null
+      },
+      "artifacts": {
+        "enabled": false,
+        "n_each_type": 6,
+        "types": [
+          "email",
+          "notification",
+          "alert",
+          "form"
+        ],
+        "source": "synthetic",
+        "path": null
+      }
+    },
+    "typography_variants": [
+      {
+        "id": "T1_times_regular",
+        "font_file": "LiberationSerif-Regular.ttf",
+        "size": 48,
+        "weight": "regular",
+        "uppercase": false,
+        "line_spacing": 1.25
+      },
+      {
+        "id": "T2_times_bold",
+        "font_file": "LiberationSerif-Bold.ttf",
+        "size": 48,
+        "weight": "bold",
+        "uppercase": false,
+        "line_spacing": 1.25
+      },
+      {
+        "id": "T3_arial_regular",
+        "font_file": "LiberationSans-Regular.ttf",
+        "size": 48,
+        "weight": "regular",
+        "uppercase": false,
+        "line_spacing": 1.25
+      },
+      {
+        "id": "T4_arial_bold",
+        "font_file": "LiberationSans-Bold.ttf",
+        "size": 48,
+        "weight": "bold",
+        "uppercase": false,
+        "line_spacing": 1.25
+      },
+      {
+        "id": "T5_arial_all_caps",
+        "font_file": "LiberationSans-Bold.ttf",
+        "size": 48,
+        "weight": "bold",
+        "uppercase": true,
+        "line_spacing": 1.25
+      },
+      {
+        "id": "T6_monospace",
+        "font_file": "LiberationMono-Regular.ttf",
+        "size": 48,
+        "weight": "regular",
+        "uppercase": false,
+        "line_spacing": 1.25
+      },
+      {
+        "id": "T7_comic",
+        "font_file": "ComicNeue-Regular.ttf",
+        "size": 48,
+        "weight": "regular",
+        "uppercase": false,
+        "line_spacing": 1.25
+      },
+      {
+        "id": "T8_small_text",
+        "font_file": "LiberationSans-Regular.ttf",
+        "size": 28,
+        "weight": "regular",
+        "uppercase": false,
+        "line_spacing": 1.25
+      },
+      {
+        "id": "A1_opendyslexic_regular",
+        "font_file": "OpenDyslexic-Regular.otf",
+        "size": 48,
+        "weight": "regular",
+        "uppercase": false,
+        "line_spacing": 1.25
+      }
+    ],
+    "render": {
+      "image_width": 1200,
+      "container": {
+        "padding": 80,
+        "radius": 24,
+        "fill": [
+          245,
+          246,
+          248
+        ],
+        "outline": [
+          220,
+          223,
+          228
+        ]
+      },
+      "margins": 40,
+      "max_text_width": 1000
+    },
+    "ocr": {
+      "enabled": true,
+      "tesseract_lang": "eng"
+    },
+    "providers": {
+      "openai": {
+        "api_key_env": "OPENAI_API_KEY",
+        "model_text": "gpt-4o-mini",
+        "model_vision": "gpt-4o"
+      },
+      "anthropic": {
+        "api_key_env": "ANTHROPIC_API_KEY",
+        "model_text": "claude-3-5-sonnet-20241022",
+        "model_vision": "claude-3-5-sonnet-20241022"
+      },
+      "google": {
+        "api_key_env": "GOOGLE_API_KEY",
+        "model_text": "gemini-1.5-flash",
+        "model_vision": "gemini-1.5-flash"
+      }
+    },
+    "inference": {
+      "mode": "both",
+      "temperature": 0.0,
+      "repeats": 1,
+      "dimensions": [
+        "urgent",
+        "immediate_action",
+        "formal",
+        "trustworthy",
+        "persuasive",
+        "emotional",
+        "professional",
+        "high_risk",
+        "confident",
+        "form_dependent"
+      ],
+      "decision_prompt_id": "escalation_v1",
+      "max_retries": 6,
+      "rate_limit_sleep": 1.5,
+      "fail_fast": false
+    },
+    "analysis": {
+      "compute_heatmaps": true,
+      "bootstrap": {
+        "n_boot": 2000,
+        "alpha": 0.05
+      },
+      "outputs": {
+        "save_csv": true,
+        "save_png": true,
+        "save_md": true
+      }
+    }
+  },
+  "git_commit": "",
+  "system_info": {
+    "python_version": "3.9.6 (default, Apr 30 2025, 02:07:18) \n[Clang 17.0.0 (clang-1700.0.13.5)]",
+    "platform": "macOS-15.4.1-x86_64-i386-64bit",
+    "os": "Darwin",
+    "machine": "x86_64"
+  },
+  "fonts": {
+    "LiberationSerif-Regular.ttf": {
+      "variant_id": "T1_times_regular",
+      "path": "/Users/wdanforth/Desktop/thinkingtype/typography-eval/assets/fonts/LiberationSerif-Regular.ttf",
+      "hash": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74",
+      "exists": true
+    },
+    "LiberationSerif-Bold.ttf": {
+      "variant_id": "T2_times_bold",
+      "path": "/Users/wdanforth/Desktop/thinkingtype/typography-eval/assets/fonts/LiberationSerif-Bold.ttf",
+      "hash": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce",
+      "exists": true
+    },
+    "LiberationSans-Regular.ttf": {
+      "variant_id": "T8_small_text",
+      "path": "/Users/wdanforth/Desktop/thinkingtype/typography-eval/assets/fonts/LiberationSans-Regular.ttf",
+      "hash": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8",
+      "exists": true
+    },
+    "LiberationSans-Bold.ttf": {
+      "variant_id": "T5_arial_all_caps",
+      "path": "/Users/wdanforth/Desktop/thinkingtype/typography-eval/assets/fonts/LiberationSans-Bold.ttf",
+      "hash": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173",
+      "exists": true
+    },
+    "LiberationMono-Regular.ttf": {
+      "variant_id": "T6_monospace",
+      "path": "/Users/wdanforth/Desktop/thinkingtype/typography-eval/assets/fonts/LiberationMono-Regular.ttf",
+      "hash": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1",
+      "exists": true
+    },
+    "ComicNeue-Regular.ttf": {
+      "variant_id": "T7_comic",
+      "path": "/Users/wdanforth/Desktop/thinkingtype/typography-eval/assets/fonts/ComicNeue-Regular.ttf",
+      "hash": "a0ee5a37c8b27c4db0700137d928598b1e23b0089e1546a8961909176b779360",
+      "exists": true
+    },
+    "OpenDyslexic-Regular.otf": {
+      "variant_id": "A1_opendyslexic_regular",
+      "path": "/Users/wdanforth/Desktop/thinkingtype/typography-eval/assets/fonts/OpenDyslexic-Regular.otf",
+      "hash": "32f5840fb2bf844bdabafe372591ddfb9286e98117f5b21950aaf54ea856919a",
+      "exists": true
+    }
+  },
+  "total_planned_calls": 0
+}

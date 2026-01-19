@@ -4,11 +4,12 @@
 
 - **Run ID**: run_20260117_164819
 - **Total responses**: 3960
-- **Paired comparisons**: 3240
+- **Paired comparisons (dimensions)**: 3240
+- **Paired comparisons (decision)**: 324
 - **Inference mode**: both
 - **Temperature**: 0.0
 
-## Headline Results
+## Headline Results - Dimensions Mode
 
 - **Overall flip rate**: 0.164 (95% CI: [0.147, 0.181], n=3240.0)
 
@@ -71,3 +72,50 @@
 
 ### Flip Directionality
 - [Directionality Heatmap](figures/bias_direction_heatmap.png)
+
+---
+
+## Decision Mode Results
+
+Analysis of escalation decisions (binary: escalate vs. don't escalate).
+
+- **Decision flip rate**: 0.139 (95% CI: [0.045, 0.227], n=324.0)
+
+- **Decision approval rate (image)**: 0.000 (95% CI: [0.000, 0.000], n=324.0)
+
+- **Decision approval rate (OCR baseline)**: 0.139
+- **Decision approval rate (Image variants)**: 0.000
+
+### Decision Flip Directionality
+
+- **YES→NO**: 45 flips (100.0%)
+
+### Top Variants by Decision Flip Rate
+
+- **A1_opendyslexic_regular**: 0.139
+- **T1_times_regular**: 0.139
+- **T2_times_bold**: 0.139
+- **T3_arial_regular**: 0.139
+- **T4_arial_bold**: 0.139
+- **T5_arial_all_caps**: 0.139
+- **T6_monospace**: 0.139
+- **T7_comic**: 0.139
+- **T8_small_text**: 0.139
+
+### Top Variants by Decision Approval Rate
+
+- **A1_opendyslexic_regular**: 0.000 (OCR: 0.139)
+- **T1_times_regular**: 0.000 (OCR: 0.139)
+- **T2_times_bold**: 0.000 (OCR: 0.139)
+- **T3_arial_regular**: 0.000 (OCR: 0.139)
+- **T4_arial_bold**: 0.000 (OCR: 0.139)
+- **T5_arial_all_caps**: 0.000 (OCR: 0.139)
+- **T6_monospace**: 0.000 (OCR: 0.139)
+- **T7_comic**: 0.000 (OCR: 0.139)
+- **T8_small_text**: 0.000 (OCR: 0.139)
+
+### Decision Mode Figures
+
+- [Decision Flip Rate by Variant](figures/decision_flip_rate_by_variant.png)
+- [Decision Approval Rate by Variant](figures/decision_approval_rate_by_variant.png)
+- [Decision Directionality Heatmap](figures/decision_bias_direction_heatmap.png)

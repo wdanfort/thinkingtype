@@ -1,4 +1,4 @@
 run_id,provider,model,temperature,mode,overall_flip_rate,n_comparisons
-run_20260115_222423,openai,gpt-4o-mini,0.0,dimensions,0.21820708825573315,2878
-run_20260116_144444,anthropic,claude-sonnet-4-20250514,0.0,dimensions,0.15902777777777777,2880
-run_20260117_164819,google,models/gemini-2.0-flash,0.0,dimensions,0.16419753086419753,3240
+run_20260115_222423,openai,gpt-4o-mini,0.0,dimensions,0.21730890713834491,3166
+run_20260116_144444,anthropic,claude-sonnet-4-20250514,0.0,dimensions,0.14898989898989898,3168
+run_20260117_164819,google,models/gemini-2.0-flash,0.0,dimensions,0.16189674523007858,3564
