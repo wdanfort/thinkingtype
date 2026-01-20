@@ -75,7 +75,9 @@ def create_long_format_csv(
         artifact_id = row.get("sentence_id") or row.get("artifact_id")
         dimension_id = row.get("dimension_id")
         key = (artifact_id, dimension_id) if dimension_id else (artifact_id, None)
-        text_baseline_map[key] = row.get("response_01", 0)
+        # Use parsed_response and convert to binary
+        parsed = row.get("parsed_response")
+        text_baseline_map[key] = coerce_to_binary(parsed) if parsed is not None else 0
 
     # Process all rows
     for _, row in results.iterrows():
@@ -83,7 +85,9 @@ def create_long_format_csv(
         representation = row.get("representation", "unknown")
         variant_id = row.get("variant_id", "__text__")
         dimension_id = row.get("dimension_id")
-        response = row.get("response_01", 0)
+        # Use parsed_response and convert to binary (same as build_delta_table)
+        parsed = row.get("parsed_response")
+        response = coerce_to_binary(parsed) if parsed is not None else 0
 
         # Get variant attributes from taxonomy
         variant_attrs = get_variant_attributes(variant_id)
@@ -135,8 +139,8 @@ def create_long_format_csv(
             "render_version": "v1",  # TODO: compute hash from render config
             "task": task,
             "dimension": dimension_id,
-            "response": int(response),
-            "raw_response": row.get("response_raw", ""),
+            "response": int(response) if response is not None else 0,
+            "raw_response": row.get("raw_response", ""),
             "text_baseline": int(text_baseline) if text_baseline is not None else None,
             "flip_vs_text": int(flip_vs_text) if flip_vs_text is not None else None,
         }
