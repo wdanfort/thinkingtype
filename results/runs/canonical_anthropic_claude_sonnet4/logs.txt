@@ -14,3 +14,7 @@
 2026-01-16 20:16:06,788 [INFO] Loaded 3319 existing records for resume
 2026-01-16 20:25:07,175 [INFO] Completed 245 calls, skipped 3319 (already done)
 2026-01-16 20:25:07,283 [INFO] Inference complete. Results saved to /Users/wdanforth/Desktop/thinkingtype/results/runs/run_20260116_144444
+2026-01-19 14:22:48,328 [INFO] Starting inference run: run_20260116_144444
+2026-01-19 14:22:48,468 [INFO] Loaded 3168 existing records for resume
+2026-01-19 14:45:30,746 [INFO] Starting inference run: run_20260116_144444
+2026-01-19 14:45:30,887 [INFO] Loaded 3470 existing records for resume

@@ -1,4 +1,4 @@
-variant_id,approval_rate_ocr,approval_rate_image,n
+variant_id,approval_rate_text,approval_rate_image,n
 T5_arial_all_caps,0.38333333333333336,0.4444444444444444,360
 T2_times_bold,0.38333333333333336,0.42777777777777776,360
 T4_arial_bold,0.38333333333333336,0.4,360

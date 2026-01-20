@@ -11,7 +11,7 @@
 
 ## Headline Results - Dimensions Mode
 
-- **Overall flip rate**: 0.164 (95% CI: [0.147, 0.181], n=3240.0)
+- **Overall flip rate**: 0.162 (95% CI: [0.145, 0.178], n=3240.0)
 
 - **Overall approval rate (image)**: 0.394 (95% CI: [0.365, 0.421], n=3240.0)
 
@@ -20,39 +20,39 @@
 
 ### Flip Directionality
 
-- **NO→YES**: 283 flips (53.2%)
-- **YES→NO**: 249 flips (46.8%)
+- **NO→YES**: 279 flips (53.2%)
+- **YES→NO**: 245 flips (46.8%)
 
 ## Top Variants by Flip Rate
 
-- **T7_comic**: 0.225
+- **T7_comic**: 0.219
 - **A1_opendyslexic_regular**: 0.189
-- **T2_times_bold**: 0.161
 - **T3_arial_regular**: 0.161
-- **T4_arial_bold**: 0.156
 - **T5_arial_all_caps**: 0.156
-- **T1_times_regular**: 0.153
+- **T2_times_bold**: 0.156
+- **T4_arial_bold**: 0.150
+- **T1_times_regular**: 0.147
 - **T6_monospace**: 0.144
 - **T8_small_text**: 0.133
 
 ## Top Variants by Approval Rate (Image)
 
-- **T5_arial_all_caps**: 0.444 (OCR: 0.383)
-- **T2_times_bold**: 0.428 (OCR: 0.383)
-- **T4_arial_bold**: 0.400 (OCR: 0.383)
-- **T3_arial_regular**: 0.400 (OCR: 0.383)
-- **T1_times_regular**: 0.397 (OCR: 0.383)
-- **T8_small_text**: 0.394 (OCR: 0.383)
-- **T6_monospace**: 0.394 (OCR: 0.383)
-- **A1_opendyslexic_regular**: 0.350 (OCR: 0.383)
-- **T7_comic**: 0.336 (OCR: 0.383)
+- **T5_arial_all_caps**: 0.444 (Text: 0.383)
+- **T2_times_bold**: 0.428 (Text: 0.383)
+- **T4_arial_bold**: 0.400 (Text: 0.383)
+- **T3_arial_regular**: 0.400 (Text: 0.383)
+- **T1_times_regular**: 0.397 (Text: 0.383)
+- **T8_small_text**: 0.394 (Text: 0.383)
+- **T6_monospace**: 0.394 (Text: 0.383)
+- **A1_opendyslexic_regular**: 0.350 (Text: 0.383)
+- **T7_comic**: 0.336 (Text: 0.383)
 
 ## Top Boundary Sentences
 
 - Sentence 30: 0.322
 - Sentence 7: 0.311
-- Sentence 29: 0.289
 - Sentence 23: 0.267
+- Sentence 29: 0.256
 - Sentence 10: 0.233
 - Sentence 12: 0.222
 - Sentence 15: 0.222
@@ -79,40 +79,40 @@
 
 Analysis of escalation decisions (binary: escalate vs. don't escalate).
 
-- **Decision flip rate**: 0.139 (95% CI: [0.045, 0.227], n=324.0)
+- **Decision flip rate**: 0.111 (95% CI: [0.042, 0.190], n=324.0)
 
 - **Decision approval rate (image)**: 0.000 (95% CI: [0.000, 0.000], n=324.0)
 
-- **Decision approval rate (OCR baseline)**: 0.139
+- **Decision approval rate (OCR baseline)**: 0.111
 - **Decision approval rate (Image variants)**: 0.000
 
 ### Decision Flip Directionality
 
-- **YES→NO**: 45 flips (100.0%)
+- **YES→NO**: 36 flips (100.0%)
 
 ### Top Variants by Decision Flip Rate
 
-- **A1_opendyslexic_regular**: 0.139
-- **T1_times_regular**: 0.139
-- **T2_times_bold**: 0.139
-- **T3_arial_regular**: 0.139
-- **T4_arial_bold**: 0.139
-- **T5_arial_all_caps**: 0.139
-- **T6_monospace**: 0.139
-- **T7_comic**: 0.139
-- **T8_small_text**: 0.139
+- **A1_opendyslexic_regular**: 0.111
+- **T1_times_regular**: 0.111
+- **T2_times_bold**: 0.111
+- **T3_arial_regular**: 0.111
+- **T4_arial_bold**: 0.111
+- **T5_arial_all_caps**: 0.111
+- **T6_monospace**: 0.111
+- **T7_comic**: 0.111
+- **T8_small_text**: 0.111
 
 ### Top Variants by Decision Approval Rate
 
-- **A1_opendyslexic_regular**: 0.000 (OCR: 0.139)
-- **T1_times_regular**: 0.000 (OCR: 0.139)
-- **T2_times_bold**: 0.000 (OCR: 0.139)
-- **T3_arial_regular**: 0.000 (OCR: 0.139)
-- **T4_arial_bold**: 0.000 (OCR: 0.139)
-- **T5_arial_all_caps**: 0.000 (OCR: 0.139)
-- **T6_monospace**: 0.000 (OCR: 0.139)
-- **T7_comic**: 0.000 (OCR: 0.139)
-- **T8_small_text**: 0.000 (OCR: 0.139)
+- **A1_opendyslexic_regular**: 0.000 (Text: 0.111)
+- **T1_times_regular**: 0.000 (Text: 0.111)
+- **T2_times_bold**: 0.000 (Text: 0.111)
+- **T3_arial_regular**: 0.000 (Text: 0.111)
+- **T4_arial_bold**: 0.000 (Text: 0.111)
+- **T5_arial_all_caps**: 0.000 (Text: 0.111)
+- **T6_monospace**: 0.000 (Text: 0.111)
+- **T7_comic**: 0.000 (Text: 0.111)
+- **T8_small_text**: 0.000 (Text: 0.111)
 
 ### Decision Mode Figures
 

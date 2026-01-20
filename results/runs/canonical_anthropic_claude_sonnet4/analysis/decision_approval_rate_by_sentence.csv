@@ -1,8 +1,8 @@
-sentence_id,approval_rate_ocr,approval_rate_image,n
-3,0.0,0.875,8
+sentence_id,approval_rate_text,approval_rate_image,n
+3,0.0,0.7777777777777778,9
 19,1.0,0.125,8
-2,0.0,0.0,8
-1,0.0,0.0,8
+2,0.0,0.0,9
+1,0.0,0.0,9
 4,0.0,0.0,8
 5,0.0,0.0,8
 7,0.0,0.0,8

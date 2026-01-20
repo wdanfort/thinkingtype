@@ -1,4 +1,4 @@
-sentence_id,approval_rate_ocr,approval_rate_image,n
+sentence_id,approval_rate_text,approval_rate_image,n
 1,0.0,0.0,9
 2,0.0,0.0,9
 3,0.0,0.0,9
@@ -20,7 +20,7 @@ sentence_id,approval_rate_ocr,approval_rate_image,n
 19,1.0,0.0,9
 20,0.0,0.0,9
 21,1.0,0.0,9
-22,1.0,0.0,9
+22,0.0,0.0,9
 23,0.0,0.0,9
 24,1.0,0.0,9
 25,0.0,0.0,9
