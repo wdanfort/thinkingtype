@@ -1,0 +1,33 @@
+{
+  "run_id": "run_20260115_222423",
+  "provider": "openai",
+  "model": "gpt-4o",
+  "timestamp": "2026-01-20T13:50:16.929280",
+  "dimension_analysis": {
+    "overall_flip_rate": 0.21865348980852378,
+    "overall_ci": [
+      0.18713506954929218,
+      0.24772497472194135
+    ],
+    "n_comparisons": 3238,
+    "top_flipping_dimension": "trustworthy",
+    "top_flipping_dimension_rate": 0.4722222222222222,
+    "top_flipping_variant": "A1_opendyslexic_regular",
+    "top_flipping_variant_rate": 0.2841225626740947
+  },
+  "decision_analysis": {
+    "flip_rate": 0.20987654320987653,
+    "flip_ci": [
+      0.10525503573749187,
+      0.31216931216931215
+    ],
+    "n_decisions": 324,
+    "direction_net_bias": -0.7352941176470589,
+    "direction_interpretation": "Vision less likely to escalate"
+  },
+  "key_correlations": {
+    "high_risk_decision_lift": 4.618571428571428,
+    "professional_decision_lift": 3.857142857142857,
+    "urgent_decision_lift": 5.338983050847458
+  }
+}

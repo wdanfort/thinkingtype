@@ -16,6 +16,22 @@ from typo_eval.config import TypoEvalConfig
 from typo_eval.prompts import coerce_to_binary
 from typo_eval.taxonomy import get_variant_attributes
 
+# Import streamlined analysis functions
+from typo_eval.analysis_streamlined import (
+    generate_flip_rates_csv,
+    generate_bias_direction_csv,
+    generate_decision_analysis_csv,
+    generate_headline_metrics_json,
+    generate_summary_md_streamlined,
+)
+from typo_eval.plots_streamlined import (
+    plot_flip_by_dimension,
+    plot_flip_by_variant,
+    plot_direction_by_dimension,
+    plot_direction_by_variant,
+    plot_decision_flip,
+)
+
 logger = logging.getLogger(__name__)
 sns.set_theme(style="whitegrid")
 
@@ -828,7 +844,139 @@ def analyze_run(
     sentences_df: Optional[pd.DataFrame] = None,
 ) -> Path:
     """
-    Run full analysis on inference results.
+    Run streamlined analysis on inference results.
+
+    Generates:
+    - flip_rates.csv (consolidated)
+    - bias_direction.csv (consolidated)
+    - decision_analysis.csv (decision-specific metrics)
+    - headline_metrics.json (programmatic access)
+    - 5 streamlined figures
+    - summary.md
+
+    Returns path to analysis directory.
+    """
+    jsonl_path = run_dir / "raw" / "responses.jsonl"
+    if not jsonl_path.exists():
+        raise FileNotFoundError(f"Results file not found: {jsonl_path}")
+
+    results = load_results(jsonl_path)
+    logger.info(f"Loaded {len(results)} results from {jsonl_path}")
+
+    analysis_dir = run_dir / "analysis"
+    analysis_dir.mkdir(parents=True, exist_ok=True)
+    figures_dir = analysis_dir / "figures"
+    figures_dir.mkdir(exist_ok=True)
+
+    # Build paired comparison table
+    paired = build_delta_table(results, sentences_df)
+
+    # Separate dimensions and decision mode data
+    paired_dimensions = (
+        paired[paired["mode"] == "dimensions"].copy()
+        if "mode" in paired.columns
+        else paired.copy()
+    )
+    paired_decision = (
+        paired[paired["mode"] == "decision"].copy()
+        if "mode" in paired.columns
+        else pd.DataFrame()
+    )
+
+    # Extract provider and model for metadata
+    provider = results.iloc[0].get("provider", "unknown") if len(results) > 0 else "unknown"
+    model = results.iloc[0].get("model", "unknown") if len(results) > 0 else "unknown"
+
+    # === GENERATE CONSOLIDATED CSVs ===
+    logger.info("Generating consolidated CSV outputs...")
+
+    # 1. Flip rates (dimensions + variants with bootstrap CIs)
+    bootstrap_cfg = config.analysis.bootstrap
+    flip_rates = generate_flip_rates_csv(
+        paired_dimensions,
+        n_boot=bootstrap_cfg.n_boot,
+        alpha=bootstrap_cfg.alpha,
+    )
+    flip_rates.to_csv(analysis_dir / "flip_rates.csv", index=False)
+    logger.info("Saved flip_rates.csv")
+
+    # 2. Bias direction (dimensions + variants)
+    bias_direction = generate_bias_direction_csv(paired_dimensions)
+    bias_direction.to_csv(analysis_dir / "bias_direction.csv", index=False)
+    logger.info("Saved bias_direction.csv")
+
+    # 3. Decision analysis (if decision data exists)
+    if len(paired_decision) > 0:
+        decision_analysis = generate_decision_analysis_csv(
+            paired_decision,
+            paired_dimensions,
+            provider,
+            n_boot=bootstrap_cfg.n_boot,
+            alpha=bootstrap_cfg.alpha,
+        )
+        decision_analysis.to_csv(analysis_dir / "decision_analysis.csv", index=False)
+        logger.info("Saved decision_analysis.csv")
+    else:
+        decision_analysis = pd.DataFrame()
+        logger.info("No decision data; skipping decision_analysis.csv")
+
+    # 4. Headline metrics JSON
+    headline_metrics = generate_headline_metrics_json(
+        paired_dimensions,
+        paired_decision,
+        flip_rates,
+        bias_direction,
+        decision_analysis,
+        config,
+        run_id,
+        provider,
+        model,
+    )
+    with open(analysis_dir / "headline_metrics.json", "w") as f:
+        json.dump(headline_metrics, f, indent=2)
+    logger.info("Saved headline_metrics.json")
+
+    # === GENERATE FIGURES ===
+    logger.info("Generating streamlined figures...")
+
+    # Fig 1: Flip by dimension
+    plot_flip_by_dimension(flip_rates, figures_dir / "fig1_flip_by_dimension.png")
+
+    # Fig 2: Flip by variant
+    plot_flip_by_variant(flip_rates, figures_dir / "fig2_flip_by_variant.png")
+
+    # Fig 3: Direction by dimension
+    plot_direction_by_dimension(bias_direction, figures_dir / "fig3_direction_by_dimension.png")
+
+    # Fig 4: Direction by variant
+    plot_direction_by_variant(bias_direction, figures_dir / "fig4_direction_by_variant.png")
+
+    # Fig 5: Decision flip (if decision data exists)
+    if len(paired_decision) > 0:
+        plot_decision_flip(decision_analysis, provider, figures_dir / "fig5_decision_flip.png")
+
+    # === GENERATE SUMMARY.md ===
+    generate_summary_md_streamlined(
+        flip_rates,
+        bias_direction,
+        decision_analysis,
+        headline_metrics,
+        analysis_dir / "summary.md",
+    )
+    logger.info("Saved summary.md")
+
+    logger.info(f"Analysis complete. Results saved to {analysis_dir}")
+    return analysis_dir
+
+
+def analyze_run_old(
+    config: TypoEvalConfig,
+    run_id: str,
+    run_dir: Path,
+    sentences_df: Optional[pd.DataFrame] = None,
+) -> Path:
+    """
+    OLD VERSION - Run full analysis on inference results.
 
     Writes CSVs, PNGs, and summary.md to analysis directory.
     """
