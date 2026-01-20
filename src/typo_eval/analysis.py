@@ -14,6 +14,7 @@ import seaborn as sns
 
 from typo_eval.config import TypoEvalConfig
 from typo_eval.prompts import coerce_to_binary
+from typo_eval.taxonomy import get_variant_attributes
 
 logger = logging.getLogger(__name__)
 sns.set_theme(style="whitegrid")
@@ -29,6 +30,120 @@ def load_results(jsonl_path: Path) -> pd.DataFrame:
             except json.JSONDecodeError:
                 continue
     return pd.DataFrame(records)
+
+
+def create_long_format_csv(
+    results: pd.DataFrame,
+    run_id: str,
+    config: TypoEvalConfig,
+    sentences_df: Optional[pd.DataFrame] = None,
+) -> pd.DataFrame:
+    """
+    Create long-format CSV with all run data in regularized columns.
+
+    Columns:
+    - run_id: Stable identifier for run
+    - provider: openai / anthropic / google
+    - model: Model identifier
+    - temperature: Temperature setting
+    - prompt_version: Hash/version of prompt templates
+    - artifact_type: sentence | document
+    - artifact_id: sentence_id or artifact_id
+    - semantic_category: Semantic category (neutral, cta, etc.)
+    - representation: text | image
+    - variant_id: __text__ for text, variant ID for image
+    - variant_bucket: font_family | emphasis | capitalization
+    - font_family: Times | Arial | Comic | Monospace | OpenDyslexic
+    - weight: regular | bold
+    - caps: normal | all_caps
+    - render_version: Hash/tag of render settings
+    - task: decision | dimension
+    - dimension: Dimension name (null for decision)
+    - response: 0/1 parsed yes/no
+    - raw_response: Raw model output
+    - text_baseline: Baseline response from text (null for text rows)
+    - flip_vs_text: 1 if flipped from text baseline (null for text rows)
+    """
+    rows = []
+
+    # Get text baseline responses for flip calculation
+    text_rows = results[results["representation"] == "text"].copy()
+
+    # Build text baseline lookup: (artifact_id, dimension_id) -> response
+    text_baseline_map = {}
+    for _, row in text_rows.iterrows():
+        artifact_id = row.get("sentence_id") or row.get("artifact_id")
+        dimension_id = row.get("dimension_id")
+        key = (artifact_id, dimension_id) if dimension_id else (artifact_id, None)
+        text_baseline_map[key] = row.get("response_01", 0)
+
+    # Process all rows
+    for _, row in results.iterrows():
+        artifact_id = row.get("sentence_id") or row.get("artifact_id")
+        representation = row.get("representation", "unknown")
+        variant_id = row.get("variant_id", "__text__")
+        dimension_id = row.get("dimension_id")
+        response = row.get("response_01", 0)
+
+        # Get variant attributes from taxonomy
+        variant_attrs = get_variant_attributes(variant_id)
+
+        # Determine artifact type
+        artifact_type = "sentence" if "sentence_id" in row else "document"
+
+        # Get semantic category from sentences_df if available
+        semantic_category = None
+        if sentences_df is not None and artifact_type == "sentence":
+            # sentences_df may have "id" or "sentence_id" as the key column
+            id_col = "sentence_id" if "sentence_id" in sentences_df.columns else "id"
+            matching = sentences_df[sentences_df[id_col] == artifact_id]
+            if len(matching) > 0:
+                semantic_category = matching.iloc[0].get("category")
+
+        # Calculate text baseline and flip (only for image representation)
+        text_baseline = None
+        flip_vs_text = None
+        if representation == "image":
+            key = (artifact_id, dimension_id) if dimension_id else (artifact_id, None)
+            text_baseline = text_baseline_map.get(key)
+            if text_baseline is not None:
+                flip_vs_text = 1 if response != text_baseline else 0
+
+        # Determine task
+        task = "dimension" if dimension_id else "decision"
+
+        # Extract provider and model from row
+        provider = row.get("provider", "unknown")
+        model = row.get("model", "unknown")
+
+        # Build row
+        long_row = {
+            "run_id": run_id,
+            "provider": provider,
+            "model": model,
+            "temperature": config.inference.temperature,
+            "prompt_version": "v1",  # TODO: compute hash from prompt templates
+            "artifact_type": artifact_type,
+            "artifact_id": str(artifact_id),
+            "semantic_category": semantic_category,
+            "representation": representation,
+            "variant_id": variant_id,
+            "variant_bucket": variant_attrs["variant_bucket"],
+            "font_family": variant_attrs["font_family"],
+            "weight": variant_attrs["weight"],
+            "caps": variant_attrs["caps"],
+            "render_version": "v1",  # TODO: compute hash from render config
+            "task": task,
+            "dimension": dimension_id,
+            "response": int(response),
+            "raw_response": row.get("response_raw", ""),
+            "text_baseline": int(text_baseline) if text_baseline is not None else None,
+            "flip_vs_text": int(flip_vs_text) if flip_vs_text is not None else None,
+        }
+
+        rows.append(long_row)
+
+    return pd.DataFrame(rows)
 
 
 def build_delta_table(
@@ -156,6 +271,14 @@ def build_delta_table(
             how="left",
         )
 
+    # Add variant_bucket from taxonomy
+    from typo_eval.taxonomy import get_variant_metadata
+    paired["variant_bucket"] = paired["variant_id"].apply(
+        lambda vid: get_variant_metadata(vid).variant_bucket
+        if get_variant_metadata(vid)
+        else "unknown"
+    )
+
     return paired
 
 
@@ -182,6 +305,16 @@ def compute_flip_rates(paired: pd.DataFrame) -> Dict[str, pd.DataFrame]:
         .sort_values("flip_rate", ascending=False)
     )
     results["by_variant"] = by_variant
+
+    # By variant_bucket
+    if "variant_bucket" in paired.columns:
+        by_bucket = (
+            paired.groupby("variant_bucket")
+            .agg(flip_rate=("flip", "mean"), n=("flip", "size"))
+            .reset_index()
+            .sort_values("flip_rate", ascending=False)
+        )
+        results["by_variant_bucket"] = by_bucket
 
     # By sentence
     by_sentence = (
@@ -243,6 +376,20 @@ def compute_approval_rates(paired: pd.DataFrame) -> Dict[str, pd.DataFrame]:
         .sort_values("approval_rate_image", ascending=False)
     )
     results["by_variant"] = by_variant
+
+    # By variant_bucket
+    if "variant_bucket" in paired.columns:
+        by_bucket = (
+            paired.groupby("variant_bucket")
+            .agg(
+                approval_rate_text=("approval_text", "mean"),
+                approval_rate_image=("approval_image", "mean"),
+                n=("approval_text", "size")
+            )
+            .reset_index()
+            .sort_values("approval_rate_image", ascending=False)
+        )
+        results["by_variant_bucket"] = by_bucket
 
     # By sentence
     by_sentence = (
@@ -558,6 +705,118 @@ def plot_approval_rate_by_dimension(df: pd.DataFrame, output_path: Path) -> None
     plt.close()
 
 
+def plot_quadrant_scatter(
+    paired: pd.DataFrame,
+    output_path: Path,
+    provider: str = "unknown",
+    model: str = "unknown",
+) -> None:
+    """
+    Plot quadrant scatter: Dimension directionality vs Decision directionality.
+
+    Each dot represents one typography variant × one dimension.
+
+    X-axis: Dimension directionality (ΔYES_rate for that dimension: image − text)
+    Y-axis: Decision directionality (ΔYES_rate for decision: image − text)
+
+    This reveals whether typography shifts that make a dimension more YES
+    also make the decision more YES (upper-right quadrant = amplification).
+    """
+    # Separate dimensions and decision data
+    dims_paired = paired[paired["dimension_id"].notna()].copy()
+    decision_paired = paired[paired["dimension_id"].isna()].copy()
+
+    if len(dims_paired) == 0 or len(decision_paired) == 0:
+        logger.warning("Insufficient data for quadrant scatter plot")
+        return
+
+    # Calculate dimension directionality: Δ approval rate for each (variant, dimension)
+    dims_directionality = (
+        dims_paired.groupby(["variant_id", "dimension_id"])
+        .agg(
+            dimension_delta=("delta", "mean"),
+            n=("delta", "size"),
+        )
+        .reset_index()
+    )
+
+    # Calculate decision directionality: Δ approval rate for each variant
+    decision_directionality = (
+        decision_paired.groupby("variant_id")
+        .agg(
+            decision_delta=("delta", "mean"),
+            n=("delta", "size"),
+        )
+        .reset_index()
+    )
+
+    # Merge dimension and decision directionality
+    scatter_data = dims_directionality.merge(
+        decision_directionality[["variant_id", "decision_delta"]],
+        on="variant_id",
+        how="inner",
+    )
+
+    if len(scatter_data) == 0:
+        logger.warning("No matching data for quadrant scatter plot")
+        return
+
+    # Create scatter plot
+    plt.figure(figsize=(10, 8))
+
+    # Use variant_bucket for coloring (from taxonomy)
+    from typo_eval.taxonomy import get_variant_metadata
+
+    scatter_data["variant_bucket"] = scatter_data["variant_id"].apply(
+        lambda vid: get_variant_metadata(vid).variant_bucket
+        if get_variant_metadata(vid)
+        else "unknown"
+    )
+
+    # Color palette
+    palette = {
+        "font_family": "steelblue",
+        "emphasis": "darkorange",
+        "capitalization": "forestgreen",
+        "unknown": "gray",
+    }
+
+    for bucket, group_df in scatter_data.groupby("variant_bucket"):
+        color = palette.get(bucket, "gray")
+        plt.scatter(
+            group_df["dimension_delta"],
+            group_df["decision_delta"],
+            alpha=0.6,
+            s=50,
+            c=color,
+            label=bucket,
+        )
+
+    # Add quadrant lines at 0
+    plt.axhline(0, color="black", linewidth=0.8, linestyle="--", alpha=0.5)
+    plt.axvline(0, color="black", linewidth=0.8, linestyle="--", alpha=0.5)
+
+    # Labels
+    plt.xlabel("Dimension Directionality\n(Δ Approval Rate: Image − Text)", fontsize=11)
+    plt.ylabel("Decision Directionality\n(Δ Approval Rate: Image − Text)", fontsize=11)
+    plt.title(
+        f"Typography Influence: Dimension vs Decision\n{provider} {model}",
+        fontsize=12,
+        fontweight="bold",
+    )
+
+    # Add legend
+    plt.legend(title="Variant Bucket", loc="best")
+
+    # Add grid
+    plt.grid(alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=200)
+    plt.close()
+    logger.info(f"Saved quadrant scatter plot to {output_path}")
+
+
 def analyze_run(
     config: TypoEvalConfig,
     run_id: str,
@@ -583,6 +842,11 @@ def analyze_run(
 
     # Build paired comparison table
     paired = build_delta_table(results, sentences_df)
+
+    # Generate long-format CSV for flexible analysis
+    long_csv = create_long_format_csv(results, run_id, config, sentences_df)
+    long_csv.to_csv(analysis_dir / "results_long_format.csv", index=False)
+    logger.info("Saved long-format CSV for flexible analysis")
 
     # Separate dimensions and decision mode data
     paired_dimensions = paired[paired["mode"] == "dimensions"].copy() if "mode" in paired.columns else paired.copy()
@@ -757,6 +1021,17 @@ def analyze_run(
             paired_dimensions,
             figures_dir / "bias_direction_heatmap.png",
         )
+
+        # Quadrant scatter plot: Dimension vs Decision directionality
+        if len(paired_decision) > 0:
+            provider = results.iloc[0].get("provider", "unknown") if len(results) > 0 else "unknown"
+            model = results.iloc[0].get("model", "unknown") if len(results) > 0 else "unknown"
+            plot_quadrant_scatter(
+                paired,  # Use full paired data (includes both dimensions and decision)
+                figures_dir / "quadrant_scatter_dimension_vs_decision.png",
+                provider=provider,
+                model=model,
+            )
 
         # Decision mode figures
         if len(paired_decision) > 0:
