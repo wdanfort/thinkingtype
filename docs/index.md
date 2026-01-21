@@ -1,5 +1,5 @@
 # t | h | i | n | k | i | n | g | t | y | p | e
----
+
 ## Typography Changes How AI Judges Identical Text
 
 A controlled diagnostic evaluation of how visual presentation influences interpretation in vision-language models. 
@@ -8,13 +8,9 @@ Disclaimer: This is independent research conducted on my own time. The views exp
 
 **TL;DR: Vision models judge identical text differently than text-only pipelines (~20% of binary judgments flip). Typography systematically influences the direction and magnitude of those flips. In a small, controlled eval, this shifted borderline cases away from human review recommendations suggesting underexplored UI and pipeline design implications.**
 
----
-
 ## Motivation
 
 I recently read *Thinking with Type* and was struck by how text font, weight, and emphasis shape how humans interpret the same words (and how these choices are shaped by the ideas and technology of the day). As more systems rely on vision-language models to read documents, I wanted to understand how those same typographic signals are interpreted: do they change judgments when the underlying text is identical? How should we think about burgeoning vulnerabilities and opportunities for UI/UX? This project is a small, controlled evaluation designed to explore the vision-text model divergence and implications for product design. 
-
----
 
 ## What I Did
 
@@ -49,8 +45,6 @@ This is sentence-level only. I have not yet tested whether these patterns hold f
 
 *Flip rates show vision-text disagreement. Decision direction shows net bias when disagreements occur (negative = vision less likely to escalate). Small text variant excluded from analysis.*
 
----
-
 ### 1. Vision pipelines diverge from text pipelines
 
 Processing the same sentence as an **image** instead of **raw text** produces different judgments—before any typography variation is introduced.
@@ -66,8 +60,6 @@ Across three providers, **16–22% of binary judgments flipped** between text-on
 | Anthropic | claude-sonnet-4 | 15.9% | [14.6%, 17.3%] |
 
 This is the baseline divergence introduced by visual processing alone.
-
----
 
 ### 2. Typography modifies the divergence
 
@@ -85,8 +77,6 @@ Within the vision pipeline, font choice acts as a **modifier**. Some presentatio
 
 Standard serif and sans-serif fonts produce the most stable behavior. Stylized fonts (Comic Sans), accessibility fonts (OpenDyslexic), and emphasis treatments (ALL CAPS, bold) increase divergence.
 
----
-
 ### 3. Some dimensions are more affected than others
 
 Not all judgments are equally susceptible. Certain semantic dimensions show much higher flip  (and differ between model providers).
@@ -94,8 +84,6 @@ Not all judgments are equally susceptible. Certain semantic dimensions show much
 ![Flip rate by dimension](figures/comparison_by_dimension.png)
 
 Judgments about trustworthiness flip half the time between vision and text pipelines. Judgments about urgency or emotional tone are much more stable.
-
----
 
 ### 4. When disagreements occur, they have direction
 
@@ -121,8 +109,6 @@ When vision and text pipelines disagree, the disagreement is often systematic—
 
 This inconsistency is itself a finding. You cannot assume that "vision mode" has a universal directional effect—it depends on the model.
 
----
-
 ### 5. Font choice also has directional effects
 
 Some typography variants systematically push judgments in one direction when flips occur.
@@ -141,8 +127,6 @@ Some typography variants systematically push judgments in one direction when fli
 | Arial ALL CAPS | -63% (toward NO) | Amplifies negative judgments |
 
 All typography variants show strong negative bias for OpenAI's vision pipeline—when vision and text disagree, vision almost always pushes toward harsher judgments. This is consistent across all font choices, though monospace and OpenDyslexic show the strongest negative bias.
-
----
 
 ### 6. Decisions flip too—and the direction matters
 
@@ -179,9 +163,6 @@ When a dimension judgment flips, how much more likely is the decision to also fl
 
 **Urgent and high_risk judgments are the leading indicators**. When vision mode changes whether something seems "urgent" or "high risk," downstream decisions are 5x more likely to change too. Professional judgments also strongly predict decision flips (4x).
 
-
----
-
 ## Why This Might Matter
 
 ### For product teams
@@ -198,8 +179,6 @@ OpenDyslexic consistently shows elevated flip rates and a bias toward negative j
 
 Vision–text divergence on identical semantic content is a form of inconsistency worth tracking. The fact that direction varies by provider suggests different models have learned different associations with visual presentation.
 
----
-
 ## Limitations
 
 This is exploratory and generated within limited budget/time constraints. There are also experimental constraints, too: 
@@ -208,8 +187,6 @@ This is exploratory and generated within limited budget/time constraints. There 
 - **Synthetic content** — Sentences were designed to be ambiguous and at the "border" for the tested categories. 
 - **Robustness** — All canonical runs at temperature=0.0, although I also re-run earlier analyses with t=0.3 and found consistent findings. Different prompts may yield different results, too. I plan to stress test this more in a v1 iteration with different prompts, dimension definitions. I am also comparing raw text to images of the text generated. Another confounder might be how I generated, cropped, and standardized image sizes. 
 - **No causal mechanism** — I can describe patterns but not explain *why* vision-text differ or why specific fonts drive a specific direction/magnitude.
-
----
 
 ## What's Next
 
@@ -232,8 +209,6 @@ This is early. I'd love any feedback or suggestions for future directions.
 - **Code**: [github.com/wdanfort/thinkingtype](https://github.com/wdanfort/thinkingtype)
 - **Issues**: [GitHub Issues](https://github.com/wdanfort/thinkingtype/issues)
 - **Contact**: wbdanforth [at] gmail [dot] com
-
----
 
 ## Citation
 
