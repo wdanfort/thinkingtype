@@ -35,6 +35,9 @@ def generate_flip_rates_csv(
     - ci_low: lower bound of 95% CI
     - ci_high: upper bound of 95% CI
     """
+    # Filter out T8_small_text variant
+    paired = paired[paired["variant_id"] != "T8_small_text"].copy()
+
     rows = []
     rng = np.random.default_rng(seed)
     sentences = paired["sentence_id"].unique()
@@ -128,6 +131,9 @@ def generate_bias_direction_csv(paired: pd.DataFrame) -> pd.DataFrame:
     - pct_yes_to_no: percentage YES→NO
     - net_bias: pct_no_to_yes - pct_yes_to_no (positive = vision more positive)
     """
+    # Filter out T8_small_text variant
+    paired = paired[paired["variant_id"] != "T8_small_text"].copy()
+
     rows = []
 
     # Helper function to compute direction stats
@@ -230,6 +236,12 @@ def generate_decision_analysis_csv(
     - Correlation between dimension flip rate and decision flip rate
     - Lift: how much more likely a dimension flip predicts a decision flip
     """
+    # Filter out T8_small_text variant
+    if decision_paired is not None and len(decision_paired) > 0:
+        decision_paired = decision_paired[decision_paired["variant_id"] != "T8_small_text"].copy()
+    if dimension_paired is not None and len(dimension_paired) > 0:
+        dimension_paired = dimension_paired[dimension_paired["variant_id"] != "T8_small_text"].copy()
+
     rows = []
 
     if len(decision_paired) == 0:

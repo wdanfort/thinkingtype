@@ -1,33 +1,33 @@
 {
-  "run_id": "run_20260116_144444",
+  "run_id": "canonical_anthropic_claude_sonnet4",
   "provider": "anthropic",
   "model": "claude-sonnet-4-20250514",
-  "timestamp": "2026-01-20T13:50:41.734954",
+  "timestamp": "2026-01-21T12:49:44.318864",
   "dimension_analysis": {
-    "overall_flip_rate": 0.1563573883161512,
+    "overall_flip_rate": 0.15694444444444444,
     "overall_ci": [
-      0.13370786516853933,
-      0.179526455026455
+      0.134375,
+      0.180625
     ],
-    "n_comparisons": 2910,
+    "n_comparisons": 2880,
     "top_flipping_dimension": "trustworthy",
-    "top_flipping_dimension_rate": 0.5532646048109966,
+    "top_flipping_dimension_rate": 0.5555555555555556,
     "top_flipping_variant": "T5_arial_all_caps",
     "top_flipping_variant_rate": 0.2361111111111111
   },
   "decision_analysis": {
-    "flip_rate": 0.048109965635738834,
+    "flip_rate": 0.04861111111111111,
     "flip_ci": [
       0.0,
-      0.08284023668639054
+      0.08333333333333333
     ],
-    "n_decisions": 291,
+    "n_decisions": 288,
     "direction_net_bias": 0.0,
     "direction_interpretation": null
   },
   "key_correlations": {
-    "emotional_decision_lift": 22.53968253968254,
-    "persuasive_decision_lift": 1.8157894736842104,
+    "emotional_decision_lift": 22.3015873015873,
+    "persuasive_decision_lift": 1.8501228501228502,
     "form_dependent_decision_lift": 0.0
   }
 }

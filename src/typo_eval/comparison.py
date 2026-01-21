@@ -576,6 +576,163 @@ def plot_directionality_comparison(
     logger.info(f"Saved directionality comparison plot to {output_path}")
 
 
+def plot_decision_flip_comparison(
+    canonical_runs: List[str],
+    output_dir: Path
+) -> None:
+    """
+    Grouped bar chart showing decision flip rate by provider with direction annotations.
+    """
+    data = []
+    for run_id in canonical_runs:
+        decision_csv = Path(f"results/runs/{run_id}/analysis/decision_analysis.csv")
+        if not decision_csv.exists():
+            continue
+
+        df = pd.read_csv(decision_csv)
+
+        # Extract provider/model from run_id or metadata
+        provider = run_id.replace("canonical_", "").split("_")[0]  # e.g., "openai"
+
+        # Get flip rate
+        flip_row = df[
+            (df["metric"] == "flip_rate") &
+            (df["group_type"] == "overall")
+        ]
+        if len(flip_row) > 0:
+            flip_rate = flip_row.iloc[0]["value"]
+            ci_low = flip_row.iloc[0]["ci_low"]
+            ci_high = flip_row.iloc[0]["ci_high"]
+        else:
+            continue
+
+        # Get direction
+        dir_row = df[
+            (df["metric"] == "direction") &
+            (df["group_type"] == "overall")
+        ]
+        if len(dir_row) > 0:
+            net_bias = dir_row.iloc[0]["value"]
+        else:
+            net_bias = 0
+
+        data.append({
+            "provider": provider.capitalize(),
+            "flip_rate": flip_rate,
+            "ci_low": ci_low,
+            "ci_high": ci_high,
+            "net_bias": net_bias
+        })
+
+    if len(data) == 0:
+        logger.warning("No decision flip data to plot")
+        return
+
+    df_plot = pd.DataFrame(data)
+
+    # Create grouped bar chart
+    fig, ax = plt.subplots(figsize=(8, 6))
+    x_pos = np.arange(len(df_plot))
+
+    bars = ax.bar(x_pos, df_plot["flip_rate"], color="steelblue", alpha=0.8)
+
+    # Error bars
+    yerr_low = df_plot["flip_rate"] - df_plot["ci_low"]
+    yerr_high = df_plot["ci_high"] - df_plot["flip_rate"]
+    ax.errorbar(
+        x_pos,
+        df_plot["flip_rate"],
+        yerr=[yerr_low, yerr_high],
+        fmt="none",
+        color="black",
+        capsize=5
+    )
+
+    ax.set_xticks(x_pos)
+    ax.set_xticklabels(df_plot["provider"])
+    ax.set_ylabel("Decision Flip Rate", fontsize=11)
+    ax.set_title("Decision Flip Rate by Provider", fontsize=13, fontweight="bold")
+
+    # Add annotations
+    for i, row in df_plot.iterrows():
+        flip = row["flip_rate"]
+        bias = row["net_bias"]
+        direction_text = "→ NO" if bias < -0.5 else "→ YES" if bias > 0.5 else "Mixed"
+        ax.text(i, flip + 0.02, f"{flip:.1%}\n({bias:+.0%} {direction_text})",
+                ha="center", fontsize=9, bbox=dict(boxstyle="round,pad=0.3", facecolor="wheat", alpha=0.5))
+
+    plt.tight_layout()
+    plt.savefig(output_dir / "figures" / "comparison_decision_flip.png", dpi=150, bbox_inches="tight")
+    plt.close()
+    logger.info(f"Saved decision flip comparison plot to {output_dir / 'figures' / 'comparison_decision_flip.png'}")
+
+
+def generate_summary_table(canonical_runs: List[str], output_dir: Path) -> pd.DataFrame:
+    """
+    Generate provider summary table from canonical runs.
+    """
+    rows = []
+    for run_id in canonical_runs:
+        # Load CSVs
+        flip_csv = Path(f"results/runs/{run_id}/analysis/flip_rates.csv")
+        decision_csv = Path(f"results/runs/{run_id}/analysis/decision_analysis.csv")
+
+        if not flip_csv.exists() or not decision_csv.exists():
+            continue
+
+        flip_df = pd.read_csv(flip_csv)
+        decision_df = pd.read_csv(decision_csv)
+
+        # Extract provider/model
+        provider = run_id.replace("canonical_", "").split("_")[0].capitalize()
+        model_map = {
+            "openai": "gpt-4o",
+            "anthropic": "claude-sonnet-4",
+            "google": "gemini-2.0-flash"
+        }
+        model = model_map.get(provider.lower(), "unknown")
+
+        # Overall dimension flip rate
+        overall_flip = flip_df[flip_df["group_type"] == "overall"].iloc[0]
+
+        # Decision metrics
+        decision_flip = decision_df[
+            (decision_df["metric"] == "flip_rate") &
+            (decision_df["group_type"] == "overall")
+        ].iloc[0]
+
+        decision_dir = decision_df[
+            (decision_df["metric"] == "direction") &
+            (decision_df["group_type"] == "overall")
+        ].iloc[0]
+
+        # Most variable/stable variants (excluding T8)
+        variants = flip_df[
+            (flip_df["group_type"] == "variant") &
+            (flip_df["group_id"] != "T8_small_text")
+        ]
+        if len(variants) > 0:
+            most_variable = variants.loc[variants["flip_rate"].idxmax()]
+            most_stable = variants.loc[variants["flip_rate"].idxmin()]
+        else:
+            continue
+
+        rows.append({
+            "Provider": provider,
+            "Model": model,
+            "Dimension Flip Rate": f"{overall_flip['flip_rate']:.1%} [{overall_flip['ci_low']:.1%}, {overall_flip['ci_high']:.1%}]",
+            "Decision Flip Rate": f"{decision_flip['value']:.1%} [{decision_flip['ci_low']:.1%}, {decision_flip['ci_high']:.1%}]",
+            "Decision Direction": f"{decision_dir['value']:+.1%} ({'Less likely to escalate' if decision_dir['value'] < -0.5 else 'More likely to escalate' if decision_dir['value'] > 0.5 else 'Mixed'})",
+            "Most Variable": f"{most_variable['group_id']} ({most_variable['flip_rate']:.1%})",
+            "Most Stable": f"{most_stable['group_id']} ({most_stable['flip_rate']:.1%})"
+        })
+
+    df = pd.DataFrame(rows)
+    df.to_csv(output_dir / "summary_table.csv", index=False)
+    logger.info(f"Saved summary table to {output_dir / 'summary_table.csv'}")
+    return df
+
+
 def plot_multi_provider_quadrant_scatter(
     all_results: pd.DataFrame,
     output_path: Path,
@@ -791,6 +948,11 @@ def run_comparison_analysis(
         all_results,
         figures_dir / "quadrant_scatter_multi_provider.png",
     )
+
+    # Decision flip comparison (new)
+    if run_ids is not None:
+        plot_decision_flip_comparison(run_ids, output_dir)
+        generate_summary_table(run_ids, output_dir)
 
     # Generate summary report
     summary_lines = [

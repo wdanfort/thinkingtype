@@ -1,0 +1,4 @@
+Provider,Model,Dimension Flip Rate,Decision Flip Rate,Decision Direction,Most Variable,Most Stable
+Openai,gpt-4o,"22.2% [19.0%, 25.1%]","20.8% [10.4%, 31.0%]",-73.3% (Less likely to escalate),A1_opendyslexic_regular (28.4%),T2_times_bold (19.7%)
+Anthropic,claude-sonnet-4,"15.7% [13.4%, 18.1%]","4.9% [0.0%, 8.3%]",+0.0% (Mixed),T5_arial_all_caps (23.6%),A1_opendyslexic_regular (13.9%)
+Google,gemini-2.0-flash,"16.5% [14.8%, 18.2%]","11.1% [4.2%, 19.0%]",-100.0% (Less likely to escalate),T7_comic (21.9%),T6_monospace (14.4%)

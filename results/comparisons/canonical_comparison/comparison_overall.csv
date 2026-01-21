@@ -1,0 +1,4 @@
+run_id,provider,model,temperature,mode,overall_flip_rate,n_comparisons
+run_20260116_144444,anthropic,claude-sonnet-4-20250514,0.0,dimensions,0.1465167135270228,3201
+run_20260117_164819,google,models/gemini-2.0-flash,0.0,dimensions,0.15712682379349047,3564
+run_20260115_222423,openai,gpt-4o,0.0,dimensions,0.21785513756316677,3562

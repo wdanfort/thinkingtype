@@ -1,17 +1,17 @@
 {
-  "run_id": "run_20260117_164819",
+  "run_id": "canonical_google_gemini2_flash",
   "provider": "google",
   "model": "models/gemini-2.0-flash",
-  "timestamp": "2026-01-20T13:51:00.123261",
+  "timestamp": "2026-01-21T12:50:06.058528",
   "dimension_analysis": {
-    "overall_flip_rate": 0.1617283950617284,
+    "overall_flip_rate": 0.16527777777777777,
     "overall_ci": [
-      0.14490651709401708,
-      0.1782828282828283
+      0.14821428571428572,
+      0.18229403409090908
     ],
-    "n_comparisons": 3240,
+    "n_comparisons": 2880,
     "top_flipping_dimension": "trustworthy",
-    "top_flipping_dimension_rate": 0.48148148148148145,
+    "top_flipping_dimension_rate": 0.4861111111111111,
     "top_flipping_variant": "T7_comic",
     "top_flipping_variant_rate": 0.21944444444444444
   },
@@ -21,13 +21,13 @@
       0.041666666666666664,
       0.19047619047619047
     ],
-    "n_decisions": 324,
+    "n_decisions": 288,
     "direction_net_bias": -1.0,
     "direction_interpretation": "Vision less likely to escalate"
   },
   "key_correlations": {
     "trustworthy_decision_lift": 0.0,
-    "confident_decision_lift": 2.8616677440206852,
+    "confident_decision_lift": 3.1755593803786573,
     "emotional_decision_lift": 0.0
   }
 }

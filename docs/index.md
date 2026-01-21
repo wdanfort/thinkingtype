@@ -1,19 +1,55 @@
-# thinkingtype
-
+# t | h | i | n | k | i | n | g | t | y | p | e
+---
 ## Typography Changes How AI Judges Identical Text
 
-*A controlled diagnostic evaluation of how visual presentation influences interpretation in vision-language models. Disclaimer: This is independent research conducted on my own time. The views expressed here are my own and do not represent those of my employer.*
+A controlled diagnostic evaluation of how visual presentation influences interpretation in vision-language models. 
 
-**TL;DR: Vision models judge identical text differently than text-only pipelines (~20% of binary judgments flip). Typography systematically influences the direction of those flips. In a small, controlled eval, this shifted borderline cases away from human review recommendations suggesting underexplored UI and pipeline design implications.** 
+Disclaimer: This is independent research conducted on my own time. The views expressed here are my own and do not represent those of my employer.
+
+**TL;DR: Vision models judge identical text differently than text-only pipelines (~20% of binary judgments flip). Typography systematically influences the direction and magnitude of those flips. In a small, controlled eval, this shifted borderline cases away from human review recommendations suggesting underexplored UI and pipeline design implications.**
 
 ---
 
 ## Motivation
 
-I recently read *Thinking with Type* and was struck by how text font, weight, and emphasis shape how humans interpret the same words (and how these choices are shaped by the ideas and technology of the day). As more systems rely on vision-language models to read documents, I wanted to understand how those same typographic signals are interpreted. Not rhetorically, but operationally: do they change judgments when the underlying text is identical? This project is a small, controlled evaluation designed to explore the vision-text model divergence and implications for product design. 
+I recently read *Thinking with Type* and was struck by how text font, weight, and emphasis shape how humans interpret the same words (and how these choices are shaped by the ideas and technology of the day). As more systems rely on vision-language models to read documents, I wanted to understand how those same typographic signals are interpreted: do they change judgments when the underlying text is identical? How should we think about burgeoning vulnerabilities and opportunities for UI/UX? This project is a small, controlled evaluation designed to explore the vision-text model divergence and implications for product design. 
+
 ---
 
-## What I Found
+## What I Did
+
+I built a controlled diagnostic evaluation harness to isolate presentation effects:
+
+- **36 synthetic sentences** across 6 semantic categories (neutral, authority, warnings, calls-to-action, promotional, procedural)
+- **8 typography variants** (Times regular/bold, Arial regular/bold/ALL CAPS, Comic Sans, Monospace, OpenDyslexic)
+- **3 providers** (OpenAI gpt-4o, Anthropic claude-sonnet-4, Google gemini-2.0-flash)
+- **10 binary interpretation dimensions** (trustworthy, professional, formal, urgent, persuasive, etc.)
+- **1 downstream decision task** ("Should this be escalated to a human reviewer?")
+- **Temperature = 0.0** for reproducibility (I also ran this at 0.3 for robustness)
+
+A **flip** = the vision model's YES/NO answer differs from the text model's answer on identical text content.
+
+**Total comparisons:** ~9,000 dimension judgments + ~1,000 decision judgments across providers
+
+This is sentence-level only. I have not yet tested whether these patterns hold for full documents. Development executed almost exclusively with Claude Code. 
+
+→ [Code and results](https://github.com/wdanfort/thinkingtype) | 
+
+
+## What I Found (V0 - 1/21/26)
+
+
+### Key Findings Summary
+
+| Provider | Model | Dimension Flip Rate | Decision Flip Rate | Decision Direction | Most Variable | Most Stable |
+|----------|-------|:-------------------:|:------------------:|:-------------------|:--------------|:------------|
+| OpenAI | gpt-4o | 22.2% [19.0%, 25.1%] | 20.8% [10.4%, 31.0%] | -73.3% (Less likely to escalate) | OpenDyslexic (28.4%) | Times Bold (19.7%) |
+| Anthropic | claude-sonnet-4 | 15.7% [13.4%, 18.1%] | 4.9% [0.0%, 8.3%] | +0.0% (Mixed) | Arial ALL CAPS (23.6%) | OpenDyslexic (13.9%) |
+| Google | gemini-2.0-flash | 16.5% [14.8%, 18.2%] | 11.1% [4.2%, 19.0%] | -100.0% (Less likely to escalate) | Comic Sans (21.9%) | Monospace (14.4%) |
+
+*Flip rates show vision-text disagreement. Decision direction shows net bias when disagreements occur (negative = vision less likely to escalate). Small text variant excluded from analysis.*
+
+---
 
 ### 1. Vision pipelines diverge from text pipelines
 
@@ -53,20 +89,9 @@ Standard serif and sans-serif fonts produce the most stable behavior. Stylized f
 
 ### 3. Some dimensions are more affected than others
 
-Not all judgments are equally susceptible. Certain semantic dimensions show much higher flip rates.
+Not all judgments are equally susceptible. Certain semantic dimensions show much higher flip  (and differ between model providers).
 
 ![Flip rate by dimension](figures/comparison_by_dimension.png)
-
-| Dimension | Flip Rate | Interpretation |
-|-----------|----------:|----------------|
-| trustworthy | 50.1% | Highly unstable across modalities |
-| high_risk | 32.3% | Unstable |
-| confident | 24.4% | Moderate instability |
-| professional | 20.8% | Moderate instability |
-| formal | 16.1% | Moderate instability |
-| persuasive | 15.9% | Moderate instability |
-| urgent | 6.0% | Relatively stable |
-| emotional | 1.1% | Stable |
 
 Judgments about trustworthiness flip half the time between vision and text pipelines. Judgments about urgency or emotional tone are much more stable.
 
@@ -102,17 +127,20 @@ This inconsistency is itself a finding. You cannot assume that "vision mode" has
 
 Some typography variants systematically push judgments in one direction when flips occur.
 
-![Bias direction by variant](figures/direction_by_variant_openai.png)
+![Typography direction bias](figures/direction_bias_net_openai.png)
 
 | Variant | Net Bias | Interpretation |
 |---------|----------|----------------|
-| ALL CAPS | Toward YES | Amplifies affirmative judgments |
-| Times Bold | Toward YES | Amplifies affirmative judgments |
-| Comic Sans | Toward NO | Amplifies negative judgments |
-| OpenDyslexic | Toward NO | Amplifies negative judgments |
-| Times Regular | Neutral | Baseline |
+| Times Bold | -72% (toward NO) | Amplifies negative judgments |
+| Arial Regular | -75% (toward NO) | Amplifies negative judgments |
+| Times Regular | -67% (toward NO) | Amplifies negative judgments |
+| Arial Bold | -68% (toward NO) | Amplifies negative judgments |
+| Monospace | -78% (toward NO) | Amplifies negative judgments |
+| Comic Sans | -76% (toward NO) | Amplifies negative judgments |
+| OpenDyslexic | -78% (toward NO) | Amplifies negative judgments |
+| Arial ALL CAPS | -63% (toward NO) | Amplifies negative judgments |
 
-Fonts associated with informality (Comic Sans) or accessibility (OpenDyslexic) appear to bias vision systems toward harsher judgments. I don't have a good explanation for why.
+All typography variants show strong negative bias for OpenAI's vision pipeline—when vision and text disagree, vision almost always pushes toward harsher judgments. This is consistent across all font choices, though monospace and OpenDyslexic show the strongest negative bias.
 
 ---
 
@@ -120,54 +148,37 @@ Fonts associated with informality (Comic Sans) or accessibility (OpenDyslexic) a
 
 Beyond interpretation dimensions, I wanted to tease out real world implications. I tested a downstream **decision task**: "Should this be escalated to a human reviewer?"
 
-![Decision flip rate by provider](figures/comparison_overall.png)
+![Decision flip rate by provider](figures/comparison_decision_flip.png)
 
 | Provider | Decision Flip Rate | Direction |
 |----------|-------------------:|-----------|
-| OpenAI | 21.0% | 87% toward NO (don't escalate) |
+| OpenAI | 20.8% | 73% toward NO (don't escalate) |
 | Google | 11.1% | 100% toward NO |
-| Anthropic | 4.8% | Neutral (50/50) |
+| Anthropic | 4.9% | Neutral (0% bias) |
 
-**The punchline**: When vision and text pipelines disagree on a decision, vision almost always says "don't escalate" when text said "escalate."
+**The punchline**: When vision and text pipelines disagree on a decision, vision almost always says "don't escalate" when text said "escalate." This means: **vision mode makes borderline cases less likely to be flagged for human review**.
 
-This means: **vision mode makes borderline cases less likely to be flagged for human review**.
-
-For systems using vision models to triage documents—medical intake, fraud detection, content moderation—this directional bias could mean cases that text-based systems would escalate get quietly downgraded when processed visually.
+For systems using vision models to triage documents—medical intake, fraud detection, resumes, or content moderation—this directional bias could mean cases that text-based systems would escalate get quietly downgraded when processed visually.
 
 ### Which dimensions predict decision flips?
 
 When a dimension judgment flips, how much more likely is the decision to also flip?
 
-| Dimension | P(decision flips \| dimension flips) | Lift vs Baseline |
-|-----------|-------------------------------------|------------------|
-| professional | 22.1% | **2.2x** |
-| high_risk | 17.5% | 1.7x |
-| persuasive | 17.4% | 1.5x |
-| trustworthy | 13.4% | 1.1x |
-| *Baseline (dimension stable)* | *10-12%* | *1.0x* |
+![Dimension-decision lift](figures/dimension_decision_lift_openai.png)
 
-**Professional judgment is the leading indicator**. When vision mode changes whether something seems "professional," downstream decisions are twice as likely to change too.
+| Dimension | Lift vs Baseline | Interpretation |
+|-----------|------------------|----------------|
+| urgent | **5.3x** | Strong predictor of decision flips |
+| high_risk | 4.6x | Strong predictor of decision flips |
+| professional | 3.9x | Strong predictor of decision flips |
+| persuasive | 2.4x | Moderate predictor |
+| emotional | 1.6x | Moderate predictor |
+| formal | 0.6x | Weak/no effect |
+| confident | 0.4x | Weak/no effect |
+| trustworthy | 0.7x | Weak/no effect |
 
----
+**Urgent and high_risk judgments are the leading indicators**. When vision mode changes whether something seems "urgent" or "high risk," downstream decisions are 5x more likely to change too. Professional judgments also strongly predict decision flips (4x).
 
-## What I Did
-
-I built a controlled diagnostic evaluation to isolate presentation effects:
-
-- **36 sentences** across 6 semantic categories (neutral, authority, warnings, calls-to-action, promotional, procedural)
-- **9 typography variants** (Times, Arial, Comic Sans, Monospace, OpenDyslexic, bold, ALL CAPS, small text)
-- **3 providers** (OpenAI gpt-4o, Anthropic claude-sonnet-4, Google gemini-2.0-flash)
-- **10 binary interpretation dimensions** (trustworthy, professional, formal, urgent, persuasive, etc.)
-- **1 downstream decision task** ("Should this be escalated to a human reviewer?")
-- **Temperature = 0.0** for reproducibility (I also ran this at 0.3 for robustness)
-
-A **flip** = the vision model's YES/NO answer differs from the text model's answer on identical content.
-
-**Total comparisons:** ~9,000 dimension judgments + ~1,000 decision judgments across providers
-
-This is sentence-level only. I have not yet tested whether these patterns hold for full documents.
-
-→ [Methodology](docs/methodology.md) | [Code](https://github.com/wdanfort/thinkingtype) | [Raw Data](results/)
 
 ---
 
@@ -175,21 +186,17 @@ This is sentence-level only. I have not yet tested whether these patterns hold f
 
 ### For product teams
 
-If your system processes documents visually—resumes, forms, claims, medical records—typography is an implicit input to your model's judgments. The choice between text extraction and vision ingestion is not neutral.
+If your system processes documents visually—resumes, forms, claims, medical records—typography is an implicit input to your model's judgments. The choice between text extraction and vision ingestion is not neutral. **The decision finding is particularly relevant**: vision mode makes borderline cases less likely to be escalated. For triage systems (medical intake, fraud detection, support tickets), this could mean cases that warrant human review get quietly downgraded.
 
-**The decision finding is particularly relevant**: vision mode makes borderline cases less likely to be escalated. For triage systems (medical intake, fraud detection, support tickets), this could mean cases that warrant human review get quietly downgraded.
-
-### For people submitting documents to AI systems
+### For people submitting documents reviewed by AI systems (more and more of us!)
 
 Font choice may influence how AI evaluates your content. The effects aren't huge in aggregate, but for borderline cases they could matter. If your document is being processed visually by an AI system, standard fonts (Times, Arial) appear to produce more predictable behavior than stylized alternatives.
+
+OpenDyslexic consistently shows elevated flip rates and a bias toward negative judgments. If AI systems process OpenDyslexic-formatted documents more harshly, that's a potential fairness issue. I'd want more evidence before making strong claims, but it's worth flagging and a thread I want to keep pulling for later iterations.
 
 ### For robustness research
 
 Vision–text divergence on identical semantic content is a form of inconsistency worth tracking. The fact that direction varies by provider suggests different models have learned different associations with visual presentation.
-
-### A note on accessibility fonts
-
-OpenDyslexic consistently shows elevated flip rates and a bias toward negative judgments. This is uncomfortable: the font exists to help people with dyslexia read more easily. If AI systems process OpenDyslexic-formatted documents more harshly, that's a potential fairness issue. I'd want more evidence before making strong claims, but it's worth flagging.
 
 ---
 
@@ -197,15 +204,16 @@ OpenDyslexic consistently shows elevated flip rates and a bias toward negative j
 
 This is exploratory and generated within limited budget/time constraints. There are also experimental constraints, too: 
 
-- **Sentence-level only** — Effects may attenuate or compound in full documents. Different prompts may yield different results, too. 
-- **Synthetic content** — Sentences were designed to be ambiguous; real documents may differ
-- **Single temperature** — All canonical runs at t=0.0, although I also re-run earlier analyses with t=0.3 and found consistent findings. 
-- **Snapshot in time** — Models update; effects may change
-- **No causal mechanism** — I can describe patterns but not explain *why* Comic Sans triggers different responses
+- **Sentence-level only** — Effects may attenuate or compound in full documents. 
+- **Synthetic content** — Sentences were designed to be ambiguous and at the "border" for the tested categories. 
+- **Robustness** — All canonical runs at temperature=0.0, although I also re-run earlier analyses with t=0.3 and found consistent findings. Different prompts may yield different results, too. I plan to stress test this more in a v1 iteration with different prompts, dimension definitions. I am also comparing raw text to images of the text generated. Another confounder might be how I generated, cropped, and standardized image sizes. 
+- **No causal mechanism** — I can describe patterns but not explain *why* vision-text differ or why specific fonts drive a specific direction/magnitude.
 
 ---
 
 ## What's Next
+
+**Robustnesss**: I plan on testing variation on prompts, dimensionss/decision questions, and a broader range of artifacts to confirm these patterns hold. 
 
 **Realistic documents**: Testing resumes, medical triage notes, and benefits appeals to see if sentence-level patterns transfer to domain-specific decisions.
 

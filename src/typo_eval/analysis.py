@@ -29,7 +29,9 @@ from typo_eval.plots_streamlined import (
     plot_flip_by_variant,
     plot_direction_by_dimension,
     plot_direction_by_variant,
+    plot_direction_bias_net,
     plot_decision_flip,
+    plot_dimension_decision_lift,
 )
 
 logger = logging.getLogger(__name__)
@@ -948,12 +950,14 @@ def analyze_run(
     # Fig 3: Direction by dimension
     plot_direction_by_dimension(bias_direction, figures_dir / "fig3_direction_by_dimension.png")
 
-    # Fig 4: Direction by variant
-    plot_direction_by_variant(bias_direction, figures_dir / "fig4_direction_by_variant.png")
+    # Fig 4: Direction bias net (new visualization)
+    plot_direction_bias_net(bias_direction, figures_dir / "fig4_direction_bias_net.png")
 
     # Fig 5: Decision flip (if decision data exists)
     if len(paired_decision) > 0:
         plot_decision_flip(decision_analysis, provider, figures_dir / "fig5_decision_flip.png")
+        # Fig 6: Dimension-decision lift
+        plot_dimension_decision_lift(decision_analysis, figures_dir / "fig6_dimension_decision_lift.png")
 
     # === GENERATE SUMMARY.md ===
     generate_summary_md_streamlined(

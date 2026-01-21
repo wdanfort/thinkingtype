@@ -70,6 +70,9 @@ def plot_flip_by_variant(flip_rates: pd.DataFrame, output_path: Path) -> None:
     Color-code by variant bucket (font_family, emphasis, capitalization).
     """
     var_data = flip_rates[flip_rates["group_type"] == "variant"].copy()
+    # Filter out T8_small_text
+    var_data = var_data[var_data["group_id"] != "T8_small_text"].copy()
+
     if len(var_data) == 0:
         logger.warning("No variant data to plot")
         return
@@ -194,6 +197,9 @@ def plot_direction_by_variant(bias_direction: pd.DataFrame, output_path: Path) -
     Similar to dimension plot but for typography variants.
     """
     var_data = bias_direction[bias_direction["group_type"] == "variant"].copy()
+    # Filter out T8_small_text
+    var_data = var_data[var_data["group_id"] != "T8_small_text"].copy()
+
     if len(var_data) == 0:
         logger.warning("No variant direction data to plot")
         return
@@ -230,6 +236,51 @@ def plot_direction_by_variant(bias_direction: pd.DataFrame, output_path: Path) -
         fontweight="bold",
     )
     ax.legend(loc="lower right", fontsize=9)
+
+    # Add grid
+    ax.grid(axis="x", alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=150, bbox_inches="tight")
+    plt.close()
+    logger.info(f"Saved figure to {output_path}")
+
+
+def plot_direction_bias_net(bias_direction: pd.DataFrame, output_path: Path) -> None:
+    """
+    Figure 4 (new): Horizontal bar chart showing net direction bias by variant.
+    Center at 0%. Left = biased toward NO (coral), Right = biased toward YES (blue).
+    More interpretable than diverging bars when one direction dominates.
+    """
+    var_data = bias_direction[bias_direction["group_type"] == "variant"].copy()
+    # Filter out T8_small_text
+    var_data = var_data[var_data["group_id"] != "T8_small_text"].copy()
+
+    if len(var_data) == 0:
+        logger.warning("No variant direction data to plot")
+        return
+
+    var_data = var_data.sort_values("net_bias", ascending=True)
+
+    fig, ax = plt.subplots(figsize=(10, max(5, len(var_data) * 0.35)))
+
+    y_pos = np.arange(len(var_data))
+    colors = ["steelblue" if x > 0 else "coral" for x in var_data["net_bias"]]
+
+    ax.barh(y_pos, var_data["net_bias"], color=colors, alpha=0.8)
+    ax.axvline(x=0, color="black", linestyle="-", linewidth=0.8)
+
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(var_data["group_id"])
+    ax.set_xlabel("Net Direction Bias (%)", fontsize=11)
+    ax.set_title("Typography Direction Bias", fontsize=13, fontweight="bold")
+
+    # Add value labels
+    for i, (idx, row) in enumerate(var_data.iterrows()):
+        bias = row["net_bias"]
+        x_pos = bias + (2 if bias > 0 else -2)
+        ha = "left" if bias > 0 else "right"
+        ax.text(x_pos, i, f"{bias:+.0f}%", va="center", ha=ha, fontsize=9)
 
     # Add grid
     ax.grid(axis="x", alpha=0.3)
@@ -313,6 +364,50 @@ def plot_decision_flip(decision_analysis: pd.DataFrame, provider: str, output_pa
             fontsize=9,
             bbox=dict(boxstyle="round,pad=0.5", facecolor="wheat", alpha=0.5),
         )
+
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=150, bbox_inches="tight")
+    plt.close()
+    logger.info(f"Saved figure to {output_path}")
+
+
+def plot_dimension_decision_lift(decision_analysis: pd.DataFrame, output_path: Path) -> None:
+    """
+    Figure 6: Horizontal bar chart showing lift metrics.
+    Shows which dimensions most predict decision flips (lift > 1.0 = predictive).
+    """
+    lift_data = decision_analysis[
+        (decision_analysis["metric"] == "lift") &
+        (decision_analysis["group_type"] == "dimension")
+    ].copy()
+
+    if len(lift_data) == 0:
+        logger.warning("No lift data to plot")
+        return
+
+    lift_data = lift_data.sort_values("value", ascending=True)
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+
+    y_pos = np.arange(len(lift_data))
+    colors = ["steelblue" if x >= 1.0 else "lightgray" for x in lift_data["value"]]
+
+    ax.barh(y_pos, lift_data["value"], color=colors, alpha=0.8)
+    ax.axvline(x=1.0, color="black", linestyle="--", linewidth=1, label="Baseline (no effect)")
+
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(lift_data["group_id"])
+    ax.set_xlabel("Lift (Decision Flip Likelihood)", fontsize=11)
+    ax.set_title("Which Dimensions Predict Decision Flips?", fontsize=13, fontweight="bold")
+    ax.legend(loc="lower right", fontsize=9)
+
+    # Add value labels
+    for i, (idx, row) in enumerate(lift_data.iterrows()):
+        val = row["value"]
+        ax.text(val + 0.1, i, f"{val:.2f}x", va="center", fontsize=9)
+
+    # Add grid
+    ax.grid(axis="x", alpha=0.3)
 
     plt.tight_layout()
     plt.savefig(output_path, dpi=150, bbox_inches="tight")

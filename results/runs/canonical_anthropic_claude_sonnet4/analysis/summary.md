@@ -1,40 +1,40 @@
 # Typography Evaluation Analysis Summary
 
-**Run ID:** run_20260116_144444
+**Run ID:** canonical_anthropic_claude_sonnet4
 **Provider:** anthropic
 **Model:** claude-sonnet-4-20250514
 
 ## Dimension Analysis
 
-- **Overall Flip Rate:** 15.6% (95% CI: [13.4%, 18.0%])
-- **Total Comparisons:** 2910
-- **Top Flipping Dimension:** trustworthy (55.3%)
+- **Overall Flip Rate:** 15.7% (95% CI: [13.4%, 18.1%])
+- **Total Comparisons:** 2880
+- **Top Flipping Dimension:** trustworthy (55.6%)
 - **Top Flipping Variant:** T5_arial_all_caps (23.6%)
 
 ### Top Dimensions by Flip Rate
 
 | Dimension | Flip Rate | 95% CI | Total |
 |-----------|-----------|--------|-------|
-| trustworthy | 55.3% | [44.7%, 65.6%] | 291 |
-| high_risk | 43.6% | [32.7%, 55.1%] | 291 |
-| persuasive | 13.1% | [5.9%, 19.0%] | 291 |
-| professional | 13.1% | [5.4%, 19.4%] | 291 |
-| urgent | 12.4% | [6.5%, 17.4%] | 291 |
+| trustworthy | 55.6% | [45.0%, 65.8%] | 288 |
+| high_risk | 44.1% | [33.1%, 55.6%] | 288 |
+| persuasive | 12.8% | [5.6%, 18.8%] | 288 |
+| professional | 12.8% | [5.4%, 19.0%] | 288 |
+| urgent | 12.5% | [6.5%, 17.6%] | 288 |
 
 ### Direction Bias (Top Dimensions)
 
 | Dimension | Total Flips | NO→YES | YES→NO | Net Bias |
 |-----------|-------------|---------|---------|----------|
-| trustworthy | 161 | 0% | 100% | -100% |
+| trustworthy | 160 | 0% | 100% | -100% |
 | high_risk | 127 | 1% | 99% | -98% |
-| persuasive | 38 | 58% | 42% | +16% |
-| professional | 38 | 71% | 29% | +42% |
+| persuasive | 37 | 59% | 41% | +19% |
+| professional | 37 | 73% | 27% | +46% |
 | urgent | 36 | 100% | 0% | +100% |
 
 ## Decision Analysis
 
-- **Decision Flip Rate:** 4.8% (95% CI: [0.0%, 8.3%])
-- **Total Decisions:** 291
+- **Decision Flip Rate:** 4.9% (95% CI: [0.0%, 8.3%])
+- **Total Decisions:** 288
 - **Direction Net Bias:** +0.0%
 - **Interpretation:** None
 
@@ -42,8 +42,8 @@
 
 | Dimension | Lift |
 |-----------|------|
-| emotional | 22.54x |
-| persuasive | 1.82x |
+| emotional | 22.30x |
+| persuasive | 1.85x |
 | form_dependent | 0.00x |
 
 ## Output Files
