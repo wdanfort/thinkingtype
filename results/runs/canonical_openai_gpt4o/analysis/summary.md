@@ -1,71 +1,62 @@
-# Analysis Summary
+# Typography Evaluation Analysis Summary
 
-## Run Metadata
+**Run ID:** run_20260115_222423
+**Provider:** openai
+**Model:** gpt-4o
 
-- **Run ID**: run_20260115_222423
-- **Total responses**: 3564
-- **Paired comparisons**: 2878
-- **Inference mode**: both
-- **Temperature**: 0.0
+## Dimension Analysis
 
-## Headline Results
+- **Overall Flip Rate:** 21.9% (95% CI: [18.7%, 24.8%])
+- **Total Comparisons:** 3238
+- **Top Flipping Dimension:** trustworthy (47.2%)
+- **Top Flipping Variant:** A1_opendyslexic_regular (28.4%)
 
-- **Overall flip rate**: 0.218 (95% CI: [0.188, 0.247], n=2878.0)
+### Top Dimensions by Flip Rate
 
-- **Overall approval rate (image)**: 0.281 (95% CI: [0.252, 0.311], n=2878.0)
+| Dimension | Flip Rate | 95% CI | Total |
+|-----------|-----------|--------|-------|
+| trustworthy | 47.2% | [36.0%, 57.8%] | 324 |
+| high_risk | 43.3% | [32.1%, 54.6%] | 323 |
+| confident | 35.2% | [25.0%, 45.0%] | 324 |
+| professional | 30.3% | [18.5%, 40.9%] | 323 |
+| formal | 27.2% | [20.9%, 32.8%] | 324 |
 
-- **Approval rate (OCR baseline)**: 0.442
-- **Approval rate (Image variants)**: 0.281
+### Direction Bias (Top Dimensions)
 
-### Flip Directionality
+| Dimension | Total Flips | NO→YES | YES→NO | Net Bias |
+|-----------|-------------|---------|---------|----------|
+| trustworthy | 153 | 0% | 100% | -100% |
+| high_risk | 140 | 0% | 100% | -100% |
+| confident | 114 | 23% | 77% | -54% |
+| professional | 98 | 0% | 100% | -100% |
+| formal | 88 | 0% | 100% | -100% |
 
-- **NO→YES**: 83 flips (13.2%)
-- **YES→NO**: 545 flips (86.8%)
+## Decision Analysis
 
-## Top Variants by Flip Rate
+- **Decision Flip Rate:** 21.0% (95% CI: [10.5%, 31.2%])
+- **Total Decisions:** 324
+- **Direction Net Bias:** -73.5%
+- **Interpretation:** Vision less likely to escalate
 
-- **A1_opendyslexic_regular**: 0.284
-- **T7_comic**: 0.256
-- **T5_arial_all_caps**: 0.225
-- **T4_arial_bold**: 0.206
-- **T6_monospace**: 0.197
-- **T1_times_regular**: 0.195
-- **T3_arial_regular**: 0.192
-- **T2_times_bold**: 0.192
+### Key Dimension-Decision Correlations
 
-## Top Variants by Approval Rate (Image)
+| Dimension | Lift |
+|-----------|------|
+| high_risk | 4.62x |
+| professional | 3.86x |
+| urgent | 5.34x |
 
-- **T1_times_regular**: 0.306 (OCR: 0.440)
-- **T2_times_bold**: 0.300 (OCR: 0.442)
-- **T5_arial_all_caps**: 0.300 (OCR: 0.442)
-- **T4_arial_bold**: 0.297 (OCR: 0.442)
-- **T3_arial_regular**: 0.294 (OCR: 0.442)
-- **T6_monospace**: 0.283 (OCR: 0.442)
-- **T7_comic**: 0.247 (OCR: 0.442)
-- **A1_opendyslexic_regular**: 0.220 (OCR: 0.443)
+## Output Files
 
-## Top Boundary Sentences
+**CSVs:**
+- `flip_rates.csv` - Flip rates by dimension and variant with bootstrap CIs
+- `bias_direction.csv` - Direction bias (NO→YES vs YES→NO)
+- `decision_analysis.csv` - Decision-specific metrics and correlations
+- `headline_metrics.json` - Key metrics for programmatic access
 
-- Sentence 8: 0.613
-- Sentence 20: 0.438
-- Sentence 22: 0.362
-- Sentence 7: 0.362
-- Sentence 13: 0.312
-- Sentence 15: 0.312
-- Sentence 32: 0.312
-- Sentence 6: 0.312
-- Sentence 27: 0.300
-- Sentence 10: 0.278
-
-## Figures
-
-### Flip Rates
-- [Flip Rate by Variant](figures/flip_rate_by_variant.png)
-- [Heatmap: Sentence x Variant](figures/heatmap_sentence_variant.png)
-
-### Approval Rates
-- [Approval Rate by Variant](figures/approval_rate_by_variant.png)
-- [Approval Rate by Dimension](figures/approval_rate_by_dimension.png)
-
-### Flip Directionality
-- [Directionality Heatmap](figures/bias_direction_heatmap.png)
+**Figures:**
+- `fig1_flip_by_dimension.png` - Flip rates by dimension
+- `fig2_flip_by_variant.png` - Flip rates by typography variant
+- `fig3_direction_by_dimension.png` - Direction bias by dimension
+- `fig4_direction_by_variant.png` - Direction bias by variant
+- `fig5_decision_flip.png` - Decision flip rate and direction

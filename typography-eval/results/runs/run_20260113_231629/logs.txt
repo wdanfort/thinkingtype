@@ -1,0 +1,10 @@
+2026-01-13 15:16:29,929 [INFO] Starting inference run: run_20260113_231629
+2026-01-13 15:16:29,999 [INFO] Loaded 0 existing records for resume
+2026-01-13 17:29:51,681 [INFO] Completed 3960 calls, skipped 0 (already done)
+2026-01-13 17:29:51,803 [INFO] Inference complete. Results saved to /Users/wdanforth/Desktop/thinkingtype/typography-eval/results/runs/run_20260113_231629
+2026-01-13 17:29:54,571 [INFO] Using most recent run: run_20260113_231629
+2026-01-13 17:29:54,574 [INFO] Analyzing run: run_20260113_231629
+2026-01-13 17:29:54,631 [INFO] Loaded 3960 results from /Users/wdanforth/Desktop/thinkingtype/typography-eval/results/runs/run_20260113_231629/raw/responses.jsonl
+2026-01-13 17:30:00,409 [INFO] Analysis written to /Users/wdanforth/Desktop/thinkingtype/typography-eval/results/runs/run_20260113_231629/analysis
+2026-01-13 17:30:00,411 [INFO] Analysis complete. Results saved to /Users/wdanforth/Desktop/thinkingtype/typography-eval/results/runs/run_20260113_231629/analysis
+2026-01-13 17:30:00,412 [INFO] Full pipeline complete.

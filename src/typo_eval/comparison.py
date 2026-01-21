@@ -309,7 +309,7 @@ def compare_approval_rates(
         - provider
         - model
         - variant_id
-        - approval_rate_ocr
+        - approval_rate_text
         - approval_rate_image
         - n
     """
@@ -343,7 +343,7 @@ def compare_approval_rates(
                         "provider": provider,
                         "model": model,
                         "variant_id": row["variant_id"],
-                        "approval_rate_ocr": row["approval_rate_ocr"],
+                        "approval_rate_text": row["approval_rate_text"],
                         "approval_rate_image": row["approval_rate_image"],
                         "n": row["n"],
                     })
@@ -518,7 +518,7 @@ def plot_approval_rate_comparison(
 
     # Aggregate by provider
     provider_agg = approval_df.groupby("provider").agg({
-        "approval_rate_ocr": "mean",
+        "approval_rate_text": "mean",
         "approval_rate_image": "mean",
     }).reset_index()
 
@@ -526,7 +526,7 @@ def plot_approval_rate_comparison(
     x = np.arange(len(provider_agg))
     width = 0.35
 
-    plt.bar(x - width/2, provider_agg["approval_rate_ocr"], width, label="OCR Baseline", color="steelblue")
+    plt.bar(x - width/2, provider_agg["approval_rate_text"], width, label="Text Baseline", color="steelblue")
     plt.bar(x + width/2, provider_agg["approval_rate_image"], width, label="Image Variant", color="darkorange")
 
     plt.xticks(x, provider_agg["provider"])
@@ -576,6 +576,124 @@ def plot_directionality_comparison(
     logger.info(f"Saved directionality comparison plot to {output_path}")
 
 
+def plot_multi_provider_quadrant_scatter(
+    all_results: pd.DataFrame,
+    output_path: Path,
+    title: str = "Typography Influence: Dimension vs Decision (All Providers)",
+) -> None:
+    """
+    Plot quadrant scatter with all providers in one chart.
+
+    Each dot represents one typography variant × one dimension × one provider.
+    Different colors for different providers.
+
+    X-axis: Dimension directionality (ΔYES_rate for that dimension: image − text)
+    Y-axis: Decision directionality (ΔYES_rate for decision: image − text)
+    """
+    if len(all_results) == 0:
+        logger.warning("No data to plot")
+        return
+
+    scatter_data = []
+
+    # Process each run
+    for run_id in all_results["run_id"].unique():
+        run_results = all_results[all_results["run_id"] == run_id]
+
+        # Build paired data for this run
+        try:
+            paired = build_delta_table(run_results)
+        except Exception as exc:
+            logger.warning(f"Failed to build paired data for run {run_id}: {exc}")
+            continue
+
+        # Separate dimensions and decision data
+        dims_paired = paired[paired["dimension_id"].notna()].copy()
+        decision_paired = paired[paired["dimension_id"].isna()].copy()
+
+        if len(dims_paired) == 0 or len(decision_paired) == 0:
+            logger.warning(f"Insufficient data for run {run_id}")
+            continue
+
+        # Calculate dimension directionality
+        dims_directionality = (
+            dims_paired.groupby(["variant_id", "dimension_id"])
+            .agg(dimension_delta=("delta", "mean"))
+            .reset_index()
+        )
+
+        # Calculate decision directionality
+        decision_directionality = (
+            decision_paired.groupby("variant_id")
+            .agg(decision_delta=("delta", "mean"))
+            .reset_index()
+        )
+
+        # Merge and add metadata
+        merged = dims_directionality.merge(
+            decision_directionality[["variant_id", "decision_delta"]],
+            on="variant_id",
+            how="inner",
+        )
+
+        if len(merged) > 0:
+            # Extract provider and model from run results
+            first_record = run_results.iloc[0]
+            provider = first_record.get("provider", "unknown")
+            model = first_record.get("model", "unknown")
+
+            merged["provider"] = provider
+            merged["model"] = model
+            merged["run_id"] = run_id
+
+            scatter_data.append(merged)
+
+    if len(scatter_data) == 0:
+        logger.warning("No scatter data to plot")
+        return
+
+    scatter_df = pd.concat(scatter_data, ignore_index=True)
+
+    # Create scatter plot
+    plt.figure(figsize=(12, 9))
+
+    # Color palette for providers
+    providers = scatter_df["provider"].unique()
+    palette = sns.color_palette("tab10", n_colors=len(providers))
+    provider_colors = dict(zip(providers, palette))
+
+    for provider in providers:
+        provider_data = scatter_df[scatter_df["provider"] == provider]
+        plt.scatter(
+            provider_data["dimension_delta"],
+            provider_data["decision_delta"],
+            alpha=0.6,
+            s=50,
+            c=[provider_colors[provider]],
+            label=provider,
+        )
+
+    # Add quadrant lines at 0
+    plt.axhline(0, color="black", linewidth=0.8, linestyle="--", alpha=0.5)
+    plt.axvline(0, color="black", linewidth=0.8, linestyle="--", alpha=0.5)
+
+    # Labels
+    plt.xlabel("Dimension Directionality\n(Δ Approval Rate: Image − Text)", fontsize=11)
+    plt.ylabel("Decision Directionality\n(Δ Approval Rate: Image − Text)", fontsize=11)
+    plt.title(title, fontsize=12, fontweight="bold")
+
+    # Add legend
+    plt.legend(title="Provider", loc="best", fontsize=10)
+
+    # Add grid
+    plt.grid(alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=200)
+    plt.close()
+    logger.info(f"Saved multi-provider quadrant scatter plot to {output_path}")
+
+
 def run_comparison_analysis(
     output_dir: Path,
     run_ids: Optional[List[str]] = None,
@@ -594,6 +712,9 @@ def run_comparison_analysis(
     figures_dir.mkdir(exist_ok=True)
 
     logger.info("Running cross-run comparison analysis...")
+
+    # Load all results for multi-provider visualizations
+    all_results = load_all_runs(run_ids, provider_filter, model_filter, results_dir)
 
     # Overall comparison
     overall_comparison = compare_flip_rates(
@@ -664,6 +785,12 @@ def run_comparison_analysis(
             directionality_comparison,
             figures_dir / "comparison_directionality.png",
         )
+
+    # Multi-provider quadrant scatter plot
+    plot_multi_provider_quadrant_scatter(
+        all_results,
+        figures_dir / "quadrant_scatter_multi_provider.png",
+    )
 
     # Generate summary report
     summary_lines = [
