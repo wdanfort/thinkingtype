@@ -1,8 +1,8 @@
 # t | h | i | n | k | i | n | g | t | y | p | e
 
-## Vision-language models input text differently than LLMs.
+## Vision-language models "read" text differently than LLMs.
 
-A small, controlled test of how visual presentation changes the way VLMs handle text.
+A small, controlled test of how visual presentation changes the way VLMs "read" text.
 
 Disclaimer: This is independent research conducted on my own time. The views expressed here are my own and do not represent those of my employer.
 
@@ -10,7 +10,7 @@ Disclaimer: This is independent research conducted on my own time. The views exp
 
 ## Motivation
 
-I recently read *Thinking with Type* and was struck by how font, weight, and emphasis shape the way humans interpret the same words (and how those choices are themselves shaped by the ideas and tools of the day). More and more systems hand documents to VLMs as input, so I wanted to know: do those same typographic cues change the model's judgments when the underlying text is identical? What does that mean for product design, and for risk?
+I recently read *Thinking with Type* and was struck by how font, weight, and emphasis shape the way humans interpret the same words (and how those choices are themselves shaped by the ideas and tools of the day). More and more systems have VLMs "read" documents directly, so I wanted to know: do those same typographic cues change the model's judgments when the underlying text is identical? What does that mean for product design, and for risk?
 
 ## What I Did
 
@@ -48,13 +48,13 @@ This is sentence-level only. I have not tested whether these patterns hold for f
 
 > **The main finding**
 >
-> Borderline cases are less likely to reach a human reviewer when the input is an image. The size of the effect depends on the provider.
+> Borderline cases are less likely to reach a human reviewer when a VLM "reads" them as images. The size of the effect depends on the provider.
 >
 > When an LLM and VLM disagree on whether to send a case to a human, the disagreement almost always lands on the "don't send" side: 73 percent for OpenAI, 100 percent for Google, and roughly even for Anthropic. For automated triage in medical intake, fraud detection, resumes, or content moderation, that means cases a text-only LLM pipeline would flag may get quietly dropped by an otherwise-similar VLM pipeline. Detail in Finding 2 below; sample size is small, see Limitations.
 
 ### 1. LLMs and VLMs disagree on the same content
 
-The same sentence given to a model as an **image** instead of **plain text** produces different judgments, before font choice enters the picture at all. This is the baseline gap from visual input alone, not a font effect.
+The same sentence given to a model as an **image** instead of **plain text** produces different judgments, before font choice enters the picture at all. This is the baseline gap from how the VLM "reads" an image versus how the LLM reads plain text, not a font effect.
 
 Across three providers, **16 to 22 percent of yes/no judgments flip** between the LLM and the VLM on the same content. That is the average across 10 dimensions; some dimensions move much more than others (see Finding 4).
 
@@ -78,7 +78,7 @@ Beyond yes/no dimensions, I asked a downstream **decision question**: "Should th
 | Google | 11.1% | 100% toward NO |
 | Anthropic | 4.9% | Roughly even (0% lean) |
 
-When the LLM and VLM disagree on whether to send a case to a human, OpenAI and Google almost always land on the "don't send" side. Anthropic is roughly even. In practice, borderline cases are less likely to reach a human when the input is an image. The size of the effect depends on the provider.
+When the LLM and VLM disagree on whether to send a case to a human, OpenAI and Google almost always land on the "don't send" side. Anthropic is roughly even. In practice, borderline cases are less likely to reach a human when a VLM "reads" them rather than an LLM. The size of the effect depends on the provider.
 
 For systems that use VLMs to triage documents (medical intake, fraud detection, resumes, content moderation), cases the text-only LLM pipeline would send to a human may quietly get dropped on the VLM side. Sample size on the decision question is small (see Limitations), so take the exact numbers as suggestive rather than precise.
 
@@ -104,7 +104,7 @@ Not all judgments shift equally. A few dimensions flip much more often than the 
 
 ![Flip rate by dimension](figures/comparison_by_dimension.png)
 
-Judgments about **trustworthiness flip about half the time** between LLM and VLM input. This is the most volatile of the 10 dimensions, and the source of the "about 50 percent" figure people sometimes quote. Judgments about urgency and emotional tone are much more stable. The 16 to 22 percent headline number is the average across all 10 dimensions, so the picture is more spread out per dimension than the average suggests.
+Judgments about **trustworthiness flip about half the time** between an LLM and a VLM "reading" the same content. This is the most volatile of the 10 dimensions, and the source of the "about 50 percent" figure people sometimes quote. Judgments about urgency and emotional tone are much more stable. The 16 to 22 percent headline number is the average across all 10 dimensions, so the picture is more spread out per dimension than the average suggests.
 
 ### 5. When the LLM and VLM disagree, the disagreement has a direction
 
@@ -121,14 +121,14 @@ When the LLM and VLM disagree, the disagreement is often systematic, but **the d
 | high_risk | VLM → LESS | VLM → LESS | Neutral |
 
 **What providers agree on:**
-- Persuasive: VLM input makes content seem MORE persuasive (75 to 93 percent of flips)
-- Formal: VLM input makes content seem LESS formal (90 to 100 percent of flips)
+- Persuasive: a VLM "reads" the same content as MORE persuasive than an LLM does (75 to 93 percent of flips)
+- Formal: a VLM "reads" the same content as LESS formal than an LLM does (90 to 100 percent of flips)
 
 **What providers disagree on:**
-- Trustworthy: OpenAI and Anthropic say VLM input = less trustworthy. Google says more trustworthy.
-- Professional: OpenAI and Google say VLM input = less professional. Anthropic says more professional.
+- Trustworthy: OpenAI and Anthropic VLMs "read" content as less trustworthy than their LLMs do. Google's VLM "reads" it as more trustworthy.
+- Professional: OpenAI and Google VLMs "read" content as less professional. Anthropic's VLM "reads" it as more professional.
 
-That inconsistency is itself a finding. There is no single direction that VLM input pushes in. It depends on the model.
+That inconsistency is itself a finding. There is no single direction VLMs push in. It depends on the model.
 
 ### 6. Font choice also has a direction
 
@@ -166,17 +166,17 @@ When a dimension judgment flips, how much more likely is the "send to a human?" 
 | confident | 0.4x | Weak or no effect |
 | trustworthy | 0.7x | Weak or no effect |
 
-**Urgent and high_risk are the leading indicators.** When VLM input changes whether something looks "urgent" or "high risk," the downstream decision is about 5 times more likely to change too. Professional judgments also strongly predict decision flips (about 4 times). One thing worth flagging: trustworthiness, the most volatile dimension, is *not* a strong predictor of decision flips. That is part of why the headline "about 50 percent" trustworthiness figure can mislead about the practical stakes.
+**Urgent and high_risk are the leading indicators.** When a VLM "reads" the content and changes whether something looks "urgent" or "high risk," the downstream decision is about 5 times more likely to change too. Professional judgments also strongly predict decision flips (about 4 times). One thing worth flagging: trustworthiness, the most volatile dimension, is *not* a strong predictor of decision flips. That is part of why the headline "about 50 percent" trustworthiness figure can mislead about the practical stakes.
 
 ## Why This Might Matter
 
 ### For product teams
 
-If your system takes documents as image input (resumes, forms, claims, medical records), typography is an unspoken input to the model's judgments. **The decision finding is the one to watch**: VLM input makes borderline cases less likely to be sent to a human. For triage systems (medical intake, fraud detection, support tickets), that means cases that warrant a human look may get quietly dropped.
+If your system has VLMs "read" documents directly (resumes, forms, claims, medical records), typography is an unspoken input to the model's judgments. **The decision finding is the one to watch**: when a VLM "reads" a case, it is less likely to be sent to a human than when an LLM "reads" the same content as text. For triage systems (medical intake, fraud detection, support tickets), that means cases that warrant a human look may get quietly dropped.
 
-### For people submitting documents that VLMs handle (more and more of us)
+### For people submitting documents that VLMs "read" (more and more of us)
 
-Font choice can change how a VLM scores your content. The average effect is small, but it can matter for borderline cases. If your document goes to a VLM as an image, standard fonts like Times and Arial seem to produce more predictable behavior than stylized fonts.
+Font choice can change how a VLM scores your content. The average effect is small, but it can matter for borderline cases. If your document is going to a VLM as an image, standard fonts like Times and Arial seem to produce more predictable behavior than stylized fonts.
 
 OpenDyslexic shows higher flip rates and a lean toward harsher judgments. If VLMs score OpenDyslexic-formatted documents more harshly, that is a possible fairness issue. I want more evidence before making strong claims, but it is worth flagging, and a thread I want to keep pulling on.
 
@@ -214,7 +214,7 @@ This is exploratory and was built within a small time and budget. A few specific
 
 **Tracking over time.** Build toward an eval that watches the LLM/VLM gap as models update.
 
-**Design rules for VLM-facing content.** VLMs are now part of agent browsing and document processing pipelines. There may be value in developing design literacy for content that goes to a VLM as input, so we know what signals are actually getting picked up.
+**Design rules for VLM-facing content.** VLMs are now part of agent browsing and document processing pipelines. There may be value in developing design literacy for content a VLM is going to "read," so we know what signals are actually getting picked up.
 
 ---
 
@@ -231,7 +231,7 @@ This is early. I'd love any feedback or suggestions for future directions.
 ```bibtex
 @misc{danforth2026typography,
   author = {Danforth, Will},
-  title = {thinkingtype: Vision-language models input text differently than LLMs},
+  title = {thinkingtype: Vision-language models "read" text differently than LLMs},
   year = {2026},
   url = {https://github.com/wdanfort/thinkingtype}
 }

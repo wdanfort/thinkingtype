@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ThinkingType: vision-language models input text differently than LLMs</title>
+  <title>ThinkingType: vision-language models &ldquo;read&rdquo; text differently than LLMs</title>
   <meta name="description" content="VLMs flag fewer borderline cases for human review than text LLMs alone. Font choice seems to matter, too. A small, controlled test across three providers." />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Vision-language models input text differently than LLMs" />
+  <meta property="og:title" content="Vision-language models &ldquo;read&rdquo; text differently than LLMs" />
   <meta property="og:description" content="VLMs flag fewer borderline cases for human review than text LLMs alone. Font choice seems to matter, too." />
   <meta property="og:image" content="https://wdanfort.github.io/thinkingtype/figures/comparison_decision_flip.png" />
   <meta property="og:url" content="https://wdanfort.github.io/thinkingtype/" />
@@ -16,7 +16,7 @@
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Vision-language models input text differently than LLMs" />
+  <meta name="twitter:title" content="Vision-language models &ldquo;read&rdquo; text differently than LLMs" />
   <meta name="twitter:description" content="VLMs flag fewer borderline cases for human review than text LLMs alone. Font choice seems to matter, too." />
   <meta name="twitter:image" content="https://wdanfort.github.io/thinkingtype/figures/comparison_overall.png" />
 
@@ -473,7 +473,7 @@
 <section class="hero">
   <div class="container">
     <p class="hero-eyebrow">ThinkingType: typography and VLM research</p>
-    <h1 class="hero-headline">Vision-language models input text differently than LLMs.</h1>
+    <h1 class="hero-headline">Vision-language models &ldquo;read&rdquo; text differently than LLMs.</h1>
     <p class="hero-sub">VLMs flag fewer borderline cases for human review than text LLMs alone. Font choice seems to matter, too.</p>
 
     <div class="hero-visual">
@@ -491,12 +491,12 @@
         <span class="verdict verdict-no">&#10007;&nbsp; No, not trustworthy</span>
       </div>
     </div>
-    <p class="hero-visual-caption">One example of the kind of flip we see. Trustworthiness flips about half the time, but it&rsquo;s the most volatile of the 10 dimensions we measured. Most judgments are more stable. The average flip rate between LLM and VLM input is 16 to 22 percent.</p>
+    <p class="hero-visual-caption">One example of the kind of flip we see. Trustworthiness flips about half the time, but it&rsquo;s the most volatile of the 10 dimensions we measured. Most judgments are more stable. The average flip rate between an LLM and a VLM &ldquo;reading&rdquo; the same content is 16 to 22 percent.</p>
 
     <div class="hero-stats">
       <div class="stat">
         <span class="stat-num">16 to 22%</span>
-        <span class="stat-label">Of judgments flip between LLM and VLM input on the same content (average across 10 dimensions)</span>
+        <span class="stat-label">Of judgments flip between an LLM and a VLM &ldquo;reading&rdquo; the same content (average across 10 dimensions)</span>
       </div>
       <div class="stat">
         <span class="stat-num">73 to 100%</span>
@@ -535,7 +535,7 @@
       <div id="sentenceDisplay">Failure to complete this step may affect access</div>
     </div>
 
-    <p class="chart-heading">Flip rate between LLM and VLM input, by provider</p>
+    <p class="chart-heading">Flip rate between LLM and VLM &ldquo;reading&rdquo; the same content, by provider</p>
     <div class="flip-chart" id="flipChart"></div>
     <p class="chart-note">
       <span class="chart-note-line"></span>
@@ -550,8 +550,8 @@
 
     <p class="site-title-mono">t | h | i | n | k | i | n | g | t | y | p | e</p>
 
-    <h2 class="first-h2">Vision-language models input text differently than LLMs.</h2>
-    <p>A small, controlled test of how visual presentation changes the way VLMs handle text.</p>
+    <h2 class="first-h2">Vision-language models &ldquo;read&rdquo; text differently than LLMs.</h2>
+    <p>A small, controlled test of how visual presentation changes the way VLMs &ldquo;read&rdquo; text.</p>
     <p class="disclaimer">Disclaimer: This is independent research conducted on my own time. The views expressed here are my own and do not represent those of my employer.</p>
 
     <div class="tldr-box">
@@ -559,7 +559,7 @@
     </div>
 
     <h2>Motivation</h2>
-    <p>I recently read <em>Thinking with Type</em> and was struck by how font, weight, and emphasis shape the way humans interpret the same words. More and more systems hand documents to VLMs as input, so I wanted to know: do those same typographic cues change the model&rsquo;s judgments when the underlying text is identical? What does that mean for product design, and for risk?</p>
+    <p>I recently read <em>Thinking with Type</em> and was struck by how font, weight, and emphasis shape the way humans interpret the same words. More and more systems have VLMs &ldquo;read&rdquo; documents directly, so I wanted to know: do those same typographic cues change the model&rsquo;s judgments when the underlying text is identical? What does that mean for product design, and for risk?</p>
 
     <h2>What I Did</h2>
     <p>I built a small evaluation harness to isolate the effect of presentation:</p>
@@ -606,7 +606,7 @@
     <!-- Spotlight: the main finding -->
     <div class="spotlight-box">
       <div class="spotlight-eyebrow">The main finding</div>
-      <h3>Borderline cases are less likely to reach a human reviewer when the input is an image. The size of the effect depends on the provider.</h3>
+      <h3>Borderline cases are less likely to reach a human reviewer when a VLM &ldquo;reads&rdquo; them as images. The size of the effect depends on the provider.</h3>
       <p>When an LLM and VLM disagree on whether to send a case to a human, the disagreement almost always lands on the &ldquo;don&rsquo;t send&rdquo; side: 73 percent for OpenAI, 100 percent for Google, and roughly even for Anthropic. For automated triage in medical intake, fraud detection, resumes, or content moderation, that means cases a text-only LLM pipeline would flag may get quietly dropped by an otherwise-similar VLM pipeline.</p>
       <p style="font-size:0.85rem;color:#475569;">Detail in <a href="#finding-2">Finding 2</a> below. Sample size is small, see <a href="#limitations">Limitations</a>.</p>
     </div>
@@ -616,10 +616,10 @@
       <h2>Why This Might Matter</h2>
 
       <h3>For product teams</h3>
-      <p>If your system takes documents as image input (resumes, forms, claims, medical records), typography is an unspoken input to the model&rsquo;s judgments. <strong>The decision finding is the one to watch</strong>: VLM input makes borderline cases less likely to be sent to a human. For triage systems (medical intake, fraud detection, support tickets), that means cases that warrant a human look may get quietly dropped.</p>
+      <p>If your system has VLMs &ldquo;read&rdquo; documents directly (resumes, forms, claims, medical records), typography is an unspoken input to the model&rsquo;s judgments. <strong>The decision finding is the one to watch</strong>: when a VLM &ldquo;reads&rdquo; a case, it is less likely to be sent to a human than when an LLM &ldquo;reads&rdquo; the same content as text. For triage systems (medical intake, fraud detection, support tickets), that means cases that warrant a human look may get quietly dropped.</p>
 
-      <h3>For people submitting documents that VLMs handle (more and more of us)</h3>
-      <p>Font choice can change how a VLM scores your content. The average effect is small, but it can matter for borderline cases. If your document goes to a VLM as an image, standard fonts like Times and Arial seem to produce more predictable behavior than stylized fonts.</p>
+      <h3>For people submitting documents that VLMs &ldquo;read&rdquo; (more and more of us)</h3>
+      <p>Font choice can change how a VLM scores your content. The average effect is small, but it can matter for borderline cases. If your document is going to a VLM as an image, standard fonts like Times and Arial seem to produce more predictable behavior than stylized fonts.</p>
       <p>OpenDyslexic shows higher flip rates and a lean toward harsher judgments. If VLMs score OpenDyslexic-formatted documents more harshly, that is a possible fairness issue. I want more evidence before making strong claims, but it is worth flagging, and a thread I want to keep pulling on.</p>
 
       <h3>For robustness research</h3>
@@ -628,7 +628,7 @@
 
     <!-- Detailed findings -->
     <h3 id="finding-1">1. LLMs and VLMs disagree on the same content</h3>
-    <p>The same sentence given to a model as an <strong>image</strong> instead of <strong>plain text</strong> produces different judgments, before font choice enters the picture at all. This is the baseline gap from visual input alone, not a font effect.</p>
+    <p>The same sentence given to a model as an <strong>image</strong> instead of <strong>plain text</strong> produces different judgments, before font choice enters the picture at all. This is the baseline gap from how the VLM &ldquo;reads&rdquo; an image versus how the LLM reads plain text, not a font effect.</p>
     <p>Across three providers, <strong>16 to 22 percent of yes/no judgments flip</strong> between the LLM and the VLM on the same content. That is the average across 10 dimensions; some dimensions move much more than others (see Finding 4).</p>
     <div class="fig-wrap"><img src="figures/comparison_overall.png" alt="Overall flip rate by provider" loading="lazy" /></div>
     <div class="table-wrap">
@@ -655,7 +655,7 @@
         </tbody>
       </table>
     </div>
-    <p>When the LLM and VLM disagree on whether to send a case to a human, OpenAI and Google almost always land on the &ldquo;don&rsquo;t send&rdquo; side. Anthropic is roughly even. In practice, borderline cases are less likely to reach a human when the input is an image. The size of the effect depends on the provider.</p>
+    <p>When the LLM and VLM disagree on whether to send a case to a human, OpenAI and Google almost always land on the &ldquo;don&rsquo;t send&rdquo; side. Anthropic is roughly even. In practice, borderline cases are less likely to reach a human when a VLM &ldquo;reads&rdquo; them rather than an LLM. The size of the effect depends on the provider.</p>
     <p>For systems that use VLMs to triage documents (medical intake, fraud detection, resumes, content moderation), cases the text-only LLM pipeline would send to a human may quietly get dropped on the VLM side. Sample size on the decision question is small (see <a href="#limitations">Limitations</a>), so take the exact numbers as suggestive rather than precise.</p>
 
     <h3 id="finding-3">3. Font choice changes the size of the gap (up to about 5 points)</h3>
@@ -678,7 +678,7 @@
     <h3 id="finding-4">4. Some dimensions move much more than others</h3>
     <p>Not all judgments shift equally. A few dimensions flip much more often than the rest, and which dimensions move most differs by provider.</p>
     <div class="fig-wrap"><img src="figures/comparison_by_dimension.png" alt="Flip rate by dimension" loading="lazy" /></div>
-    <p>Judgments about <strong>trustworthiness flip about half the time</strong> between LLM and VLM input. This is the most volatile of the 10 dimensions, and the source of the &ldquo;about 50 percent&rdquo; figure people sometimes quote. Judgments about urgency and emotional tone are much more stable. The 16 to 22 percent headline number is the average across all 10 dimensions, so the picture is more spread out per dimension than the average suggests.</p>
+    <p>Judgments about <strong>trustworthiness flip about half the time</strong> between an LLM and a VLM &ldquo;reading&rdquo; the same content. This is the most volatile of the 10 dimensions, and the source of the &ldquo;about 50 percent&rdquo; figure people sometimes quote. Judgments about urgency and emotional tone are much more stable. The 16 to 22 percent headline number is the average across all 10 dimensions, so the picture is more spread out per dimension than the average suggests.</p>
 
     <h3 id="finding-5">5. When the LLM and VLM disagree, the disagreement has a direction</h3>
     <p>When the LLM and VLM disagree, the disagreement is often systematic, but <strong>the direction depends on the provider</strong>.</p>
@@ -697,15 +697,15 @@
     </div>
     <p><strong>What providers agree on:</strong></p>
     <ul>
-      <li>Persuasive: VLM input makes content seem MORE persuasive (75 to 93 percent of flips)</li>
-      <li>Formal: VLM input makes content seem LESS formal (90 to 100 percent of flips)</li>
+      <li>Persuasive: a VLM &ldquo;reads&rdquo; the same content as MORE persuasive than an LLM does (75 to 93 percent of flips)</li>
+      <li>Formal: a VLM &ldquo;reads&rdquo; the same content as LESS formal than an LLM does (90 to 100 percent of flips)</li>
     </ul>
     <p><strong>What providers disagree on:</strong></p>
     <ul>
-      <li>Trustworthy: OpenAI and Anthropic say VLM input = less trustworthy. Google says more trustworthy.</li>
-      <li>Professional: OpenAI and Google say VLM input = less professional. Anthropic says more professional.</li>
+      <li>Trustworthy: OpenAI and Anthropic VLMs &ldquo;read&rdquo; content as less trustworthy than their LLMs do. Google&rsquo;s VLM &ldquo;reads&rdquo; it as more trustworthy.</li>
+      <li>Professional: OpenAI and Google VLMs &ldquo;read&rdquo; content as less professional. Anthropic&rsquo;s VLM &ldquo;reads&rdquo; it as more professional.</li>
     </ul>
-    <p>That inconsistency is itself a finding. There is no single direction that VLM input pushes in. It depends on the model.</p>
+    <p>That inconsistency is itself a finding. There is no single direction VLMs push in. It depends on the model.</p>
 
     <h3 id="finding-6">6. Font choice also has a direction</h3>
     <p>Some font variants push judgments in one direction when flips happen.</p>
@@ -745,7 +745,7 @@
         </tbody>
       </table>
     </div>
-    <p><strong>Urgent and high_risk are the leading indicators.</strong> When VLM input changes whether something looks &ldquo;urgent&rdquo; or &ldquo;high risk,&rdquo; the downstream decision is about 5 times more likely to change too. Professional judgments also strongly predict decision flips (about 4 times). One thing worth flagging: trustworthiness, the most volatile dimension, is <em>not</em> a strong predictor of decision flips. That is part of why the headline &ldquo;about 50 percent&rdquo; trustworthiness figure can mislead about the practical stakes.</p>
+    <p><strong>Urgent and high_risk are the leading indicators.</strong> When a VLM &ldquo;reads&rdquo; the content and changes whether something looks &ldquo;urgent&rdquo; or &ldquo;high risk,&rdquo; the downstream decision is about 5 times more likely to change too. Professional judgments also strongly predict decision flips (about 4 times). One thing worth flagging: trustworthiness, the most volatile dimension, is <em>not</em> a strong predictor of decision flips. That is part of why the headline &ldquo;about 50 percent&rdquo; trustworthiness figure can mislead about the practical stakes.</p>
 
     <h2>Related Work</h2>
 
@@ -771,7 +771,7 @@
     <p><strong>Realistic documents.</strong> Test resumes, medical triage notes, and benefits appeals to see if sentence-level patterns carry over to domain-specific decisions.</p>
     <p><strong>Beyond fonts.</strong> Color, highlighting, layout, UI elements. Typography is one visual cue among many.</p>
     <p><strong>Tracking over time.</strong> Build toward an eval that watches the LLM/VLM gap as models update.</p>
-    <p><strong>Design rules for VLM-facing content.</strong> VLMs are now part of agent browsing and document processing pipelines. There may be value in developing design literacy for content that goes to a VLM as input, so we know what signals are actually getting picked up.</p>
+    <p><strong>Design rules for VLM-facing content.</strong> VLMs are now part of agent browsing and document processing pipelines. There may be value in developing design literacy for content a VLM is going to &ldquo;read,&rdquo; so we know what signals are actually getting picked up.</p>
 
     <hr class="footer-divider" />
 
@@ -786,7 +786,7 @@
     <h2>Citation</h2>
     <pre><code>@misc{danforth2026typography,
   author = {Danforth, Will},
-  title  = {thinkingtype: Typography Changes How AI Judges Identical Text},
+  title  = {thinkingtype: Vision-language models "read" text differently than LLMs},
   year   = {2026},
   url    = {https://github.com/wdanfort/thinkingtype}
 }</code></pre>
