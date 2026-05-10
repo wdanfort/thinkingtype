@@ -1,12 +1,16 @@
 # t | h | i | n | k | i | n | g | t | y | p | e
 
-## Typography Changes How AI Judges Identical Text
+## Vision pipelines deflect borderline cases — and typography modulates the bias
 
-A controlled diagnostic evaluation of how visual presentation influences interpretation in vision-language models. 
+A controlled diagnostic evaluation of how visual presentation influences interpretation in vision-language models.
 
 Disclaimer: This is independent research conducted on my own time. The views expressed here are my own and do not represent those of my employer.
 
-**TL;DR: Vision models judge identical text differently than text-only pipelines (~20% of binary judgments flip). Typography systematically influences the direction and magnitude of those flips. In a small, controlled eval, this shifted borderline cases away from human review recommendations suggesting underexplored UI and pipeline design implications.**
+**TL;DR — three nested findings:**
+
+1. **Vision–text divergence (baseline).** Across three frontier providers, 16–22% of binary judgments flip between vision and text-only pipelines on identical content — before any typography variation.
+2. **Decision asymmetry (the practical concern).** When the disagreement involves a triage decision ("escalate to a human reviewer?"), 73–100% of flips point toward "don't escalate" for OpenAI and Google; Anthropic is roughly neutral. Borderline cases are systematically less likely to reach a human when processed visually.
+3. **Typography modulation (the colorful angle).** Font choice modulates the divergence by up to ~5pp on the flip rate. Trustworthiness — the most volatile of the 10 dimensions measured — flips ~50% of the time; most dimensions are more stable.
 
 ## Motivation
 
@@ -45,11 +49,17 @@ This is sentence-level only. I have not yet tested whether these patterns hold f
 
 *Flip rates show vision-text disagreement. Decision direction shows net bias when disagreements occur (negative = vision less likely to escalate). Small text variant excluded from analysis.*
 
+> **Decision Asymmetry Spotlight — the takeaway most readers should remember**
+>
+> Borderline triage cases are less likely to reach a human reviewer when processed by vision pipelines, with direction varying by provider.
+>
+> When vision and text pipelines disagree on whether to escalate a case for human review, the disagreement is overwhelmingly directional toward *don't escalate*: 73% (OpenAI), 100% (Google), and roughly neutral (Anthropic). For automated triage in medical intake, fraud detection, resumes, or content moderation, this means cases a text-based pipeline would flag may get quietly downgraded by an otherwise-equivalent vision pipeline. Detail in Finding 2 below; sample size is modest — see Limitations.
+
 ### 1. Vision pipelines diverge from text pipelines
 
-Processing the same sentence as an **image** instead of **raw text** produces different judgments—before any typography variation is introduced.
+Processing the same sentence as an **image** instead of **raw text** produces different judgments — even before any typography variation. This is the baseline divergence introduced by visual processing alone, not a typography effect.
 
-Across three providers, **16–22% of binary judgments flipped** between text-only and vision pipelines on identical content.
+Across three providers, **16–22% of binary judgments flipped** between text-only and vision pipelines on identical content (averaged across 10 dimensions; individual dimensions vary widely — see Finding 4).
 
 ![Overall flip rate by provider](figures/comparison_overall.png)
 
@@ -59,11 +69,25 @@ Across three providers, **16–22% of binary judgments flipped** between text-on
 | Google | gemini-2.0-flash | 16.4% | [15.2%, 17.7%] |
 | Anthropic | claude-sonnet-4 | 15.9% | [14.6%, 17.3%] |
 
-This is the baseline divergence introduced by visual processing alone.
+### 2. Decision asymmetry — vision pipelines deflect away from escalation
 
-### 2. Typography modifies the divergence
+Beyond interpretation dimensions, I tested a downstream **decision task**: "Should this be escalated to a human reviewer?" This is the result with the clearest practical implications, and the one this page is built around.
 
-Within the vision pipeline, font choice acts as a **modifier**. Some presentations amplify vision–text divergence; others keep it closer to baseline.
+![Decision flip rate by provider](figures/comparison_decision_flip.png)
+
+| Provider | Decision Flip Rate | Direction |
+|----------|-------------------:|-----------|
+| OpenAI | 20.8% | 73% toward NO (don't escalate) |
+| Google | 11.1% | 100% toward NO |
+| Anthropic | 4.9% | Neutral (0% bias) |
+
+**The punchline**: When vision and text pipelines disagree on the escalation decision, OpenAI and Google overwhelmingly fall on the "don't escalate" side; Anthropic is roughly neutral. In practice, borderline cases are less likely to reach a human reviewer when processed visually — with the magnitude depending on the provider.
+
+For systems using vision models to triage documents — medical intake, fraud detection, resumes, or content moderation — cases that a text pipeline would escalate may get quietly downgraded when processed visually. Sample size on the decision task is modest (see Limitations); take the magnitudes as suggestive rather than precise.
+
+### 3. Typography modulates the divergence (up to ~5pp)
+
+Within the vision pipeline, font choice modulates the gap. Some presentations amplify divergence; others keep it near baseline. The effect is real but modest in magnitude — up to about 5 percentage points on the flip rate — which is much smaller than the underlying vision–text divergence in Finding 1.
 
 ![Flip rate by typography variant](figures/comparison_by_variant.png)
 
@@ -77,17 +101,17 @@ Within the vision pipeline, font choice acts as a **modifier**. Some presentatio
 
 Standard serif and sans-serif fonts produce the most stable behavior. Stylized fonts (Comic Sans), accessibility fonts (OpenDyslexic), and emphasis treatments (ALL CAPS, bold) increase divergence.
 
-### 3. Some dimensions are more affected than others
+### 4. Some dimensions are much more affected than others
 
-Not all judgments are equally susceptible. Certain semantic dimensions show much higher flip  (and differ between model providers).
+Not all judgments are equally susceptible. Certain semantic dimensions show much higher flip rates (and differ between model providers).
 
 ![Flip rate by dimension](figures/comparison_by_dimension.png)
 
-Judgments about trustworthiness flip half the time between vision and text pipelines. Judgments about urgency or emotional tone are much more stable.
+Judgments about **trustworthiness flip roughly half the time** between vision and text pipelines — this is the most volatile dimension and is the source of the "~50%" figure quoted in headline-style framings. Judgments about urgency or emotional tone are much more stable. The 16–22% headline number is the average across all 10 dimensions; the per-dimension picture is more dispersed.
 
-### 4. When disagreements occur, they have direction
+### 5. When disagreements occur, they have direction
 
-When vision and text pipelines disagree, the disagreement is often systematic—but **the direction varies by provider**.
+When vision and text pipelines disagree, the disagreement is often systematic — but **the direction varies by provider**.
 
 ![Direction by provider and dimension](figures/comparison_directionality.png)
 
@@ -107,9 +131,9 @@ When vision and text pipelines disagree, the disagreement is often systematic—
 - Trustworthy: OpenAI/Anthropic say vision = less trustworthy; Google says more trustworthy
 - Professional: OpenAI/Google say vision = less professional; Anthropic says more professional
 
-This inconsistency is itself a finding. You cannot assume that "vision mode" has a universal directional effect—it depends on the model.
+This inconsistency is itself a finding. You cannot assume that "vision mode" has a universal directional effect — it depends on the model.
 
-### 5. Font choice also has directional effects
+### 6. Font choice also has directional effects
 
 Some typography variants systematically push judgments in one direction when flips occur.
 
@@ -126,27 +150,11 @@ Some typography variants systematically push judgments in one direction when fli
 | OpenDyslexic | -78% (toward NO) | Amplifies negative judgments |
 | Arial ALL CAPS | -63% (toward NO) | Amplifies negative judgments |
 
-All typography variants show strong negative bias for OpenAI's vision pipeline—when vision and text disagree, vision almost always pushes toward harsher judgments. This is consistent across all font choices, though monospace and OpenDyslexic show the strongest negative bias.
+All typography variants show strong negative bias for OpenAI's vision pipeline — when vision and text disagree, vision almost always pushes toward harsher judgments. This is consistent across all font choices, though monospace and OpenDyslexic show the strongest negative bias.
 
-### 6. Decisions flip too—and the direction matters
+### 7. Some dimension flips strongly predict decision flips
 
-Beyond interpretation dimensions, I wanted to tease out real world implications. I tested a downstream **decision task**: "Should this be escalated to a human reviewer?"
-
-![Decision flip rate by provider](figures/comparison_decision_flip.png)
-
-| Provider | Decision Flip Rate | Direction |
-|----------|-------------------:|-----------|
-| OpenAI | 20.8% | 73% toward NO (don't escalate) |
-| Google | 11.1% | 100% toward NO |
-| Anthropic | 4.9% | Neutral (0% bias) |
-
-**The punchline**: When vision and text pipelines disagree on a decision, vision almost always says "don't escalate" when text said "escalate." This means: **vision mode makes borderline cases less likely to be flagged for human review**.
-
-For systems using vision models to triage documents—medical intake, fraud detection, resumes, or content moderation—this directional bias could mean cases that text-based systems would escalate get quietly downgraded when processed visually.
-
-### Which dimensions predict decision flips?
-
-When a dimension judgment flips, how much more likely is the decision to also flip?
+When a dimension judgment flips, how much more likely is the escalation decision to also flip? This connects Findings 4–6 back to the practical concern in Finding 2.
 
 ![Dimension-decision lift](figures/dimension_decision_lift_openai.png)
 
@@ -161,7 +169,7 @@ When a dimension judgment flips, how much more likely is the decision to also fl
 | confident | 0.4x | Weak/no effect |
 | trustworthy | 0.7x | Weak/no effect |
 
-**Urgent and high_risk judgments are the leading indicators**. When vision mode changes whether something seems "urgent" or "high risk," downstream decisions are 5x more likely to change too. Professional judgments also strongly predict decision flips (4x).
+**Urgent and high_risk judgments are the leading indicators**. When vision mode changes whether something seems "urgent" or "high risk," downstream decisions are ~5x more likely to change too. Professional judgments also strongly predict decision flips (~4x). Notably, trustworthiness — the most volatile dimension — is *not* a strong predictor of decision flips, which is part of why the headline ~50% trustworthiness number can mislead about the practical stakes.
 
 ## Why This Might Matter
 
@@ -178,6 +186,18 @@ OpenDyslexic consistently shows elevated flip rates and a bias toward negative j
 ### For robustness research
 
 Vision–text divergence on identical semantic content is a form of inconsistency worth tracking. The fact that direction varies by provider suggests different models have learned different associations with visual presentation.
+
+## Related Work
+
+This work sits at the intersection of three lines of research and contributes a specific empirical observation rather than a new framework. The goal of this section is to signal awareness of adjacent work, not to be a full lit review.
+
+**Prompt-format sensitivity in language models.** Sclar and colleagues showed that LLM outputs are sensitive to surface-level prompt formatting (whitespace, separators, casing, etc.) on identical underlying tasks — small text-format changes can produce large output swings *[CITATION NEEDED: Sclar et al., "Quantifying Language Models' Sensitivity to Spurious Features in Prompt Design" / ICLR 2024 — please confirm exact title, authors, and venue]*. The work here extends that line of inquiry from text-mode formatting to vision-mode typographic formatting: a different surface, but a similar question about robustness to non-semantic presentation.
+
+**Vision-language model hallucination and evaluation.** A growing body of benchmarks documents systematic failure modes in VLMs on tasks where the visual presentation should be irrelevant *[CITATION NEEDED: representative VLM hallucination / robustness benchmarks — e.g., POPE, MM-Vet, MMHal-Bench, HallusionBench — please select and cite the ones you want to anchor against]*. Most of that literature focuses on object-level hallucination or fine-grained recognition. The framing here is complementary: instead of asking whether the VLM correctly extracts content, this eval asks whether *judgments* about the same extracted content are stable across visual presentations.
+
+**Visual / typographic robustness and prompt injection.** Adversarial typography, font-based attacks on OCR, and visual prompt injection are adjacent areas *[CITATION NEEDED: representative work on visual prompt injection and typographic adversarial examples for VLMs — please pick the ones most relevant to the framing here]*. This work differs in two ways: (a) the typographic variations are non-adversarial (standard, naturally occurring fonts), and (b) the focus is on downstream judgment shifts rather than extraction or content-recognition accuracy.
+
+**What's new here.** A small but controlled diagnostic showing that (a) vision–text pipeline divergence on identical content is non-trivial across three frontier providers, (b) the divergence is direction-asymmetric on a triage decision, and (c) typography is a measurable but smaller modulator of (a). This is a starting point, not a final claim — see Limitations.
 
 ## Limitations
 
