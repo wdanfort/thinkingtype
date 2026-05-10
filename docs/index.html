@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ThinkingType &mdash; Font choice flips AI model judgments 20&ndash;50% of the time</title>
-  <meta name="description" content="A controlled evaluation showing typography systematically influences how AI vision models judge identical text &mdash; flipping 16&ndash;22% of binary judgments across OpenAI, Anthropic, and Google." />
+  <title>ThinkingType &mdash; Vision pipelines deflect borderline cases away from human review</title>
+  <meta name="description" content="A controlled evaluation: vision pipelines diverge from text-only pipelines on 16&ndash;22% of identical-content judgments, and when they disagree on triage decisions they overwhelmingly say &lsquo;don&rsquo;t escalate&rsquo; (73&ndash;100% directional, by provider). Typography modulates the gap by up to ~5pp." />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Font choice flips AI model judgments 20&ndash;50% of the time" />
-  <meta property="og:description" content="A controlled eval across OpenAI, Anthropic, and Google shows font choice flips 16&ndash;22% of AI binary judgments on identical text. Trustworthiness flips ~50% of the time." />
-  <meta property="og:image" content="https://wdanfort.github.io/thinkingtype/figures/comparison_overall.png" />
+  <meta property="og:title" content="Vision pipelines deflect borderline cases away from human review" />
+  <meta property="og:description" content="Across three frontier providers, vision pipelines diverge from text-only pipelines on 16&ndash;22% of identical-content judgments. When disagreements touch a triage decision, vision overwhelmingly deflects away from escalation. Typography modulates the gap by up to ~5pp." />
+  <meta property="og:image" content="https://wdanfort.github.io/thinkingtype/figures/comparison_decision_flip.png" />
   <meta property="og:url" content="https://wdanfort.github.io/thinkingtype/" />
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="ThinkingType" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Font choice flips AI model judgments 20&ndash;50% of the time" />
-  <meta name="twitter:description" content="A controlled eval across OpenAI, Anthropic, and Google shows font choice flips 16&ndash;22% of AI binary judgments on identical text." />
+  <meta name="twitter:title" content="Vision pipelines deflect borderline cases away from human review" />
+  <meta name="twitter:description" content="Vision-vs-text divergence on identical content (16&ndash;22%); decision asymmetry (73&ndash;100% toward &lsquo;don&rsquo;t escalate&rsquo;); typography as a modulator (~5pp)." />
   <meta name="twitter:image" content="https://wdanfort.github.io/thinkingtype/figures/comparison_overall.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -410,6 +410,32 @@
     }
     .why-matter-box h3 { margin-top: 20px; font-size: 1rem; }
 
+    /* Decision Asymmetry spotlight */
+    .spotlight-box {
+      background: #f5f8ff;
+      border: 1px solid #b9c9f0;
+      border-left: 4px solid #2563eb;
+      border-radius: 10px;
+      padding: 24px 28px;
+      margin: 28px 0 40px;
+    }
+    .spotlight-eyebrow {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #2563eb;
+      margin: 0 0 10px;
+    }
+    .spotlight-box h3 {
+      margin: 0 0 10px !important;
+      font-size: 1.1rem;
+      color: #111;
+      line-height: 1.35;
+    }
+    .spotlight-box p { margin: 0 0 10px; }
+    .spotlight-box p:last-child { margin-bottom: 0; }
+
     /* Code */
     pre {
       background: #f6f6f5;
@@ -447,8 +473,8 @@
 <section class="hero">
   <div class="container">
     <p class="hero-eyebrow">ThinkingType &mdash; Typography &times; AI Vision Research</p>
-    <h1 class="hero-headline">Font choice flips AI model judgments 20&ndash;50% of the time</h1>
-    <p class="hero-sub">A controlled diagnostic evaluation showing that visual presentation systematically influences how AI vision models judge identical text &mdash; with real implications for automated triage systems.</p>
+    <h1 class="hero-headline">Vision pipelines deflect borderline cases away from human review &mdash; and typography modulates the bias</h1>
+    <p class="hero-sub">A controlled diagnostic eval across three frontier providers. Vision pipelines diverge from text-only pipelines on 16&ndash;22% of identical-content judgments, and when those disagreements involve a triage decision, vision overwhelmingly says &ldquo;don&rsquo;t escalate.&rdquo; Typography modulates the gap by up to ~5pp.</p>
 
     <div class="hero-visual">
       <div class="font-card">
@@ -465,24 +491,24 @@
         <span class="verdict verdict-no">&#10007;&nbsp; No &mdash; Not Trustworthy</span>
       </div>
     </div>
-    <p class="hero-visual-caption">Same sentence &bull; Same AI model &bull; Identical text content &bull; Different font &bull; Opposite verdict</p>
+    <p class="hero-visual-caption">An illustrative example of the kind of flip we observe. Trustworthiness specifically flips ~50% of the time across the test set &mdash; the most volatile of 10 measured dimensions. Most other judgments are more stable; the average vision&ndash;text flip rate is 16&ndash;22%.</p>
 
     <div class="hero-stats">
       <div class="stat">
         <span class="stat-num">16&ndash;22%</span>
-        <span class="stat-label">Average dimension flip rate</span>
+        <span class="stat-label">Vision&ndash;text divergence on identical content (avg across dimensions)</span>
       </div>
       <div class="stat">
-        <span class="stat-num">&sim;50%</span>
-        <span class="stat-label">Trustworthiness flip rate</span>
+        <span class="stat-num">73&ndash;100%</span>
+        <span class="stat-label">Of decision flips go toward &ldquo;don&rsquo;t escalate&rdquo; (OpenAI / Google; Anthropic neutral)</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">~5pp</span>
+        <span class="stat-label">Max typography modulation on flip rate</span>
       </div>
       <div class="stat">
         <span class="stat-num">3</span>
         <span class="stat-label">AI providers tested</span>
-      </div>
-      <div class="stat">
-        <span class="stat-num">~10k</span>
-        <span class="stat-label">Total comparisons</span>
       </div>
     </div>
 
@@ -524,12 +550,17 @@
 
     <p class="site-title-mono">t | h | i | n | k | i | n | g | t | y | p | e</p>
 
-    <h2 class="first-h2">Typography Changes How AI Judges Identical Text</h2>
+    <h2 class="first-h2">Vision pipelines deflect borderline cases &mdash; and typography modulates the bias</h2>
     <p>A controlled diagnostic evaluation of how visual presentation influences interpretation in vision-language models.</p>
     <p class="disclaimer">Disclaimer: This is independent research conducted on my own time. The views expressed here are my own and do not represent those of my employer.</p>
 
     <div class="tldr-box">
-      <strong>TL;DR:</strong> Vision models judge identical text differently than text-only pipelines (~20% of binary judgments flip). Typography systematically influences the direction and magnitude of those flips. In a small, controlled eval, this shifted borderline cases away from human review recommendations &mdash; with underexplored implications for UI and pipeline design.
+      <strong>TL;DR &mdash; three nested findings:</strong>
+      <ol style="margin:10px 0 0;padding-left:22px;">
+        <li><strong>Vision&ndash;text divergence (baseline).</strong> Across three frontier providers, 16&ndash;22% of binary judgments flip between vision and text-only pipelines on identical content &mdash; before any typography variation.</li>
+        <li><strong>Decision asymmetry (the practical concern).</strong> When the disagreement is on a triage decision (&ldquo;escalate to a human reviewer?&rdquo;), 73&ndash;100% of flips point toward &ldquo;don&rsquo;t escalate&rdquo; for OpenAI and Google; Anthropic is roughly neutral. Borderline cases are systematically less likely to reach a human when processed visually.</li>
+        <li><strong>Typography modulation (the colorful angle).</strong> Font choice modulates the divergence by up to ~5pp on the flip rate. Trustworthiness, the most volatile of the 10 dimensions measured, flips ~50% of the time; most dimensions are more stable.</li>
+      </ol>
     </div>
 
     <h2>Motivation</h2>
@@ -575,6 +606,14 @@
     </div>
     <p><small><em>Flip rates show vision-text disagreement. Decision direction shows net bias when disagreements occur (negative = vision less likely to escalate). Small text variant excluded from analysis.</em></small></p>
 
+    <!-- Decision Asymmetry Spotlight — the takeaway most readers should remember -->
+    <div class="spotlight-box">
+      <div class="spotlight-eyebrow">Decision Asymmetry Spotlight</div>
+      <h3>Borderline triage cases are less likely to reach a human reviewer when processed by vision pipelines &mdash; with direction varying by provider.</h3>
+      <p>When vision and text pipelines disagree on a downstream decision (&ldquo;escalate this case to a human reviewer?&rdquo;), the disagreement is overwhelmingly directional toward <em>don&rsquo;t escalate</em>: 73% (OpenAI), 100% (Google), and roughly neutral (Anthropic). For automated triage in medical intake, fraud detection, resumes, or content moderation, this means cases a text-based pipeline would flag may get quietly downgraded by an otherwise-equivalent vision pipeline.</p>
+      <p style="font-size:0.85rem;color:#475569;">Detail in <a href="#finding-2">Finding 2</a> below. Sample size is modest &mdash; see <a href="#limitations">Limitations</a>.</p>
+    </div>
+
     <!-- WHY THIS MIGHT MATTER — moved up per task spec -->
     <div class="why-matter-box">
       <h2>Why This Might Matter</h2>
@@ -591,9 +630,9 @@
     </div>
 
     <!-- Detailed findings -->
-    <h3>1. Vision pipelines diverge from text pipelines</h3>
-    <p>Processing the same sentence as an <strong>image</strong> instead of <strong>raw text</strong> produces different judgments, even before any typography variation.</p>
-    <p>Across three providers, <strong>16&ndash;22% of binary judgments flipped</strong> between text-only and vision pipelines on identical content.</p>
+    <h3 id="finding-1">1. Vision pipelines diverge from text pipelines</h3>
+    <p>Processing the same sentence as an <strong>image</strong> instead of <strong>raw text</strong> produces different judgments, even before any typography variation. This is the baseline divergence introduced by visual processing alone &mdash; not a typography effect.</p>
+    <p>Across three providers, <strong>16&ndash;22% of binary judgments flipped</strong> between text-only and vision pipelines on identical content (averaged across 10 dimensions; individual dimensions vary widely &mdash; see Finding 4).</p>
     <div class="fig-wrap"><img src="figures/comparison_overall.png" alt="Overall flip rate by provider" loading="lazy" /></div>
     <div class="table-wrap">
       <table>
@@ -605,10 +644,25 @@
         </tbody>
       </table>
     </div>
-    <p>This is the baseline divergence introduced by visual processing alone.</p>
 
-    <h3>2. Typography modifies the divergence</h3>
-    <p>Within the vision pipeline, font choice modifies the gap. Some presentations amplify divergence; others keep it near baseline.</p>
+    <h3 id="finding-2">2. Decision asymmetry &mdash; vision pipelines deflect away from escalation</h3>
+    <p>Beyond interpretation dimensions, I tested a downstream <strong>decision task</strong>: &ldquo;Should this be escalated to a human reviewer?&rdquo; This is the result with the clearest practical implications, and the one this page is built around.</p>
+    <div class="fig-wrap"><img src="figures/comparison_decision_flip.png" alt="Decision flip rate by provider" loading="lazy" /></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Provider</th><th style="text-align:right">Decision Flip Rate</th><th>Direction</th></tr></thead>
+        <tbody>
+          <tr><td>OpenAI</td><td style="text-align:right">20.8%</td><td>73% toward NO (don&rsquo;t escalate)</td></tr>
+          <tr><td>Google</td><td style="text-align:right">11.1%</td><td>100% toward NO</td></tr>
+          <tr><td>Anthropic</td><td style="text-align:right">4.9%</td><td>Neutral (0% bias)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>The punchline</strong>: When vision and text pipelines disagree on the escalation decision, OpenAI and Google overwhelmingly fall on the &ldquo;don&rsquo;t escalate&rdquo; side; Anthropic is roughly neutral. In practice, borderline cases are less likely to reach a human reviewer when processed visually &mdash; with the magnitude depending on the provider.</p>
+    <p>For systems using vision models to triage documents &mdash; medical intake, fraud detection, resumes, or content moderation &mdash; cases that a text pipeline would escalate may get quietly downgraded when processed visually. Sample size on the decision task is modest (see <a href="#limitations">Limitations</a>); take the magnitudes as suggestive rather than precise.</p>
+
+    <h3 id="finding-3">3. Typography modulates the divergence (up to ~5pp)</h3>
+    <p>Within the vision pipeline, font choice modulates the gap. Some presentations amplify divergence; others keep it near baseline. The effect is real but modest in magnitude &mdash; up to about 5 percentage points on the flip rate &mdash; which is much smaller than the underlying vision&ndash;text divergence in Finding 1.</p>
     <div class="fig-wrap"><img src="figures/comparison_by_variant.png" alt="Flip rate by typography variant" loading="lazy" /></div>
     <div class="table-wrap">
       <table>
@@ -624,12 +678,12 @@
     </div>
     <p>Standard serif and sans-serif fonts produce the most stable behavior. Stylized fonts (Comic Sans), accessibility fonts (OpenDyslexic), and emphasis treatments (ALL CAPS, bold) increase divergence.</p>
 
-    <h3>3. Some dimensions are more affected than others</h3>
+    <h3 id="finding-4">4. Some dimensions are much more affected than others</h3>
     <p>Not all judgments are equally susceptible. Certain semantic dimensions show much higher flip rates (and differ between model providers).</p>
     <div class="fig-wrap"><img src="figures/comparison_by_dimension.png" alt="Flip rate by dimension" loading="lazy" /></div>
-    <p>Judgments about trustworthiness flip half the time between vision and text pipelines. Judgments about urgency or emotional tone are much more stable.</p>
+    <p>Judgments about <strong>trustworthiness flip roughly half the time</strong> between vision and text pipelines &mdash; this is the most volatile dimension and is the source of the &ldquo;~50%&rdquo; figure quoted in headline-style framings. Judgments about urgency or emotional tone are much more stable. The 16&ndash;22% headline number is the average across all 10 dimensions; the per-dimension picture is more dispersed.</p>
 
-    <h3>4. When disagreements occur, they have direction</h3>
+    <h3 id="finding-5">5. When disagreements occur, they have direction</h3>
     <p>When vision and text pipelines disagree, the disagreement is often systematic, but <strong>the direction varies by provider</strong>.</p>
     <div class="fig-wrap"><img src="figures/comparison_directionality.png" alt="Direction by provider and dimension" loading="lazy" /></div>
     <div class="table-wrap">
@@ -656,7 +710,7 @@
     </ul>
     <p>This inconsistency is itself a finding. There is no universal directional effect. It depends on the model.</p>
 
-    <h3>5. Font choice also has directional effects</h3>
+    <h3 id="finding-6">6. Font choice also has directional effects</h3>
     <p>Some typography variants systematically push judgments in one direction when flips occur.</p>
     <div class="fig-wrap"><img src="figures/direction_bias_net_openai.png" alt="Typography direction bias (OpenAI)" loading="lazy" /></div>
     <div class="table-wrap">
@@ -676,24 +730,8 @@
     </div>
     <p>All typography variants show strong negative bias for OpenAI&rsquo;s vision pipeline &mdash; when vision and text disagree, vision almost always pushes toward harsher judgments. This is consistent across all font choices, though monospace and OpenDyslexic show the strongest negative bias.</p>
 
-    <h3>6. Decisions flip too &mdash; and the direction matters</h3>
-    <p>Beyond interpretation dimensions, I wanted to tease out real world implications. I tested a downstream <strong>decision task</strong>: &ldquo;Should this be escalated to a human reviewer?&rdquo;</p>
-    <div class="fig-wrap"><img src="figures/comparison_decision_flip.png" alt="Decision flip rate by provider" loading="lazy" /></div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Provider</th><th style="text-align:right">Decision Flip Rate</th><th>Direction</th></tr></thead>
-        <tbody>
-          <tr><td>OpenAI</td><td style="text-align:right">20.8%</td><td>73% toward NO (don&rsquo;t escalate)</td></tr>
-          <tr><td>Google</td><td style="text-align:right">11.1%</td><td>100% toward NO</td></tr>
-          <tr><td>Anthropic</td><td style="text-align:right">4.9%</td><td>Neutral (0% bias)</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p><strong>The punchline</strong>: When vision and text pipelines disagree on a decision, vision almost always says &ldquo;don&rsquo;t escalate&rdquo; where text said &ldquo;escalate.&rdquo; In practice, borderline cases are less likely to reach a human reviewer.</p>
-    <p>For systems using vision models to triage documents &mdash; medical intake, fraud detection, resumes, or content moderation &mdash; cases that a text pipeline would escalate may get quietly downgraded when processed visually.</p>
-
-    <h3>Which dimensions predict decision flips?</h3>
-    <p>When a dimension judgment flips, how much more likely is the decision to also flip?</p>
+    <h3 id="finding-7">7. Some dimension flips strongly predict decision flips</h3>
+    <p>When a dimension judgment flips, how much more likely is the escalation decision to also flip? This connects Findings 4&ndash;6 back to the practical concern in Finding 2.</p>
     <div class="fig-wrap"><img src="figures/dimension_decision_lift_openai.png" alt="Dimension-decision lift" loading="lazy" /></div>
     <div class="table-wrap">
       <table>
@@ -710,9 +748,20 @@
         </tbody>
       </table>
     </div>
-    <p><strong>Urgent and high_risk judgments are the leading indicators</strong>. When vision mode changes whether something seems &ldquo;urgent&rdquo; or &ldquo;high risk,&rdquo; downstream decisions are 5&times; more likely to change too. Professional judgments also strongly predict decision flips (4&times;).</p>
+    <p><strong>Urgent and high_risk judgments are the leading indicators</strong>. When vision mode changes whether something seems &ldquo;urgent&rdquo; or &ldquo;high risk,&rdquo; downstream decisions are ~5&times; more likely to change too. Professional judgments also strongly predict decision flips (~4&times;). Notably, trustworthiness &mdash; the most volatile dimension &mdash; is <em>not</em> a strong predictor of decision flips, which is part of why the headline ~50% trustworthiness number can mislead about the practical stakes.</p>
 
-    <h2>Limitations</h2>
+    <h2>Related Work</h2>
+    <p>This work sits at the intersection of three lines of research and contributes a specific empirical observation rather than a new framework. The goal of this section is to signal awareness of adjacent work, not to be a full lit review.</p>
+
+    <p><strong>Prompt-format sensitivity in language models.</strong> Sclar and colleagues showed that LLM outputs are sensitive to surface-level prompt formatting (whitespace, separators, casing, etc.) on identical underlying tasks &mdash; small text-format changes can produce large output swings <em>[CITATION NEEDED: Sclar et al., &ldquo;Quantifying Language Models&rsquo; Sensitivity to Spurious Features in Prompt Design&rdquo; / ICLR 2024 &mdash; please confirm exact title, authors, and venue]</em>. The work here extends that line of inquiry from text-mode formatting to vision-mode typographic formatting: a different surface, but a similar question about robustness to non-semantic presentation.</p>
+
+    <p><strong>Vision-language model hallucination and evaluation.</strong> A growing body of benchmarks documents systematic failure modes in VLMs on tasks where the visual presentation should be irrelevant <em>[CITATION NEEDED: representative VLM hallucination / robustness benchmarks &mdash; e.g., POPE, MM-Vet, MMHal-Bench, HallusionBench &mdash; please select and cite the ones you want to anchor against]</em>. Most of that literature focuses on object-level hallucination or fine-grained recognition. The framing here is complementary: instead of asking whether the VLM correctly extracts content, this eval asks whether <em>judgments</em> about the same extracted content are stable across visual presentations.</p>
+
+    <p><strong>Visual / typographic robustness and prompt injection.</strong> Adversarial typography, font-based attacks on OCR, and visual prompt injection are adjacent areas <em>[CITATION NEEDED: representative work on visual prompt injection and typographic adversarial examples for VLMs &mdash; please pick the ones most relevant to the framing here]</em>. This work differs in two ways: (a) the typographic variations are non-adversarial (standard, naturally occurring fonts), and (b) the focus is on downstream judgment shifts rather than extraction or content-recognition accuracy.</p>
+
+    <p><strong>What&rsquo;s new here.</strong> A small but controlled diagnostic showing that (a) vision&ndash;text pipeline divergence on identical content is non-trivial across three frontier providers, (b) the divergence is direction-asymmetric on a triage decision, and (c) typography is a measurable but smaller modulator of (a). This is a starting point, not a final claim &mdash; see Limitations.</p>
+
+    <h2 id="limitations">Limitations</h2>
     <p>This is exploratory and generated within limited budget/time constraints. There are also experimental constraints:</p>
     <ul>
       <li><strong>Sentence-level only</strong> &mdash; Effects may attenuate or compound in full documents.</li>
