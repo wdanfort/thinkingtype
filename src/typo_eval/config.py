@@ -72,6 +72,9 @@ class ProviderConfig(BaseModel):
     # OpenAI only: "flex" processes at ~50% cost with slower, queued
     # responses. Ignored by other providers.
     service_tier: Optional[str] = None
+    # Google only: thinking token budget (0 disables thinking). Ignored by
+    # other providers.
+    thinking_budget: Optional[int] = None
 
 
 class ProvidersConfig(BaseModel):

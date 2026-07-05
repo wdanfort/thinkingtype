@@ -28,6 +28,18 @@ class GoogleProvider(Provider):
             http_options=types.HttpOptions(timeout=300_000),  # ms
         )
         self.last_usage = None
+        # Set by the inference loop from ProviderConfig.thinking_budget
+        self.thinking_budget = None
+
+    def _gen_config(self, system_prompt, temperature):
+        kwargs = {}
+        if temperature is not None:
+            kwargs["temperature"] = temperature
+        if self.thinking_budget is not None:
+            kwargs["thinking_config"] = types.ThinkingConfig(
+                thinking_budget=self.thinking_budget
+            )
+        return types.GenerateContentConfig(system_instruction=system_prompt, **kwargs)
 
     def _capture_usage(self, response) -> None:
         usage = getattr(response, "usage_metadata", None)
@@ -57,10 +69,7 @@ class GoogleProvider(Provider):
         response = self.client.models.generate_content(
             model=model,
             contents=prompt,
-            config=types.GenerateContentConfig(
-                system_instruction=system_prompt,
-                **({} if temperature is None else {"temperature": temperature}),
-            ),
+            config=self._gen_config(system_prompt, temperature),
         )
         self._capture_usage(response)
         return response.text if response.text else ""
@@ -92,10 +101,7 @@ class GoogleProvider(Provider):
                 types.Part.from_bytes(data=img_byte_arr, mime_type=f"image/{(img.format or 'png').lower()}"),
                 prompt,
             ],
-            config=types.GenerateContentConfig(
-                system_instruction=system_prompt,
-                **({} if temperature is None else {"temperature": temperature}),
-            ),
+            config=self._gen_config(system_prompt, temperature),
         )
         self._capture_usage(response)
         return response.text if response.text else ""

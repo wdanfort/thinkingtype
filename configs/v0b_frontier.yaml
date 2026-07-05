@@ -121,6 +121,9 @@ providers:
     api_key_env: GOOGLE_API_KEY
     model_text: models/gemini-3.5-flash
     model_vision: models/gemini-3.5-flash
+    # Thinking disabled: at ~246 thinking tokens per one-token yes/no answer
+    # it multiplies cost ~2.4x; agreement with thinking-on checked in pilot.
+    thinking_budget: 0
 
 inference:
   mode: both
