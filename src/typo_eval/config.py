@@ -51,6 +51,9 @@ class RenderConfig(BaseModel):
     })
     margins: int = 40
     max_text_width: int = 1000
+    # How to equalize visual size across fonts: "ag_height" (bbox of "Ag",
+    # includes ascender+descender) or "x_height" (bbox of "x").
+    font_normalization: str = "ag_height"
 
 
 class OCRConfig(BaseModel):
@@ -110,6 +113,9 @@ class InferenceConfig(BaseModel):
     max_retries: int = 6
     rate_limit_sleep: float = 1.5
     fail_fast: bool = False
+    # API-level sampling seed. Only OpenAI accepts a seed parameter;
+    # other providers ignore it (their APIs offer no seed).
+    seed: Optional[int] = None
 
 
 class BootstrapConfig(BaseModel):

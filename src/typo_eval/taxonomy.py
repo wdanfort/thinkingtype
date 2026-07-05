@@ -77,12 +77,22 @@ VARIANT_TAXONOMY: Dict[str, VariantMetadata] = {
         size=48,
     ),
 
-    # Capitalization variant (Arial lowercase vs ALL CAPS)
+    # Capitalization variants (Arial lowercase vs ALL CAPS)
+    # T5 (legacy, v0 runs) bundled bold + caps — two manipulations at once.
     "T5_arial_all_caps": VariantMetadata(
         variant_id="T5_arial_all_caps",
         variant_bucket="capitalization",
         font_family="Arial",
         weight="bold",
+        caps="all_caps",
+        size=48,
+    ),
+    # T5b (v0b runs onward) isolates capitalization: regular weight, caps only.
+    "T5b_arial_caps": VariantMetadata(
+        variant_id="T5b_arial_caps",
+        variant_bucket="capitalization",
+        font_family="Arial",
+        weight="regular",
         caps="all_caps",
         size=48,
     ),

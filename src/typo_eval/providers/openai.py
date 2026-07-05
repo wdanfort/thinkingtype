@@ -18,6 +18,17 @@ class OpenAIProvider(Provider):
 
     def __init__(self) -> None:
         self.client = OpenAI()
+        self.last_usage = None
+
+    def _capture_usage(self, resp) -> None:
+        usage = getattr(resp, "usage", None)
+        if usage is not None:
+            self.last_usage = {
+                "input_tokens": usage.prompt_tokens,
+                "output_tokens": usage.completion_tokens,
+            }
+        else:
+            self.last_usage = None
 
     def infer_text(
         self,
@@ -26,8 +37,12 @@ class OpenAIProvider(Provider):
         input_text: str,
         question: str,
         system_prompt: str,
+        seed: int | None = None,
     ) -> str:
         """Run inference on text input using OpenAI."""
+        kwargs = {}
+        if seed is not None:
+            kwargs["seed"] = seed
         resp = self.client.chat.completions.create(
             model=model,
             temperature=temperature,
@@ -35,7 +50,9 @@ class OpenAIProvider(Provider):
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": make_text_prompt(input_text, question)},
             ],
+            **kwargs,
         )
+        self._capture_usage(resp)
         return resp.choices[0].message.content or ""
 
     def infer_image(
@@ -45,9 +62,13 @@ class OpenAIProvider(Provider):
         image_path: str,
         question: str,
         system_prompt: str,
+        seed: int | None = None,
     ) -> str:
         """Run inference on image input using OpenAI."""
         data_url = _encode_image(image_path)
+        kwargs = {}
+        if seed is not None:
+            kwargs["seed"] = seed
         resp = self.client.chat.completions.create(
             model=model,
             temperature=temperature,
@@ -61,7 +82,9 @@ class OpenAIProvider(Provider):
                     ],
                 },
             ],
+            **kwargs,
         )
+        self._capture_usage(resp)
         return resp.choices[0].message.content or ""
 
 

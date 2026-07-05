@@ -24,6 +24,17 @@ class GoogleProvider(Provider):
         if not api_key:
             raise ValueError("GOOGLE_API_KEY environment variable not set")
         self.client = genai.Client(api_key=api_key)
+        self.last_usage = None
+
+    def _capture_usage(self, response) -> None:
+        usage = getattr(response, "usage_metadata", None)
+        if usage is not None:
+            self.last_usage = {
+                "input_tokens": usage.prompt_token_count or 0,
+                "output_tokens": usage.candidates_token_count or 0,
+            }
+        else:
+            self.last_usage = None
 
     def infer_text(
         self,
@@ -32,8 +43,9 @@ class GoogleProvider(Provider):
         input_text: str,
         question: str,
         system_prompt: str,
+        seed: int | None = None,
     ) -> str:
-        """Run inference on text input using Gemini."""
+        """Run inference on text input using Gemini. seed is ignored (no API support)."""
         prompt = make_text_prompt(input_text, question)
 
         response = self.client.models.generate_content(
@@ -44,6 +56,7 @@ class GoogleProvider(Provider):
                 system_instruction=system_prompt,
             ),
         )
+        self._capture_usage(response)
         return response.text if response.text else ""
 
     def infer_image(
@@ -53,8 +66,9 @@ class GoogleProvider(Provider):
         image_path: str,
         question: str,
         system_prompt: str,
+        seed: int | None = None,
     ) -> str:
-        """Run inference on image input using Gemini."""
+        """Run inference on image input using Gemini. seed is ignored (no API support)."""
         # Load image and convert to bytes
         img = Image.open(image_path)
 
@@ -77,4 +91,5 @@ class GoogleProvider(Provider):
                 system_instruction=system_prompt,
             ),
         )
+        self._capture_usage(response)
         return response.text if response.text else ""

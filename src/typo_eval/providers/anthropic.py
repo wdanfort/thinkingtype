@@ -18,6 +18,17 @@ class AnthropicProvider(Provider):
 
     def __init__(self) -> None:
         self.client = anthropic.Anthropic()
+        self.last_usage = None
+
+    def _capture_usage(self, resp) -> None:
+        usage = getattr(resp, "usage", None)
+        if usage is not None:
+            self.last_usage = {
+                "input_tokens": usage.input_tokens,
+                "output_tokens": usage.output_tokens,
+            }
+        else:
+            self.last_usage = None
 
     def infer_text(
         self,
@@ -26,8 +37,9 @@ class AnthropicProvider(Provider):
         input_text: str,
         question: str,
         system_prompt: str,
+        seed: int | None = None,
     ) -> str:
-        """Run inference on text input using Anthropic."""
+        """Run inference on text input using Anthropic. seed is ignored (no API support)."""
         resp = self.client.messages.create(
             model=model,
             max_tokens=100,
@@ -37,6 +49,7 @@ class AnthropicProvider(Provider):
                 {"role": "user", "content": make_text_prompt(input_text, question)},
             ],
         )
+        self._capture_usage(resp)
         if resp.content and len(resp.content) > 0:
             return resp.content[0].text
         return ""
@@ -48,8 +61,9 @@ class AnthropicProvider(Provider):
         image_path: str,
         question: str,
         system_prompt: str,
+        seed: int | None = None,
     ) -> str:
-        """Run inference on image input using Anthropic."""
+        """Run inference on image input using Anthropic. seed is ignored (no API support)."""
         b64_data = _encode_image_base64(image_path)
         resp = self.client.messages.create(
             model=model,
@@ -73,6 +87,7 @@ class AnthropicProvider(Provider):
                 },
             ],
         )
+        self._capture_usage(resp)
         if resp.content and len(resp.content) > 0:
             return resp.content[0].text
         return ""

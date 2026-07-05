@@ -6,6 +6,7 @@ import logging
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+import numpy as np
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 from tqdm import tqdm
@@ -45,6 +46,7 @@ def wrap_text(
 def normalize_font_sizes(
     font_paths: List[Path],
     requested_size: int,
+    method: str = "ag_height",
 ) -> Dict[str, int]:
     """
     Normalize font sizes so all fonts render at the same visual height.
@@ -55,12 +57,18 @@ def normalize_font_sizes(
     Args:
         font_paths: List of font file paths to normalize
         requested_size: The requested point size (baseline for measurement)
+        method: "ag_height" measures the bbox of "Ag" (ascender+descender);
+            "x_height" measures the bbox of "x" (x-height), which better
+            equalizes the perceived body size across fonts with different
+            ascender/descender proportions.
 
     Returns:
         Dictionary mapping font path (as string) to normalized point size
     """
     if not font_paths:
         return {}
+
+    probe = "x" if method == "x_height" else "Ag"
 
     # Measure visual heights at requested size
     visual_heights: Dict[str, int] = {}
@@ -70,8 +78,7 @@ def normalize_font_sizes(
     for font_path in font_paths:
         try:
             font = ImageFont.truetype(str(font_path), requested_size)
-            # Measure visual height using "Ag" which includes ascenders/descenders
-            bbox = draw.textbbox((0, 0), "Ag", font=font)
+            bbox = draw.textbbox((0, 0), probe, font=font)
             visual_height = bbox[3] - bbox[1]
             visual_heights[str(font_path)] = visual_height
         except Exception as e:
@@ -184,6 +191,7 @@ def render_sentences(
     metadata_rows = []
 
     # Pre-compute normalized font sizes for all variants grouped by size
+    normalization_method = config.render.font_normalization
     size_to_normalized: Dict[int, Dict[str, int]] = {}
     for variant in config.typography_variants:
         if variant.size not in size_to_normalized:
@@ -197,7 +205,9 @@ def render_sentences(
 
             # Normalize sizes for all fonts at this size level
             if font_paths:
-                size_to_normalized[variant.size] = normalize_font_sizes(font_paths, variant.size)
+                size_to_normalized[variant.size] = normalize_font_sizes(
+                    font_paths, variant.size, method=normalization_method
+                )
 
     for _, row in tqdm(sentences_df.iterrows(), total=len(sentences_df), desc="Rendering sentences"):
         sentence_id = row["sentence_id"]
@@ -216,12 +226,11 @@ def render_sentences(
 
             image_path = sentence_dir / f"{variant.id}.png"
 
-            if not image_path.exists():
-                # Use normalized font size
-                normalized_size = size_to_normalized.get(variant.size, {}).get(
-                    str(font_path), variant.size
-                )
+            normalized_size = size_to_normalized.get(variant.size, {}).get(
+                str(font_path), variant.size
+            )
 
+            if not image_path.exists():
                 img = render_text_image(
                     text,
                     font_path,
@@ -232,14 +241,36 @@ def render_sentences(
                 )
                 img.save(image_path)
 
+            width, height, ink_ratio = measure_image(image_path)
+
             metadata_rows.append({
                 "sentence_id": sentence_id,
                 "category": category,
                 "variant_id": variant.id,
                 "image_path": str(image_path),
+                "normalized_font_size": normalized_size,
+                "image_width": width,
+                "image_height": height,
+                "ink_ratio": ink_ratio,
             })
 
     return pd.DataFrame(metadata_rows)
+
+
+def measure_image(image_path: Path) -> Tuple[int, int, float]:
+    """
+    Measure width, height, and ink ratio of a rendered image.
+
+    Ink ratio is the fraction of pixels darker than near-white, a proxy for
+    how much visual "weight" the variant puts on the page. Reported in the
+    render metadata so residual rendering confounds (line width, stroke
+    weight) can be quantified rather than assumed away.
+    """
+    with Image.open(image_path) as im:
+        width, height = im.size
+        gray = np.asarray(im.convert("L"))
+    ink_ratio = float((gray < 245).mean())
+    return width, height, ink_ratio
 
 
 def render_artifacts(
