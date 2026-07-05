@@ -199,6 +199,20 @@ def cmd_run(args: argparse.Namespace, config: TypoEvalConfig, logger: logging.Lo
         if metadata_path.exists():
             artifacts_metadata_df = pd.read_csv(metadata_path)
 
+    # Optional sharding for parallel workers (disjoint sentence_id sets)
+    shard = getattr(args, "shard", None)
+    if shard:
+        shard_i, shard_n = map(int, shard.split("/"))
+        if sentences_df is not None:
+            mask = sentences_df["sentence_id"] % shard_n == shard_i
+            sentences_df = sentences_df[mask]
+            text_sentences_df = text_sentences_df[mask]
+        if sentences_metadata_df is not None:
+            sentences_metadata_df = sentences_metadata_df[
+                sentences_metadata_df["sentence_id"] % shard_n == shard_i
+            ]
+        logger.info(f"Shard {shard_i}/{shard_n}: {0 if sentences_df is None else len(sentences_df)} sentences")
+
     # Generate and save manifest
     manifest = generate_manifest(run_id, config, repo_root)
     write_manifest(manifest, data_dir / "manifests" / f"run_{run_id}.json")
@@ -361,6 +375,11 @@ def main() -> None:
         choices=["sentences", "artifacts", "both"],
         default="both",
         help="Input type to process",
+    )
+    run_parser.add_argument(
+        "--shard",
+        help="Process only sentences where sentence_id %% N == i, as 'i/N'. "
+        "Shards share a run-id and JSONL; keys never overlap across shards.",
     )
 
     # analyze command
