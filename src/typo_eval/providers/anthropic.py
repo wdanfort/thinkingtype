@@ -17,7 +17,7 @@ class AnthropicProvider(Provider):
     name = "anthropic"
 
     def __init__(self) -> None:
-        self.client = anthropic.Anthropic()
+        self.client = anthropic.Anthropic(timeout=300.0)
         self.last_usage = None
 
     def _capture_usage(self, resp) -> None:
@@ -45,7 +45,7 @@ class AnthropicProvider(Provider):
             kwargs["temperature"] = temperature
         resp = self.client.messages.create(
             model=model,
-            max_tokens=100,
+            max_tokens=1024,
             **kwargs,
             system=system_prompt,
             messages=[
@@ -53,8 +53,9 @@ class AnthropicProvider(Provider):
             ],
         )
         self._capture_usage(resp)
-        if resp.content and len(resp.content) > 0:
-            return resp.content[0].text
+        for block in resp.content:
+            if getattr(block, "type", None) == "text":
+                return block.text
         return ""
 
     def infer_image(
@@ -73,7 +74,7 @@ class AnthropicProvider(Provider):
             kwargs["temperature"] = temperature
         resp = self.client.messages.create(
             model=model,
-            max_tokens=100,
+            max_tokens=1024,
             **kwargs,
             system=system_prompt,
             messages=[
@@ -94,8 +95,9 @@ class AnthropicProvider(Provider):
             ],
         )
         self._capture_usage(resp)
-        if resp.content and len(resp.content) > 0:
-            return resp.content[0].text
+        for block in resp.content:
+            if getattr(block, "type", None) == "text":
+                return block.text
         return ""
 
 

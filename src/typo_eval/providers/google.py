@@ -23,7 +23,10 @@ class GoogleProvider(Provider):
         api_key = os.getenv("GOOGLE_API_KEY")
         if not api_key:
             raise ValueError("GOOGLE_API_KEY environment variable not set")
-        self.client = genai.Client(api_key=api_key)
+        self.client = genai.Client(
+            api_key=api_key,
+            http_options=types.HttpOptions(timeout=300_000),  # ms
+        )
         self.last_usage = None
 
     def _capture_usage(self, response) -> None:

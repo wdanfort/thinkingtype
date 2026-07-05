@@ -17,7 +17,7 @@ class OpenAIProvider(Provider):
     name = "openai"
 
     def __init__(self) -> None:
-        self.client = OpenAI()
+        self.client = OpenAI(timeout=300.0)
         self.last_usage = None
         # Set by the inference loop from ProviderConfig.service_tier
         self.service_tier = None
