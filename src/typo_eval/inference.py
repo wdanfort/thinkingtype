@@ -178,6 +178,7 @@ def run_inference(
     # Get provider config
     provider_config = getattr(config.providers, provider_name)
     provider = get_provider(provider_name)
+    provider.service_tier = getattr(provider_config, "service_tier", None)
 
     inference_cfg = config.inference
     temperature = inference_cfg.temperature

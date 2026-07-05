@@ -69,6 +69,9 @@ class ProviderConfig(BaseModel):
     api_key_env: str = ""
     model_text: str = ""
     model_vision: str = ""
+    # OpenAI only: "flex" processes at ~50% cost with slower, queued
+    # responses. Ignored by other providers.
+    service_tier: Optional[str] = None
 
 
 class ProvidersConfig(BaseModel):
@@ -95,7 +98,9 @@ class InferenceConfig(BaseModel):
     """Inference configuration."""
 
     mode: str = "both"  # "dimensions" | "decision" | "both"
-    temperature: float = 0.0
+    # None omits the temperature parameter entirely (required for
+    # reasoning-era models, which reject explicit temperature values).
+    temperature: Optional[float] = 0.0
     repeats: int = 1
     dimensions: List[str] = Field(default_factory=lambda: [
         "urgent",

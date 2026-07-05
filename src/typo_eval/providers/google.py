@@ -29,9 +29,12 @@ class GoogleProvider(Provider):
     def _capture_usage(self, response) -> None:
         usage = getattr(response, "usage_metadata", None)
         if usage is not None:
+            # Thinking tokens are billed at the output rate; include them so
+            # cost accounting from these fields is accurate.
+            thoughts = getattr(usage, "thoughts_token_count", None) or 0
             self.last_usage = {
                 "input_tokens": usage.prompt_token_count or 0,
-                "output_tokens": usage.candidates_token_count or 0,
+                "output_tokens": (usage.candidates_token_count or 0) + thoughts,
             }
         else:
             self.last_usage = None
@@ -52,8 +55,8 @@ class GoogleProvider(Provider):
             model=model,
             contents=prompt,
             config=types.GenerateContentConfig(
-                temperature=temperature,
                 system_instruction=system_prompt,
+                **({} if temperature is None else {"temperature": temperature}),
             ),
         )
         self._capture_usage(response)
@@ -87,8 +90,8 @@ class GoogleProvider(Provider):
                 prompt,
             ],
             config=types.GenerateContentConfig(
-                temperature=temperature,
                 system_instruction=system_prompt,
+                **({} if temperature is None else {"temperature": temperature}),
             ),
         )
         self._capture_usage(response)

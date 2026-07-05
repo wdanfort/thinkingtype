@@ -40,10 +40,13 @@ class AnthropicProvider(Provider):
         seed: int | None = None,
     ) -> str:
         """Run inference on text input using Anthropic. seed is ignored (no API support)."""
+        kwargs = {}
+        if temperature is not None:
+            kwargs["temperature"] = temperature
         resp = self.client.messages.create(
             model=model,
             max_tokens=100,
-            temperature=temperature,
+            **kwargs,
             system=system_prompt,
             messages=[
                 {"role": "user", "content": make_text_prompt(input_text, question)},
@@ -65,10 +68,13 @@ class AnthropicProvider(Provider):
     ) -> str:
         """Run inference on image input using Anthropic. seed is ignored (no API support)."""
         b64_data = _encode_image_base64(image_path)
+        kwargs = {}
+        if temperature is not None:
+            kwargs["temperature"] = temperature
         resp = self.client.messages.create(
             model=model,
             max_tokens=100,
-            temperature=temperature,
+            **kwargs,
             system=system_prompt,
             messages=[
                 {

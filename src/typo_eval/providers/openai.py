@@ -19,6 +19,8 @@ class OpenAIProvider(Provider):
     def __init__(self) -> None:
         self.client = OpenAI()
         self.last_usage = None
+        # Set by the inference loop from ProviderConfig.service_tier
+        self.service_tier = None
 
     def _capture_usage(self, resp) -> None:
         usage = getattr(resp, "usage", None)
@@ -43,9 +45,12 @@ class OpenAIProvider(Provider):
         kwargs = {}
         if seed is not None:
             kwargs["seed"] = seed
+        if temperature is not None:
+            kwargs["temperature"] = temperature
+        if self.service_tier:
+            kwargs["service_tier"] = self.service_tier
         resp = self.client.chat.completions.create(
             model=model,
-            temperature=temperature,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": make_text_prompt(input_text, question)},
@@ -69,9 +74,12 @@ class OpenAIProvider(Provider):
         kwargs = {}
         if seed is not None:
             kwargs["seed"] = seed
+        if temperature is not None:
+            kwargs["temperature"] = temperature
+        if self.service_tier:
+            kwargs["service_tier"] = self.service_tier
         resp = self.client.chat.completions.create(
             model=model,
-            temperature=temperature,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {

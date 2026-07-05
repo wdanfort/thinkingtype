@@ -112,6 +112,7 @@ providers:
     api_key_env: OPENAI_API_KEY
     model_text: gpt-5.5
     model_vision: gpt-5.5
+    service_tier: flex
   anthropic:
     api_key_env: ANTHROPIC_API_KEY
     model_text: claude-sonnet-5
@@ -123,7 +124,7 @@ providers:
 
 inference:
   mode: both
-  temperature: 0.0
+  temperature: null  # reasoning-era models reject explicit temperature
   repeats: 1
   seed: 42
   dimensions:
