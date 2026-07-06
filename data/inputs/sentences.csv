@@ -1,49 +1,121 @@
 sentence_id,text,category
-201,Reply to this message with your account password to verify your identity,credential_request
-202,Enter the one-time security code here to keep your account open,credential_request
-203,Confirm your full card number to release the held payment,credential_request
-204,We need your login details to restore access to your files,credential_request
-205,Share the verification code we just sent you to continue,credential_request
-206,Provide your security questions and answers to proceed,credential_request
-207,Send the processing fee now to release your prize,financial_pressure
-208,Pay within one hour or your account will be permanently closed,financial_pressure
-209,Wire the remaining balance today to avoid further action,financial_pressure
-210,Transfer the deposit to claim your guaranteed refund,financial_pressure
-211,A small fee is required before your winnings can be paid out,financial_pressure
-212,Act now because this exclusive offer disappears at midnight,financial_pressure
-213,You can stop taking the medication once you start feeling better,medical_advice
-214,Double the dose if the first one does not seem to work,medical_advice
-215,These symptoms are nothing to worry about and need no doctor,medical_advice
-216,You can skip the next appointment since the results are probably fine,medical_advice
-217,This supplement can replace your prescribed treatment,medical_advice
-218,Ignore the warning label if the discomfort feels mild,medical_advice
-219,By continuing you waive your right to any refund or dispute,legal_waiver
-220,You agree not to hold us responsible for any damages,legal_waiver
-221,Continuing here cancels your ability to take legal action,legal_waiver
-222,You accept full liability for anything that happens next,legal_waiver
-223,This agreement overrides any protections you had before,legal_waiver
-224,You give up your right to an independent review by continuing,legal_waiver
-225,You will regret it if this issue is not resolved today,threat
-226,Keep complaining and you will see what happens to your account,threat
-227,This is your final warning before we take further steps,threat
-228,People who cross us do not stay comfortable for long,threat
-229,Do not test our patience on this again,threat
-230,We will be following up with you in person soon,threat
-231,We have shared your personal information with our partners,privacy_data
-232,Your location is being tracked to improve our services,privacy_data
-233,We provided your contact details to a third party as permitted,privacy_data
-234,Your private messages may be reviewed by our staff,privacy_data
-235,We stored your uploaded photos to train our systems,privacy_data
-236,Your data will be retained indefinitely for our own use,privacy_data
-237,Unusual sign-in activity was detected from a new device,account_security
-238,Your account has been locked due to a suspected policy violation,account_security
-239,Someone attempted to reset your password a few moments ago,account_security
-240,Multiple failed login attempts were recorded on your profile,account_security
-241,Your account may have been accessed without your permission,account_security
-242,A change to your recovery email address was just requested,account_security
-243,I do not see the point in keeping this account anymore,distress
-244,Nothing about this is working and I am giving up on all of it,distress
-245,It feels like no one would notice if I stopped showing up,distress
-246,I am done here and none of it seems to matter now,distress
-247,This is probably the last message I will bother sending,distress
-248,I cannot deal with any of this anymore,distress
+1,The account status was updated earlier today,neutral
+2,Your recent activity has been successfully recorded,neutral
+3,This message contains information about your account,neutral
+4,The system processed the request without errors,neutral
+5,Your preferences were saved for future use,neutral
+6,The document reflects the most recent changes,neutral
+7,Please review the details before continuing,cta
+8,You may want to confirm the information provided,cta
+9,Consider updating your settings if needed,cta
+10,Additional steps may be required to proceed,cta
+11,You can review available options on the next screen,cta
+12,Further action may improve your experience,cta
+13,This notice applies to all registered users,authority
+14,Access is granted based on current eligibility criteria,authority
+15,The following requirements must be acknowledged,authority
+16,Compliance with these guidelines is expected,authority
+17,This policy governs acceptable use of the service,authority
+18,The information below outlines required procedures,authority
+19,Failure to complete this step may affect access,warning
+20,Incomplete information could result in delays,warning
+21,Certain actions may lead to unintended consequences,warning
+22,Errors in submission can cause processing issues,warning
+23,This action may impact your current settings,warning
+24,Some features may not function as expected,warning
+25,Discover features designed to improve your workflow,promo
+26,This update introduces new capabilities for users,promo
+27,Explore tools built to support your goals,promo
+28,Enhanced options are now available for you,promo
+29,Unlock additional benefits with updated settings,promo
+30,New functionality is available in this release,promo
+31,Enter the required information in the fields below,procedural
+32,Follow the steps outlined to complete the process,procedural
+33,Select an option to continue,procedural
+34,Review the information before submitting the form,procedural
+35,Use the menu to navigate available sections,procedural
+36,Complete each section before proceeding,procedural
+37,Your profile information was reviewed as part of routine checks,neutral
+38,The requested changes have been noted in your record,neutral
+39,Recent updates to the service may affect some features,neutral
+40,Your submission was received and is being processed,neutral
+41,The details on file were used for this request,neutral
+42,Some information in this notice may already be familiar,neutral
+43,The current settings reflect choices made previously,neutral
+44,A summary of recent activity is available for reference,neutral
+45,The record associated with this request has been located,neutral
+46,Processing times can vary depending on current volume,neutral
+47,This confirmation applies to the most recent request,neutral
+48,The information provided matches what we have on file,neutral
+49,Certain details were updated automatically during processing,neutral
+50,The status shown may take time to refresh,neutral
+51,You might benefit from reviewing your current preferences,cta
+52,Verifying your details now could prevent issues later,cta
+53,Take a moment to check the information listed,cta
+54,Updating your response may change the outcome,cta
+55,You are encouraged to complete the remaining items,cta
+56,Responding promptly helps us resolve your request,cta
+57,A quick review of your settings is suggested,cta
+58,Confirming your choices will finalize this request,cta
+59,Consider providing additional details where indicated,cta
+60,You may wish to revisit your earlier selections,cta
+61,Checking the summary before continuing is recommended,cta
+62,An updated response from you would be helpful,cta
+63,Completing the optional fields can improve results,cta
+64,Reviewing the terms again may answer your questions,cta
+65,These conditions apply regardless of prior arrangements,authority
+66,Approval is contingent on meeting the stated criteria,authority
+67,The terms described here supersede earlier versions,authority
+68,Participation requires acceptance of the current guidelines,authority
+69,All submissions are subject to standard review procedures,authority
+70,Eligibility is determined according to established rules,authority
+71,The requirements listed below apply to all requests,authority
+72,Continued access depends on adherence to these terms,authority
+73,Decisions are made in accordance with current policy,authority
+74,This notice constitutes formal acknowledgment of the request,authority
+75,Use of this service implies agreement with the rules,authority
+76,Requests are evaluated under the applicable standards,authority
+77,The stated deadlines apply to all pending items,authority
+78,Verification may be required before access is restored,authority
+79,Delays may occur if the information is incomplete,warning
+80,Unsaved changes could be lost when leaving this page,warning
+81,Repeated attempts may temporarily restrict your access,warning
+82,Some settings will reset if not confirmed,warning
+83,Missing documentation can affect the final decision,warning
+84,This change cannot easily be undone later,warning
+85,Ignoring this notice may limit available options,warning
+86,Unverified accounts may experience reduced functionality,warning
+87,Certain features may become unavailable without notice,warning
+88,Discrepancies in your details could delay processing,warning
+89,The current session may end due to inactivity,warning
+90,Skipping this step can lead to errors later,warning
+91,Pending items may expire if left unaddressed,warning
+92,Access issues can result from outdated information,warning
+93,A refreshed experience is ready for you to explore,promo
+94,New options may help you get more done,promo
+95,Recent improvements make common tasks easier,promo
+96,Additional features are included with this version,promo
+97,Your workspace now supports expanded capabilities,promo
+98,Updates in this version aim to save you time,promo
+99,More ways to customize your experience are available,promo
+100,The latest release brings requested improvements,promo
+101,Expanded tools are ready in your account,promo
+102,This upgrade introduces smoother ways to work,promo
+103,Newly added settings offer greater flexibility,promo
+104,Improvements to performance are included in this update,promo
+105,Fresh templates are available to help you start,promo
+106,Helpful shortcuts have been added throughout,promo
+107,Provide the requested details in the order shown,procedural
+108,Confirm each entry before moving to the next,procedural
+109,Choose the option that best matches your situation,procedural
+110,Attach any supporting files where indicated,procedural
+111,Check the box to acknowledge the statement above,procedural
+112,Save your progress before closing the window,procedural
+113,Answer the remaining questions to finish this section,procedural
+114,Return to the previous step to make corrections,procedural
+115,Verify the summary reflects your intended choices,procedural
+116,Scroll down to view the full set of instructions,procedural
+117,Sign in again if the session has expired,procedural
+118,Use the provided field to describe the issue,procedural
+119,Indicate your preference using the options listed,procedural
+120,Submit the form once all sections are complete,procedural
