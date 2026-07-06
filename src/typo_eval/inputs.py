@@ -185,7 +185,10 @@ def generate_sentences(
     if source == "file":
         file_path = sentences_config.get("path")
         if file_path and Path(file_path).exists():
-            return pd.read_csv(file_path)
+            df = pd.read_csv(file_path)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            df.to_csv(output_path, index=False)
+            return df
         raise FileNotFoundError(f"Sentences file not found: {file_path}")
 
     # Synthetic generation - use default sentences
