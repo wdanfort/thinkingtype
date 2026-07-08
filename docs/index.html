@@ -609,13 +609,14 @@
 
     <!-- WHY THIS MIGHT MATTER -->
     <div class="why-matter-box">
-      <h2>Why This Might Matter</h2>
+      <h2>Does this actually change a decision?</h2>
+      <p>Worth being honest about the &ldquo;so what.&rdquo; Most of what I measured is a shift in <em>subjective</em> judgments &mdash; formal, professional, trustworthy &mdash; and a subjective flip isn&rsquo;t right or wrong, it&rsquo;s just a difference. On its own, &ldquo;a VLM reads this as less formal&rdquo; doesn&rsquo;t tell anyone to do anything differently. The finding becomes consequential only where a subjective judgment feeds a <strong>decision someone owns</strong> &mdash; approve/deny, escalate/don&rsquo;t, pass/fail &mdash; and typography pushes a borderline case across the line. That&rsquo;s the link this MVP couldn&rsquo;t close: the escalation experiment was meant to be that bridge, and it saturated (<a href="#finding-5">Finding 5</a>). So treat these results as a well-characterized <em>input signal</em>, not yet a demonstrated decision risk. Here&rsquo;s where I&rsquo;d expect it to bite:</p>
 
-      <h3>For product teams</h3>
-      <p>If your system lets a VLM read documents directly (resumes, forms, claims, receipts, screenshots), typography is an input to its judgments that you probably aren&rsquo;t controlling. The good news is the effect is shrinking with model generation; the caution is that &ldquo;less formal / less professional when rendered&rdquo; is consistent enough to matter for anything that scores tone or professionalism from a page image.</p>
+      <h3>For product teams running VLM triage or scoring</h3>
+      <p>If a VLM reads documents and something downstream keys on its tone or quality judgment (triage, ranking, auto-approval), typography is an uncontrolled input. The effect is shrinking with model generation, but &ldquo;less formal / less professional when rendered&rdquo; is consistent enough that anything scoring professionalism from a page image should test its own gate on the same content in two fonts before trusting it.</p>
 
-      <h3>For people whose documents get read by VLMs</h3>
-      <p>Standard fonts (Times, Arial) produce the most predictable behavior in every model tested. Stylized and accessibility fonts move judgments more &mdash; OpenDyslexic in particular, which is worth watching as a fairness question, though the effect is small and I want more evidence before making strong claims.</p>
+      <h3>For accessibility and fairness</h3>
+      <p>This is the one thread that&rsquo;s actionable <em>today</em>, because it isn&rsquo;t subjective: if accessibility-formatted documents (OpenDyslexic) are judged differently on identical content, that&rsquo;s an ADA/fairness question, not a taste one. The effect here is small and I want more evidence &mdash; but it&rsquo;s the result most likely to force a decision, and the one I&rsquo;d pin down next.</p>
 
       <h3>For robustness research</h3>
       <p>The text/image gap on identical content is a form of inconsistency worth tracking over time, and the fact that its <em>direction</em> varies by model suggests the associations are learned, not architectural.</p>
@@ -681,11 +682,12 @@
       <li><strong>No mechanism.</strong> I can describe the patterns, not explain why a given model reads a given font the way it does.</li>
     </ul>
 
-    <h2 id="whats-next">What&rsquo;s Next</h2>
-    <p><strong>Boundary-calibrated escalation content.</strong> Build escalation cases the text model flags about half the time, so the decision effect can actually be measured &mdash; the clearest open problem this MVP surfaced.</p>
-    <p><strong>Real documents.</strong> Resumes, intake notes, benefits appeals, to see if sentence-level patterns carry over.</p>
-    <p><strong>Beyond fonts.</strong> Color, highlighting, layout.</p>
-    <p><strong>Tracking over time.</strong> The gap halved from GPT-4o to frontier; this MVP is the first datapoint in watching it as models update.</p>
+    <h2 id="whats-next">Future Directions</h2>
+    <p><strong>Close the decision link &mdash; the experiment that decides whether this matters.</strong> The open question is whether any of this moves a <em>decision</em>, not just a judgment. The clean test: pick a real gate (r&eacute;sum&eacute; screen, moderation triage, eligibility/approval), build cases the text model decides right at the ~50% line &mdash; genuinely on the fence &mdash; and measure whether rendering the same content as an image flips the outcome, and in which direction. Both stimulus sets here missed that boundary in opposite directions (<a href="#finding-5">Finding 5</a>); calibrating to it is the whole game. A real effect is a concrete risk for VLM-in-the-loop pipelines; a null is a genuine &ldquo;feed VLMs images freely, the gate is robust.&rdquo; Either answer changes what someone builds &mdash; which is what turns this from a novelty into a result.</p>
+    <p><strong>Pin down the accessibility-fairness effect.</strong> Does the OpenDyslexic gap survive at scale, is it directional (harsher?), and does it move a real gate? If yes, &ldquo;VLMs judge accessibility-formatted documents differently on identical content&rdquo; is a compliance-relevant finding, not a curiosity.</p>
+    <p><strong>Trace attribute &rarr; decision.</strong> Which judgment shifts actually propagate to decision shifts &mdash; does &ldquo;reads as less professional&rdquo; predict a hire/approve flip? That link is the mechanism that makes a subjective wobble consequential, and it&rsquo;s cheap to measure once the gate above exists.</p>
+    <p><strong>Real documents, and beyond fonts.</strong> R&eacute;sum&eacute;s, intake notes, benefits appeals; then color, highlighting, and layout &mdash; typography is one visual cue among many.</p>
+    <p><strong>Track the gap over time.</strong> It halved from GPT-4o to frontier; this MVP is the first datapoint in watching whether it keeps closing.</p>
 
     <hr class="footer-divider" />
 

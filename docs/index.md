@@ -81,13 +81,17 @@ One signal is worth flagging as future work rather than a finding: **GPT-5.5 was
 
 Honest takeaway: the strong "VLMs quietly drop borderline cases" claim I started with does not survive a properly-powered, same-model test. Testing it right needs escalation content calibrated to the decision boundary — the clearest open problem this MVP surfaced.
 
-## Why this might matter
+## Does this actually change a decision?
 
-**For product teams.** If your system lets a VLM read documents directly, typography is an input to its judgments you probably aren't controlling. The good news is the effect is shrinking with model generation; the caution is that "less formal / less professional when rendered" is consistent enough to matter for anything that scores tone or professionalism from a page image.
+Worth being honest about the "so what." Most of what I measured is a shift in *subjective* judgments — formal, professional, trustworthy — and a subjective flip isn't right or wrong, it's just a difference. On its own, "a VLM reads this as less formal" doesn't tell anyone to do anything differently. The finding becomes consequential only where a subjective judgment feeds a **decision someone owns** — approve/deny, escalate/don't, pass/fail — and typography pushes a borderline case across the line.
 
-**For people whose documents get read by VLMs.** Standard fonts (Times, Arial) produce the most predictable behavior. Stylized and accessibility fonts move judgments more — OpenDyslexic in particular, which is worth watching as a fairness question, though the effect is small and I want more evidence before making strong claims.
+That's exactly the link this MVP couldn't close: the escalation experiment was meant to be that bridge, and it saturated (Finding 5). So treat these results as a well-characterized *input signal*, not yet a demonstrated decision risk. Here's where I'd expect it to bite:
 
-**For robustness research.** The text/image gap on identical content is a form of inconsistency worth tracking over time, and the fact that its *direction* varies by model suggests the associations are learned, not architectural.
+**For product teams running VLM triage or scoring.** If a VLM reads documents and something downstream keys on its tone or quality judgment (triage, ranking, auto-approval), typography is an uncontrolled input. The effect is shrinking with model generation, but "less formal / less professional when rendered" is consistent enough that anything scoring professionalism from a page image should test its own gate on the same content in two fonts before trusting it.
+
+**For accessibility and fairness.** This is the one thread that's actionable *today*, because it isn't subjective: if accessibility-formatted documents (OpenDyslexic) are judged differently on identical content, that's an ADA/fairness question, not a taste one. The effect here is small and I want more evidence — but it's the result most likely to force a decision, and the one I'd pin down next.
+
+**For robustness research.** The text/image gap on identical content is inconsistency worth tracking over time, and the fact that its *direction* varies by model suggests the associations are learned, not architectural.
 
 ## Related work
 
@@ -109,11 +113,17 @@ Honest takeaway: the strong "VLMs quietly drop borderline cases" claim I started
 - **Three models, two providers.** Google's model was dropped mid-project — the previous-generation Gemini was retired by the provider (it now returns 404) and the current one timed out repeatedly. Model turnover is itself a finding about reproducibility.
 - **No mechanism.** I can describe the patterns, not explain why a given model reads a given font the way it does.
 
-## What's next
+## Future directions
 
-- Real documents (resumes, intake notes, benefits appeals) to see if sentence-level patterns carry over.
-- Beyond fonts: color, highlighting, layout.
-- Tracking the gap as models update — this MVP is the first datapoint in that series.
+**Close the decision link — the experiment that decides whether this matters.** The open question is whether any of this moves a *decision*, not just a judgment. The clean test: pick a real gate (résumé screen, moderation triage, eligibility/approval), build cases the text model decides right at the ~50% line — genuinely on the fence — and measure whether rendering the same content as an image flips the outcome, and in which direction. Both stimulus sets here missed that boundary in opposite directions (Finding 5); calibrating to it is the whole game. A real effect is a concrete risk for VLM-in-the-loop pipelines; a null is a genuine "feed VLMs images freely, the gate is robust." Either answer changes what someone builds — which is what turns this from a novelty into a result.
+
+**Pin down the accessibility-fairness effect.** Does the OpenDyslexic gap survive at scale, is it directional (harsher?), and does it move a real gate? If yes, "VLMs judge accessibility-formatted documents differently on identical content" is a compliance-relevant finding, not a curiosity.
+
+**Trace attribute → decision.** Which judgment shifts actually propagate to decision shifts — does "reads as less professional" predict a hire/approve flip? That link is the mechanism that makes a subjective wobble consequential, and it's cheap to measure once the gate above exists.
+
+**Real documents, and beyond fonts.** Résumés, intake notes, benefits appeals; then color, highlighting, and layout — typography is one visual cue among many.
+
+**Track the gap over time.** It halved from GPT-4o to frontier; this MVP is the first datapoint in watching whether it keeps closing.
 
 ## Citation
 
