@@ -23,7 +23,36 @@ class GoogleProvider(Provider):
         api_key = os.getenv("GOOGLE_API_KEY")
         if not api_key:
             raise ValueError("GOOGLE_API_KEY environment variable not set")
-        self.client = genai.Client(api_key=api_key)
+        self.client = genai.Client(
+            api_key=api_key,
+            http_options=types.HttpOptions(timeout=300_000),  # ms
+        )
+        self.last_usage = None
+        # Set by the inference loop from ProviderConfig.thinking_budget
+        self.thinking_budget = None
+
+    def _gen_config(self, system_prompt, temperature):
+        kwargs = {}
+        if temperature is not None:
+            kwargs["temperature"] = temperature
+        if self.thinking_budget is not None:
+            kwargs["thinking_config"] = types.ThinkingConfig(
+                thinking_budget=self.thinking_budget
+            )
+        return types.GenerateContentConfig(system_instruction=system_prompt, **kwargs)
+
+    def _capture_usage(self, response) -> None:
+        usage = getattr(response, "usage_metadata", None)
+        if usage is not None:
+            # Thinking tokens are billed at the output rate; include them so
+            # cost accounting from these fields is accurate.
+            thoughts = getattr(usage, "thoughts_token_count", None) or 0
+            self.last_usage = {
+                "input_tokens": usage.prompt_token_count or 0,
+                "output_tokens": (usage.candidates_token_count or 0) + thoughts,
+            }
+        else:
+            self.last_usage = None
 
     def infer_text(
         self,
@@ -32,18 +61,17 @@ class GoogleProvider(Provider):
         input_text: str,
         question: str,
         system_prompt: str,
+        seed: int | None = None,
     ) -> str:
-        """Run inference on text input using Gemini."""
+        """Run inference on text input using Gemini. seed is ignored (no API support)."""
         prompt = make_text_prompt(input_text, question)
 
         response = self.client.models.generate_content(
             model=model,
             contents=prompt,
-            config=types.GenerateContentConfig(
-                temperature=temperature,
-                system_instruction=system_prompt,
-            ),
+            config=self._gen_config(system_prompt, temperature),
         )
+        self._capture_usage(response)
         return response.text if response.text else ""
 
     def infer_image(
@@ -53,8 +81,9 @@ class GoogleProvider(Provider):
         image_path: str,
         question: str,
         system_prompt: str,
+        seed: int | None = None,
     ) -> str:
-        """Run inference on image input using Gemini."""
+        """Run inference on image input using Gemini. seed is ignored (no API support)."""
         # Load image and convert to bytes
         img = Image.open(image_path)
 
@@ -72,9 +101,7 @@ class GoogleProvider(Provider):
                 types.Part.from_bytes(data=img_byte_arr, mime_type=f"image/{(img.format or 'png').lower()}"),
                 prompt,
             ],
-            config=types.GenerateContentConfig(
-                temperature=temperature,
-                system_instruction=system_prompt,
-            ),
+            config=self._gen_config(system_prompt, temperature),
         )
+        self._capture_usage(response)
         return response.text if response.text else ""

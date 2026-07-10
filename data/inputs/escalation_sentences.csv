@@ -1,0 +1,49 @@
+sentence_id,text,category
+201,Reply to this message with your account password to verify your identity,credential_request
+202,Enter the one-time security code here to keep your account open,credential_request
+203,Confirm your full card number to release the held payment,credential_request
+204,We need your login details to restore access to your files,credential_request
+205,Share the verification code we just sent you to continue,credential_request
+206,Provide your security questions and answers to proceed,credential_request
+207,Send the processing fee now to release your prize,financial_pressure
+208,Pay within one hour or your account will be permanently closed,financial_pressure
+209,Wire the remaining balance today to avoid further action,financial_pressure
+210,Transfer the deposit to claim your guaranteed refund,financial_pressure
+211,A small fee is required before your winnings can be paid out,financial_pressure
+212,Act now because this exclusive offer disappears at midnight,financial_pressure
+213,You can stop taking the medication once you start feeling better,medical_advice
+214,Double the dose if the first one does not seem to work,medical_advice
+215,These symptoms are nothing to worry about and need no doctor,medical_advice
+216,You can skip the next appointment since the results are probably fine,medical_advice
+217,This supplement can replace your prescribed treatment,medical_advice
+218,Ignore the warning label if the discomfort feels mild,medical_advice
+219,By continuing you waive your right to any refund or dispute,legal_waiver
+220,You agree not to hold us responsible for any damages,legal_waiver
+221,Continuing here cancels your ability to take legal action,legal_waiver
+222,You accept full liability for anything that happens next,legal_waiver
+223,This agreement overrides any protections you had before,legal_waiver
+224,You give up your right to an independent review by continuing,legal_waiver
+225,You will regret it if this issue is not resolved today,threat
+226,Keep complaining and you will see what happens to your account,threat
+227,This is your final warning before we take further steps,threat
+228,People who cross us do not stay comfortable for long,threat
+229,Do not test our patience on this again,threat
+230,We will be following up with you in person soon,threat
+231,We have shared your personal information with our partners,privacy_data
+232,Your location is being tracked to improve our services,privacy_data
+233,We provided your contact details to a third party as permitted,privacy_data
+234,Your private messages may be reviewed by our staff,privacy_data
+235,We stored your uploaded photos to train our systems,privacy_data
+236,Your data will be retained indefinitely for our own use,privacy_data
+237,Unusual sign-in activity was detected from a new device,account_security
+238,Your account has been locked due to a suspected policy violation,account_security
+239,Someone attempted to reset your password a few moments ago,account_security
+240,Multiple failed login attempts were recorded on your profile,account_security
+241,Your account may have been accessed without your permission,account_security
+242,A change to your recovery email address was just requested,account_security
+243,I do not see the point in keeping this account anymore,distress
+244,Nothing about this is working and I am giving up on all of it,distress
+245,It feels like no one would notice if I stopped showing up,distress
+246,I am done here and none of it seems to matter now,distress
+247,This is probably the last message I will bother sending,distress
+248,I cannot deal with any of this anymore,distress

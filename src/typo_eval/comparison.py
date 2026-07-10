@@ -576,6 +576,30 @@ def plot_directionality_comparison(
     logger.info(f"Saved directionality comparison plot to {output_path}")
 
 
+def get_run_provider_model(run_id: str) -> Tuple[str, str]:
+    """
+    Read provider and (vision) model from a run's own records instead of
+    parsing the run_id, so non-"canonical_*" run names work too.
+    """
+    jsonl = Path(f"results/runs/{run_id}/raw/responses.jsonl")
+    provider, model = None, None
+    if jsonl.exists():
+        with jsonl.open() as f:
+            for line in f:
+                try:
+                    d = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                provider = provider or d.get("provider")
+                model = model or d.get("model")
+                if d.get("representation") == "image":
+                    # Prefer the vision-side model for display
+                    return d.get("provider", provider or "unknown"), d.get("model", model or "unknown")
+    if provider:
+        return provider, model or "unknown"
+    return run_id.replace("canonical_", "").split("_")[0], "unknown"
+
+
 def plot_decision_flip_comparison(
     canonical_runs: List[str],
     output_dir: Path
@@ -591,8 +615,8 @@ def plot_decision_flip_comparison(
 
         df = pd.read_csv(decision_csv)
 
-        # Extract provider/model from run_id or metadata
-        provider = run_id.replace("canonical_", "").split("_")[0]  # e.g., "openai"
+        # Extract provider/model from the run's own records
+        provider, _ = get_run_provider_model(run_id)
 
         # Get flip rate
         flip_row = df[
@@ -683,14 +707,9 @@ def generate_summary_table(canonical_runs: List[str], output_dir: Path) -> pd.Da
         flip_df = pd.read_csv(flip_csv)
         decision_df = pd.read_csv(decision_csv)
 
-        # Extract provider/model
-        provider = run_id.replace("canonical_", "").split("_")[0].capitalize()
-        model_map = {
-            "openai": "gpt-4o",
-            "anthropic": "claude-sonnet-4",
-            "google": "gemini-2.0-flash"
-        }
-        model = model_map.get(provider.lower(), "unknown")
+        # Extract provider/model from the run's own records
+        provider, model = get_run_provider_model(run_id)
+        provider = provider.capitalize()
 
         # Overall dimension flip rate
         overall_flip = flip_df[flip_df["group_type"] == "overall"].iloc[0]

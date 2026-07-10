@@ -51,6 +51,9 @@ class RenderConfig(BaseModel):
     })
     margins: int = 40
     max_text_width: int = 1000
+    # How to equalize visual size across fonts: "ag_height" (bbox of "Ag",
+    # includes ascender+descender) or "x_height" (bbox of "x").
+    font_normalization: str = "ag_height"
 
 
 class OCRConfig(BaseModel):
@@ -66,6 +69,12 @@ class ProviderConfig(BaseModel):
     api_key_env: str = ""
     model_text: str = ""
     model_vision: str = ""
+    # OpenAI only: "flex" processes at ~50% cost with slower, queued
+    # responses. Ignored by other providers.
+    service_tier: Optional[str] = None
+    # Google only: thinking token budget (0 disables thinking). Ignored by
+    # other providers.
+    thinking_budget: Optional[int] = None
 
 
 class ProvidersConfig(BaseModel):
@@ -92,7 +101,9 @@ class InferenceConfig(BaseModel):
     """Inference configuration."""
 
     mode: str = "both"  # "dimensions" | "decision" | "both"
-    temperature: float = 0.0
+    # None omits the temperature parameter entirely (required for
+    # reasoning-era models, which reject explicit temperature values).
+    temperature: Optional[float] = 0.0
     repeats: int = 1
     dimensions: List[str] = Field(default_factory=lambda: [
         "urgent",
@@ -110,6 +121,9 @@ class InferenceConfig(BaseModel):
     max_retries: int = 6
     rate_limit_sleep: float = 1.5
     fail_fast: bool = False
+    # API-level sampling seed. Only OpenAI accepts a seed parameter;
+    # other providers ignore it (their APIs offer no seed).
+    seed: Optional[int] = None
 
 
 class BootstrapConfig(BaseModel):

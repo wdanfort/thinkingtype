@@ -902,8 +902,12 @@ def analyze_run(
     flip_rates.to_csv(analysis_dir / "flip_rates.csv", index=False)
     logger.info("Saved flip_rates.csv")
 
-    # 2. Bias direction (dimensions + variants)
-    bias_direction = generate_bias_direction_csv(paired_dimensions)
+    # 2. Bias direction (dimensions + variants) with CIs and McNemar/BH
+    bias_direction = generate_bias_direction_csv(
+        paired_dimensions,
+        n_boot=bootstrap_cfg.n_boot,
+        alpha=bootstrap_cfg.alpha,
+    )
     bias_direction.to_csv(analysis_dir / "bias_direction.csv", index=False)
     logger.info("Saved bias_direction.csv")
 
@@ -922,7 +926,53 @@ def analyze_run(
         decision_analysis = pd.DataFrame()
         logger.info("No decision data; skipping decision_analysis.csv")
 
-    # 4. Headline metrics JSON
+    # 4. Statistical tests table (single file collecting all inference results)
+    stat_rows = []
+    for _, row in bias_direction.iterrows():
+        stat_rows.append({
+            "source": "dimensions",
+            "group_type": row["group_type"],
+            "group_id": row["group_id"],
+            "no_to_yes": row["no_to_yes"],
+            "yes_to_no": row["yes_to_no"],
+            "net_bias": row["net_bias"],
+            "net_bias_ci_low": row["net_bias_ci_low"],
+            "net_bias_ci_high": row["net_bias_ci_high"],
+            "p_mcnemar": row["p_mcnemar"],
+            "p_bh": row["p_bh"],
+            "significant_bh_05": bool(row["p_bh"] < 0.05) if pd.notna(row["p_bh"]) else False,
+        })
+    if len(paired_decision) > 0:
+        dec_n01 = int((paired_decision["delta"] == 1).sum())
+        dec_n10 = int((paired_decision["delta"] == -1).sum())
+        dec_total = dec_n01 + dec_n10
+        dec_dir_row = decision_analysis[
+            (decision_analysis["metric"] == "direction")
+            & (decision_analysis["group_type"] == "overall")
+        ]
+        dec_p_row = decision_analysis[
+            decision_analysis["metric"] == "direction_p_mcnemar"
+        ]
+        dec_p = float(dec_p_row.iloc[0]["value"]) if len(dec_p_row) > 0 else float("nan")
+        stat_rows.append({
+            "source": "decision",
+            "group_type": "overall",
+            "group_id": "all",
+            "no_to_yes": dec_n01,
+            "yes_to_no": dec_n10,
+            "net_bias": 100 * (dec_n01 - dec_n10) / dec_total if dec_total > 0 else 0,
+            "net_bias_ci_low": 100 * dec_dir_row.iloc[0]["ci_low"] if len(dec_dir_row) > 0 else float("nan"),
+            "net_bias_ci_high": 100 * dec_dir_row.iloc[0]["ci_high"] if len(dec_dir_row) > 0 else float("nan"),
+            "p_mcnemar": dec_p,
+            # Single decision test; reported unadjusted (its own family)
+            "p_bh": dec_p,
+            "significant_bh_05": bool(dec_p < 0.05) if pd.notna(dec_p) else False,
+        })
+    statistical_tests = pd.DataFrame(stat_rows)
+    statistical_tests.to_csv(analysis_dir / "statistical_tests.csv", index=False)
+    logger.info("Saved statistical_tests.csv")
+
+    # 5. Headline metrics JSON
     headline_metrics = generate_headline_metrics_json(
         paired_dimensions,
         paired_decision,

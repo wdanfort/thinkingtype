@@ -12,6 +12,15 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
+from typo_eval.stats import (
+    bh_fdr,
+    cluster_bootstrap_ci,
+    lift_stat,
+    mcnemar_exact,
+    net_bias_stat,
+    per_cluster_counts,
+    rate_stat,
+)
 from typo_eval.taxonomy import get_variant_metadata
 
 logger = logging.getLogger(__name__)
@@ -37,24 +46,14 @@ def generate_flip_rates_csv(
     """
     # Filter out T8_small_text variant
     paired = paired[paired["variant_id"] != "T8_small_text"].copy()
+    paired["_one"] = 1
 
     rows = []
-    rng = np.random.default_rng(seed)
-    sentences = paired["sentence_id"].unique()
 
-    # Helper function for bootstrap CI
+    # Cluster bootstrap by sentence, resampling clusters with multiplicity
     def compute_ci(group_df):
-        boot_rates = []
-        for _ in range(n_boot):
-            sample_sentences = rng.choice(sentences, size=len(sentences), replace=True)
-            boot_df = group_df[group_df["sentence_id"].isin(sample_sentences)]
-            if len(boot_df) > 0:
-                boot_rates.append(boot_df["flip"].mean())
-
-        if boot_rates:
-            lo, hi = np.percentile(boot_rates, [100 * alpha / 2, 100 * (1 - alpha / 2)])
-            return lo, hi
-        return np.nan, np.nan
+        counts = per_cluster_counts(group_df, "sentence_id", ["flip", "_one"])
+        return cluster_bootstrap_ci(counts, rate_stat, n_boot=n_boot, alpha=alpha, seed=seed)
 
     # Overall flip rate
     flip_count = int(paired["flip"].sum())
@@ -117,9 +116,14 @@ def generate_flip_rates_csv(
     return df
 
 
-def generate_bias_direction_csv(paired: pd.DataFrame) -> pd.DataFrame:
+def generate_bias_direction_csv(
+    paired: pd.DataFrame,
+    n_boot: int = 2000,
+    alpha: float = 0.05,
+    seed: int = 42,
+) -> pd.DataFrame:
     """
-    Generate consolidated bias direction CSV.
+    Generate consolidated bias direction CSV with inference columns.
 
     Output schema:
     - group_type: "overall" | "dimension" | "variant"
@@ -130,67 +134,25 @@ def generate_bias_direction_csv(paired: pd.DataFrame) -> pd.DataFrame:
     - pct_no_to_yes: percentage NO→YES
     - pct_yes_to_no: percentage YES→NO
     - net_bias: pct_no_to_yes - pct_yes_to_no (positive = vision more positive)
+    - net_bias_ci_low / net_bias_ci_high: cluster-bootstrap 95% CI for net_bias
+      (resampling sentences with replacement; primary inference)
+    - p_mcnemar: exact McNemar p-value on discordant pairs (secondary;
+      anti-conservative because pairs within a sentence are correlated)
+    - p_bh: Benjamini-Hochberg adjusted p_mcnemar. The correction family is
+      all rows of this table (overall + per-dimension + per-variant) within
+      a single run.
     """
     # Filter out T8_small_text variant
     paired = paired[paired["variant_id"] != "T8_small_text"].copy()
+    paired["_n01"] = (paired["delta"] == 1).astype(int)
+    paired["_n10"] = (paired["delta"] == -1).astype(int)
 
     rows = []
 
-    # Helper function to compute direction stats
-    def compute_direction(group_df):
-        flipped = group_df[group_df["flip"] == 1]
-        if len(flipped) == 0:
-            return 0, 0, 0
-
-        no_to_yes = len(flipped[flipped["delta"] == 1])  # delta > 0 means NO→YES
-        yes_to_no = len(flipped[flipped["delta"] == -1])  # delta < 0 means YES→NO
-        return no_to_yes, yes_to_no, len(flipped)
-
-    # Overall
-    no_to_yes, yes_to_no, total_flips = compute_direction(paired)
-    if total_flips > 0:
-        pct_no_to_yes = 100 * no_to_yes / total_flips
-        pct_yes_to_no = 100 * yes_to_no / total_flips
-        net_bias = pct_no_to_yes - pct_yes_to_no
-    else:
-        pct_no_to_yes = pct_yes_to_no = net_bias = 0
-
-    rows.append({
-        "group_type": "overall",
-        "group_id": "all",
-        "no_to_yes": no_to_yes,
-        "yes_to_no": yes_to_no,
-        "total_flips": total_flips,
-        "pct_no_to_yes": pct_no_to_yes,
-        "pct_yes_to_no": pct_yes_to_no,
-        "net_bias": net_bias,
-    })
-
-    # By dimension
-    if "dimension_id" in paired.columns:
-        for dim_id, dim_df in paired.groupby("dimension_id"):
-            no_to_yes, yes_to_no, total_flips = compute_direction(dim_df)
-            if total_flips > 0:
-                pct_no_to_yes = 100 * no_to_yes / total_flips
-                pct_yes_to_no = 100 * yes_to_no / total_flips
-                net_bias = pct_no_to_yes - pct_yes_to_no
-            else:
-                pct_no_to_yes = pct_yes_to_no = net_bias = 0
-
-            rows.append({
-                "group_type": "dimension",
-                "group_id": dim_id,
-                "no_to_yes": no_to_yes,
-                "yes_to_no": yes_to_no,
-                "total_flips": total_flips,
-                "pct_no_to_yes": pct_no_to_yes,
-                "pct_yes_to_no": pct_yes_to_no,
-                "net_bias": net_bias,
-            })
-
-    # By variant
-    for var_id, var_df in paired.groupby("variant_id"):
-        no_to_yes, yes_to_no, total_flips = compute_direction(var_df)
+    def compute_row(group_type, group_id, group_df):
+        no_to_yes = int(group_df["_n01"].sum())
+        yes_to_no = int(group_df["_n10"].sum())
+        total_flips = no_to_yes + yes_to_no
         if total_flips > 0:
             pct_no_to_yes = 100 * no_to_yes / total_flips
             pct_yes_to_no = 100 * yes_to_no / total_flips
@@ -198,18 +160,41 @@ def generate_bias_direction_csv(paired: pd.DataFrame) -> pd.DataFrame:
         else:
             pct_no_to_yes = pct_yes_to_no = net_bias = 0
 
-        rows.append({
-            "group_type": "variant",
-            "group_id": var_id,
+        counts = per_cluster_counts(group_df, "sentence_id", ["_n01", "_n10"])
+        ci_low, ci_high = cluster_bootstrap_ci(
+            counts, net_bias_stat, n_boot=n_boot, alpha=alpha, seed=seed
+        )
+
+        return {
+            "group_type": group_type,
+            "group_id": group_id,
             "no_to_yes": no_to_yes,
             "yes_to_no": yes_to_no,
             "total_flips": total_flips,
             "pct_no_to_yes": pct_no_to_yes,
             "pct_yes_to_no": pct_yes_to_no,
             "net_bias": net_bias,
-        })
+            "net_bias_ci_low": ci_low,
+            "net_bias_ci_high": ci_high,
+            "p_mcnemar": mcnemar_exact(no_to_yes, yes_to_no),
+        }
+
+    # Overall
+    rows.append(compute_row("overall", "all", paired))
+
+    # By dimension
+    if "dimension_id" in paired.columns:
+        for dim_id, dim_df in paired.groupby("dimension_id"):
+            rows.append(compute_row("dimension", dim_id, dim_df))
+
+    # By variant
+    for var_id, var_df in paired.groupby("variant_id"):
+        rows.append(compute_row("variant", var_id, var_df))
 
     df = pd.DataFrame(rows)
+
+    # BH-FDR across all rows of this table (documented family choice)
+    df["p_bh"] = bh_fdr(df["p_mcnemar"].to_numpy())
 
     # Sort by total_flips descending within each group_type
     df["sort_order"] = df["group_type"].map({"overall": 0, "dimension": 1, "variant": 2})
@@ -247,22 +232,14 @@ def generate_decision_analysis_csv(
     if len(decision_paired) == 0:
         return pd.DataFrame(rows)
 
-    rng = np.random.default_rng(seed)
-    sentences = decision_paired["sentence_id"].unique()
+    decision_paired["_one"] = 1
+    decision_paired["_n01"] = (decision_paired["delta"] == 1).astype(int)
+    decision_paired["_n10"] = (decision_paired["delta"] == -1).astype(int)
 
-    # Overall decision flip rate with CI
+    # Overall decision flip rate with cluster-bootstrap CI
     flip_rate = decision_paired["flip"].mean()
-    boot_rates = []
-    for _ in range(n_boot):
-        sample_sentences = rng.choice(sentences, size=len(sentences), replace=True)
-        boot_df = decision_paired[decision_paired["sentence_id"].isin(sample_sentences)]
-        if len(boot_df) > 0:
-            boot_rates.append(boot_df["flip"].mean())
-
-    if boot_rates:
-        ci_low, ci_high = np.percentile(boot_rates, [100 * alpha / 2, 100 * (1 - alpha / 2)])
-    else:
-        ci_low, ci_high = np.nan, np.nan
+    counts = per_cluster_counts(decision_paired, "sentence_id", ["flip", "_one"])
+    ci_low, ci_high = cluster_bootstrap_ci(counts, rate_stat, n_boot=n_boot, alpha=alpha, seed=seed)
 
     rows.append({
         "metric": "flip_rate",
@@ -274,38 +251,58 @@ def generate_decision_analysis_csv(
         "n": len(decision_paired),
     })
 
-    # Flip rate by variant
+    # Flip rate by variant, with cluster-bootstrap CIs
     for var_id, var_df in decision_paired.groupby("variant_id"):
         flip_rate = var_df["flip"].mean()
-        n = len(var_df)
+        var_counts = per_cluster_counts(var_df, "sentence_id", ["flip", "_one"])
+        var_ci_low, var_ci_high = cluster_bootstrap_ci(
+            var_counts, rate_stat, n_boot=n_boot, alpha=alpha, seed=seed
+        )
 
         rows.append({
             "metric": "flip_rate",
             "group_type": "variant",
             "group_id": var_id,
             "value": flip_rate,
-            "ci_low": np.nan,  # Skip CI for individual variants (too slow)
-            "ci_high": np.nan,
-            "n": n,
+            "ci_low": var_ci_low,
+            "ci_high": var_ci_high,
+            "n": len(var_df),
         })
 
-    # Direction bias
-    flipped = decision_paired[decision_paired["flip"] == 1]
-    if len(flipped) > 0:
-        no_to_yes = len(flipped[flipped["delta"] == 1])
-        yes_to_no = len(flipped[flipped["delta"] == -1])
-        net_bias = (no_to_yes - yes_to_no) / len(flipped)
-    else:
-        net_bias = 0
+    # Direction bias with cluster-bootstrap CI and exact McNemar p-value
+    no_to_yes = int(decision_paired["_n01"].sum())
+    yes_to_no = int(decision_paired["_n10"].sum())
+    n_flipped = no_to_yes + yes_to_no
+    net_bias = (no_to_yes - yes_to_no) / n_flipped if n_flipped > 0 else 0
+
+    dir_counts = per_cluster_counts(decision_paired, "sentence_id", ["_n01", "_n10"])
+    # net_bias here is a fraction (not percent), so scale the percent-based stat
+    dir_ci_low, dir_ci_high = cluster_bootstrap_ci(
+        dir_counts,
+        lambda s: net_bias_stat(s) / 100.0,
+        n_boot=n_boot,
+        alpha=alpha,
+        seed=seed,
+    )
 
     rows.append({
         "metric": "direction",
         "group_type": "overall",
         "group_id": "all",
         "value": net_bias,
+        "ci_low": dir_ci_low,
+        "ci_high": dir_ci_high,
+        "n": n_flipped,
+    })
+
+    rows.append({
+        "metric": "direction_p_mcnemar",
+        "group_type": "overall",
+        "group_id": "all",
+        "value": mcnemar_exact(no_to_yes, yes_to_no),
         "ci_low": np.nan,
         "ci_high": np.nan,
-        "n": len(flipped),
+        "n": n_flipped,
     })
 
     # Compute correlations and lift (only if we have dimension data)
@@ -340,16 +337,28 @@ def generate_decision_analysis_csv(
                 else:
                     corr = 0
 
-                # Lift
-                flipped_dim = merged[merged["dim_flip"] > 0.5]  # Dimension flipped
-                not_flipped_dim = merged[merged["dim_flip"] <= 0.5]  # Dimension didn't flip
+                # Lift with cluster-bootstrap CI. Per-pair indicators:
+                # a = dim flip & dec flip, b = dim flip & no dec flip,
+                # c = no dim flip & dec flip, d = neither.
+                merged = merged.copy()
+                dim_flipped = merged["dim_flip"] > 0.5
+                dec_flipped = merged["dec_flip"] > 0.5
+                merged["_a"] = (dim_flipped & dec_flipped).astype(int)
+                merged["_b"] = (dim_flipped & ~dec_flipped).astype(int)
+                merged["_c"] = (~dim_flipped & dec_flipped).astype(int)
+                merged["_d"] = (~dim_flipped & ~dec_flipped).astype(int)
 
-                if len(flipped_dim) > 0 and len(not_flipped_dim) > 0:
-                    p_dec_given_dim = flipped_dim["dec_flip"].mean()
-                    p_dec_given_no_dim = not_flipped_dim["dec_flip"].mean()
-                    lift = p_dec_given_dim / p_dec_given_no_dim if p_dec_given_no_dim > 0 else 0
-                else:
+                lift_counts = per_cluster_counts(
+                    merged, "sentence_id", ["_a", "_b", "_c", "_d"]
+                )
+                lift = lift_stat(lift_counts.sum(axis=0))
+                if np.isnan(lift):
                     lift = 0
+                    lift_ci_low, lift_ci_high = np.nan, np.nan
+                else:
+                    lift_ci_low, lift_ci_high = cluster_bootstrap_ci(
+                        lift_counts, lift_stat, n_boot=n_boot, alpha=alpha, seed=seed
+                    )
 
                 rows.append({
                     "metric": "correlation",
@@ -366,8 +375,8 @@ def generate_decision_analysis_csv(
                     "group_type": "dimension",
                     "group_id": dim_id,
                     "value": lift,
-                    "ci_low": np.nan,
-                    "ci_high": np.nan,
+                    "ci_low": lift_ci_low,
+                    "ci_high": lift_ci_high,
                     "n": len(merged),
                 })
 

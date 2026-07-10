@@ -1,0 +1,154 @@
+# Typography Evaluation Harness v0b PILOT (n=6) - Old-generation models, confound fixed
+#
+# Differences from v0_default.yaml:
+# - OpenAI uses gpt-4o for BOTH text and vision. The v0 run compared
+#   gpt-4o-mini (text) to gpt-4o (vision), confounding modality with model.
+# - 120 sentences (ids 1-36 preserved from v0; 84 new, 20 per category).
+# - T5 (bold + all caps) replaced by T5b (regular weight + all caps) so the
+#   capitalization variant isolates one manipulation.
+# - inference.seed: 42 passed to the API where supported (OpenAI only).
+
+run_id: null
+seed: 42
+
+inputs:
+  sentences:
+    enabled: true
+    n_sentences: 6
+    categories:
+      - neutral
+      - cta
+      - authority
+      - warning
+      - promo
+      - procedural
+    source: synthetic
+    path: null
+  artifacts:
+    enabled: false
+    n_each_type: 6
+    types:
+      - email
+      - notification
+      - alert
+      - form
+    source: synthetic
+    path: null
+
+typography_variants:
+  - id: T1_times_regular
+    font_file: LiberationSerif-Regular.ttf
+    size: 48
+    weight: regular
+    uppercase: false
+    line_spacing: 1.25
+
+  - id: T2_times_bold
+    font_file: LiberationSerif-Bold.ttf
+    size: 48
+    weight: bold
+    uppercase: false
+    line_spacing: 1.25
+
+  - id: T3_arial_regular
+    font_file: LiberationSans-Regular.ttf
+    size: 48
+    weight: regular
+    uppercase: false
+    line_spacing: 1.25
+
+  - id: T4_arial_bold
+    font_file: LiberationSans-Bold.ttf
+    size: 48
+    weight: bold
+    uppercase: false
+    line_spacing: 1.25
+
+  - id: T5b_arial_caps
+    font_file: LiberationSans-Regular.ttf
+    size: 48
+    weight: regular
+    uppercase: true
+    line_spacing: 1.25
+
+  - id: T6_monospace
+    font_file: LiberationMono-Regular.ttf
+    size: 48
+    weight: regular
+    uppercase: false
+    line_spacing: 1.25
+
+  - id: T7_comic
+    font_file: ComicNeue-Regular.ttf
+    size: 48
+    weight: regular
+    uppercase: false
+    line_spacing: 1.25
+
+  - id: A1_opendyslexic_regular
+    font_file: OpenDyslexic-Regular.otf
+    size: 48
+    weight: regular
+    uppercase: false
+    line_spacing: 1.25
+
+render:
+  image_width: 1200
+  container:
+    padding: 80
+    radius: 24
+    fill: null
+    outline: null
+  margins: 40
+  max_text_width: 1000
+  # Keep ag_height for v0b to preserve stimulus comparability with v0 runs.
+  font_normalization: ag_height
+
+ocr:
+  enabled: true
+  tesseract_lang: eng
+
+providers:
+  openai:
+    api_key_env: OPENAI_API_KEY
+    model_text: gpt-4o        # v0 used gpt-4o-mini here - that was the confound
+    model_vision: gpt-4o
+  anthropic:
+    api_key_env: ANTHROPIC_API_KEY
+    model_text: claude-sonnet-4-20250514
+    model_vision: claude-sonnet-4-20250514
+  google:
+    api_key_env: GOOGLE_API_KEY
+    model_text: models/gemini-2.0-flash
+    model_vision: models/gemini-2.0-flash
+
+inference:
+  mode: both
+  temperature: 0.0
+  repeats: 1
+  seed: 42
+  dimensions:
+    - urgent
+    - immediate_action
+    - formal
+    - trustworthy
+    - persuasive
+    - emotional
+    - professional
+    - high_risk
+    - confident
+    - form_dependent
+  decision_prompt_id: escalation_v1
+  max_retries: 6
+  rate_limit_sleep: 1.5
+  fail_fast: false
+
+analysis:
+  compute_heatmaps: true
+  bootstrap:
+    n_boot: 2000
+    alpha: 0.05
+  outputs:
+    save_csv: true
+    save_png: true
+    save_md: true

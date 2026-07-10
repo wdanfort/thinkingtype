@@ -50,6 +50,11 @@ class InferenceRecord:
     raw_response: str = ""
     parsed_response: Optional[int] = None
     parse_error: Optional[str] = None
+    # Provenance/accounting fields; deliberately excluded from get_key()
+    # so resume semantics are unchanged for older JSONL files.
+    request_seed: Optional[int] = None
+    input_tokens: Optional[int] = None
+    output_tokens: Optional[int] = None
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
@@ -133,6 +138,17 @@ def _retry_call(fn, max_retries: int, sleep_s: float, jitter: float = 0.25):
     return None
 
 
+def _finalize_record(record: InferenceRecord, provider, raw: str, seed: Optional[int]) -> None:
+    """Attach response, parse result, seed, and token usage to a record."""
+    parsed, _ = parse_yes_no(raw)
+    record.raw_response = raw
+    record.parsed_response = parsed
+    record.request_seed = seed
+    usage = getattr(provider, "last_usage", None) or {}
+    record.input_tokens = usage.get("input_tokens")
+    record.output_tokens = usage.get("output_tokens")
+
+
 def run_inference(
     config: TypoEvalConfig,
     run_id: str,
@@ -162,6 +178,8 @@ def run_inference(
     # Get provider config
     provider_config = getattr(config.providers, provider_name)
     provider = get_provider(provider_name)
+    provider.service_tier = getattr(provider_config, "service_tier", None)
+    provider.thinking_budget = getattr(provider_config, "thinking_budget", None)
 
     inference_cfg = config.inference
     temperature = inference_cfg.temperature
@@ -229,13 +247,12 @@ def run_inference(
                                     text,
                                     question,
                                     DIMENSIONS_SYSTEM_PROMPT,
+                                    seed=inference_cfg.seed,
                                 ),
                                 max_retries=inference_cfg.max_retries,
                                 sleep_s=inference_cfg.rate_limit_sleep,
                             )
-                            parsed, _ = parse_yes_no(raw)
-                            record.raw_response = raw
-                            record.parsed_response = parsed
+                            _finalize_record(record, provider, raw, inference_cfg.seed)
                         except Exception as exc:
                             record.parse_error = str(exc)
                             if inference_cfg.fail_fast:
@@ -282,13 +299,12 @@ def run_inference(
                                 text,
                                 question,
                                 DECISION_SYSTEM_PROMPT,
+                                seed=inference_cfg.seed,
                             ),
                             max_retries=inference_cfg.max_retries,
                             sleep_s=inference_cfg.rate_limit_sleep,
                         )
-                        parsed, _ = parse_yes_no(raw)
-                        record.raw_response = raw
-                        record.parsed_response = parsed
+                        _finalize_record(record, provider, raw, inference_cfg.seed)
                     except Exception as exc:
                         record.parse_error = str(exc)
                         if inference_cfg.fail_fast:
@@ -356,13 +372,12 @@ def run_inference(
                                     image_path,
                                     question,
                                     DIMENSIONS_SYSTEM_PROMPT,
+                                    seed=inference_cfg.seed,
                                 ),
                                 max_retries=inference_cfg.max_retries,
                                 sleep_s=inference_cfg.rate_limit_sleep,
                             )
-                            parsed, _ = parse_yes_no(raw)
-                            record.raw_response = raw
-                            record.parsed_response = parsed
+                            _finalize_record(record, provider, raw, inference_cfg.seed)
                         except Exception as exc:
                             record.parse_error = str(exc)
                             if inference_cfg.fail_fast:
@@ -409,13 +424,12 @@ def run_inference(
                                 image_path,
                                 question,
                                 DECISION_SYSTEM_PROMPT,
+                                seed=inference_cfg.seed,
                             ),
                             max_retries=inference_cfg.max_retries,
                             sleep_s=inference_cfg.rate_limit_sleep,
                         )
-                        parsed, _ = parse_yes_no(raw)
-                        record.raw_response = raw
-                        record.parsed_response = parsed
+                        _finalize_record(record, provider, raw, inference_cfg.seed)
                     except Exception as exc:
                         record.parse_error = str(exc)
                         if inference_cfg.fail_fast:
