@@ -474,7 +474,7 @@
   <div class="container">
     <p class="hero-eyebrow">ThinkingType: typography and VLM research</p>
     <h1 class="hero-headline">Vision-language models &ldquo;read&rdquo; text differently than LLMs &mdash; and frontier models do it about half as much.</h1>
-    <p class="hero-sub">Give a model the same sentence as text and as an image of that text, and 8 to 15 percent of its yes/no judgments disagree. The gap roughly halved from an older model to current frontier ones.</p>
+    <p class="hero-sub">The same sentence, given as text and as an image of that text, gets different yes/no judgments 8 to 15 percent of the time. The gap shrank by about half between the last model generation and this one.</p>
 
     <div class="hero-visual">
       <div class="font-card">
@@ -500,7 +500,7 @@
       </div>
       <div class="stat">
         <span class="stat-num">7.8 to 9.5%</span>
-        <span class="stat-label">On frontier models (GPT-5.5, Claude Sonnet 5) &mdash; roughly half the gap</span>
+        <span class="stat-label">On frontier models (GPT-5.5, Claude Sonnet 5), roughly half the gap</span>
       </div>
       <div class="stat">
         <span class="stat-num">2 of 10</span>
@@ -555,26 +555,24 @@
     <p class="disclaimer">Disclaimer: This is independent research conducted on my own time. The views expressed here are my own and do not represent those of my employer.</p>
 
     <div class="tldr-box">
-      <strong>TL;DR.</strong> Give a model the <em>same sentence</em> as text and as an image of that text, ask ten yes/no questions, and its answers disagree 8 to 15 percent of the time. For two judgments the disagreement points the same way in every model tested &mdash; a VLM reads rendered text as <em>less formal</em> and <em>less professional</em>. The effect roughly halved from GPT-4o (15.2%) to frontier models (GPT-5.5 7.8%, Claude Sonnet 5 9.5%). Font choice nudges it a few points.
+      <strong>TL;DR.</strong> I gave three models the same sentences as plain text and as images of that text, then asked ten yes/no questions about each. The answers disagreed 8 to 15 percent of the time. Two of the disagreements point the same way in every model I tested: rendered text reads as less formal and less professional than the identical words given as text. The gap shrank by about half between GPT-4o (15.2%) and the current frontier models (GPT-5.5 at 7.8%, Claude Sonnet 5 at 9.5%). Font choice moves it a few points.
     </div>
 
     <h2>Motivation</h2>
-    <p>I read <em>Thinking with Type</em> and got interested in how font, weight, and emphasis change the way <em>people</em> read the same words. More and more systems now have VLMs &ldquo;read&rdquo; documents directly &mdash; resumes, forms, receipts, screenshots &mdash; so I wanted to know whether the same typographic cues move a model&rsquo;s judgments when the underlying text is identical. If they do, typography becomes an unspoken input to any pipeline that lets a VLM look at a page.</p>
+    <p>I read <em>Thinking with Type</em> and got interested in how font, weight, and emphasis change the way people read the same words. More and more systems now have VLMs read documents directly (resumes, forms, receipts, screenshots), so I wanted to know whether the same typographic cues move a model&rsquo;s judgments when the underlying text is identical. If they do, typography is an unspoken input to any pipeline that lets a VLM look at a page.</p>
 
     <h2>What I Did</h2>
-    <p>I built a small harness that isolates presentation from content:</p>
+    <p>I built a small harness that separates presentation from content:</p>
     <ul>
       <li><strong>120 synthetic sentences</strong> across 6 everyday categories (neutral, calls-to-action, authority, warnings, promotional, procedural)</li>
       <li><strong>8 typography variants</strong> (Times regular/bold, Arial regular/bold, Arial caps-only at regular weight, Monospace, Comic Sans, OpenDyslexic) plus a plain-text baseline</li>
       <li><strong>10 yes/no judgment dimensions</strong> (trustworthy, professional, formal, urgent, persuasive, confident, and so on)</li>
-      <li><strong>3 models across two generations</strong> (GPT-4o; frontier GPT-5.5 and Claude Sonnet 5), with <strong>the same model reading both the text and the image</strong></li>
-      <li><strong>Confidence intervals on everything</strong> &mdash; a bootstrap that resamples by sentence, plus exact McNemar tests with Benjamini&ndash;Hochberg correction for directional claims</li>
+      <li><strong>3 models across two generations</strong> (GPT-4o; frontier GPT-5.5 and Claude Sonnet 5), with the same model reading both the text and the image</li>
+      <li><strong>Confidence intervals on everything</strong>: a bootstrap that resamples by sentence, plus exact McNemar tests with Benjamini&ndash;Hochberg correction for directional claims</li>
     </ul>
     <p>A <strong>flip</strong> is when the image answer differs from the text answer on the same sentence and question.</p>
     <p>This is sentence-level only. Built almost entirely with Claude Code.</p>
     <p><a href="https://github.com/wdanfort/thinkingtype" target="_blank" rel="noopener">&rarr; Code and data</a></p>
-
-    <p style="background:#fafaf9;border-left:3px solid #d1d5db;padding:10px 14px;font-size:0.9rem;color:#475569;margin:0 0 24px;"><strong>A note on rigor.</strong> An earlier draft compared <em>different</em> OpenAI models on the two sides (a small model on text, a large one on the image), which inflated the gap and mixed &ldquo;vision changes judgments&rdquo; with &ldquo;a bigger model judges differently.&rdquo; Everything here uses the same model on both sides, 120 sentences instead of 36, and confidence intervals on every figure. This is the first published version.</p>
 
     <h3>Key findings summary</h3>
     <div class="table-wrap">
@@ -597,34 +595,34 @@
         </tbody>
       </table>
     </div>
-    <p><small><em>Flip rates show how often the LLM and VLM disagree on the same content. Decision direction shows the net lean when they disagree (negative means the VLM is less likely to send the case to a human). The small-text variant is left out of the analysis.</em></small></p>
+    <p><small><em>Flip rate is the share of yes/no judgments where the image answer differs from the text answer on the same content, averaged across ten dimensions and eight fonts.</em></small></p>
 
     <!-- Spotlight: the main finding -->
     <div class="spotlight-box">
       <div class="spotlight-eyebrow">The main finding</div>
-      <h3>The text/image gap is real, and frontier models roughly halved it.</h3>
-      <p>Give a model the same content as text and as an image of that text, and 8 to 15 percent of its yes/no judgments flip. The gap is largest on the older model (GPT-4o, 15.2%) and substantially smaller on both frontier models (GPT-5.5 7.8%, Claude Sonnet 5 9.5%) &mdash; the confidence intervals don&rsquo;t overlap. Whatever causes the modality gap, scale and training are reducing it.</p>
+      <h3>The text/image gap is real, and frontier models cut it roughly in half.</h3>
+      <p>Between 8 and 15 percent of yes/no judgments change when the input switches from text to an image of the same text. The gap is widest on the older model (GPT-4o, 15.2%) and smaller on both frontier models (GPT-5.5 7.8%, Claude Sonnet 5 9.5%); the confidence intervals don&rsquo;t overlap. Whatever causes it, newer models have less of it.</p>
       <p style="font-size:0.85rem;color:#475569;">Detail in <a href="#finding-1">Finding 1</a>. Every figure carries a 95% cluster-bootstrap CI; see <a href="#limitations">Limitations</a>.</p>
     </div>
 
     <!-- WHY THIS MIGHT MATTER -->
     <div class="why-matter-box">
-      <h2>Does this actually change a decision?</h2>
-      <p>Worth being honest about the &ldquo;so what.&rdquo; Most of what I measured is a shift in <em>subjective</em> judgments &mdash; formal, professional, trustworthy &mdash; and a subjective flip isn&rsquo;t right or wrong, it&rsquo;s just a difference. On its own, &ldquo;a VLM reads this as less formal&rdquo; doesn&rsquo;t tell anyone to do anything differently. The finding becomes consequential only where a subjective judgment feeds a <strong>decision someone owns</strong> &mdash; approve/deny, escalate/don&rsquo;t, pass/fail &mdash; and typography pushes a borderline case across the line. That&rsquo;s the link this MVP couldn&rsquo;t close: the escalation experiment was meant to be that bridge, and it saturated (<a href="#finding-5">Finding 5</a>). So treat these results as a well-characterized <em>input signal</em>, not yet a demonstrated decision risk. Here&rsquo;s where I&rsquo;d expect it to bite:</p>
+      <h2>Does this change any decisions?</h2>
+      <p>Most of what I measured is a shift in subjective judgments: formal, professional, trustworthy. A flip on those isn&rsquo;t an error, since there is no correct answer, and by itself it doesn&rsquo;t tell anyone to do anything differently. It starts to matter when the judgment feeds a decision someone owns (approve or deny, escalate or don&rsquo;t, pass or fail) and the typography pushes a borderline case over the line. The escalation experiment was supposed to test that link and couldn&rsquo;t (<a href="#finding-5">Finding 5</a>). For now, these results describe an input to such decisions rather than a measured effect on them. Where I expect it to show up:</p>
 
-      <h3>For product teams running VLM triage or scoring</h3>
-      <p>If a VLM reads documents and something downstream keys on its tone or quality judgment (triage, ranking, auto-approval), typography is an uncontrolled input. The effect is shrinking with model generation, but &ldquo;less formal / less professional when rendered&rdquo; is consistent enough that anything scoring professionalism from a page image should test its own gate on the same content in two fonts before trusting it.</p>
+      <h3>Product teams running VLM triage or scoring</h3>
+      <p>If a VLM reads documents and something downstream keys on its tone or quality judgment (triage, ranking, auto-approval), typography is an input you aren&rsquo;t controlling. The effect is shrinking with model generation, but &ldquo;less formal and less professional when rendered&rdquo; held in every model I tested. If you score professionalism from a page image, run your own gate on the same content in two fonts before trusting it.</p>
 
-      <h3>For accessibility and fairness</h3>
-      <p>This is the one thread that&rsquo;s actionable <em>today</em>, because it isn&rsquo;t subjective: if accessibility-formatted documents (OpenDyslexic) are judged differently on identical content, that&rsquo;s an ADA/fairness question, not a taste one. The effect here is small and I want more evidence &mdash; but it&rsquo;s the result most likely to force a decision, and the one I&rsquo;d pin down next.</p>
+      <h3>Accessibility and fairness</h3>
+      <p>Unlike the rest, this one doesn&rsquo;t come down to taste. If models judge accessibility-formatted documents (OpenDyslexic) differently on identical content, that&rsquo;s a fairness problem with legal weight. The effect I saw is small and needs more evidence, but of everything here it&rsquo;s the result most likely to require action, and the one I&rsquo;d pin down next.</p>
 
-      <h3>For robustness research</h3>
-      <p>The text/image gap on identical content is a form of inconsistency worth tracking over time, and the fact that its <em>direction</em> varies by model suggests the associations are learned, not architectural.</p>
+      <h3>Robustness research</h3>
+      <p>The text/image gap on identical content is an inconsistency worth tracking over time. Since its direction varies by model, it looks learned rather than architectural.</p>
     </div>
 
     <!-- Detailed findings -->
-    <h3 id="finding-1">1. The text/vision gap is real &mdash; and frontier models roughly halved it</h3>
-    <p>Give a model the same content as text and as an image, and 8 to 15 percent of its yes/no judgments flip. The gap is largest on the older model and smaller on both frontier models, and the confidence intervals don&rsquo;t overlap. This is the baseline gap from how a model &ldquo;reads&rdquo; an image of text versus the text itself, before font choice enters the picture.</p>
+    <h3 id="finding-1">1. The text/image gap is real, and frontier models cut it roughly in half</h3>
+    <p>Between 8 and 15 percent of yes/no judgments change when the input switches from text to an image of the same text. The gap is widest on the older model and smaller on both frontier models; the confidence intervals don&rsquo;t overlap. This gap exists before font choice enters the picture; it comes from the switch in modality alone.</p>
     <div class="fig-wrap"><img src="figures/v0b_generation_gap.png" alt="Text/vision gap by model generation" loading="lazy" /></div>
     <div class="table-wrap">
       <table>
@@ -636,58 +634,57 @@
         </tbody>
       </table>
     </div>
-    <p>That the gap shrank by generation is the most encouraging result here.</p>
+    <p>That it shrank by generation is the most encouraging result here. Whatever causes it, newer models have less of it.</p>
 
-    <h3 id="finding-2">2. Two directions are universal; most are model-specific</h3>
-    <p>When text and image judgments disagree, do they disagree in a consistent direction? For two dimensions, yes &mdash; in <strong>every</strong> model tested:</p>
+    <h3 id="finding-2">2. Two disagreements are consistent across models; the rest aren&rsquo;t</h3>
+    <p>When text and image judgments disagree, do they disagree in a consistent direction? For two dimensions, yes, in all three models:</p>
     <ul>
-      <li><strong>Formal:</strong> a VLM reads the same words as <em>less formal</em> than the LLM does (net &minus;53% to &minus;83%).</li>
-      <li><strong>Professional:</strong> a VLM reads them as <em>less professional</em> (net &minus;74% to &minus;100%).</li>
+      <li><strong>Formal:</strong> rendered text reads as less formal than the same words as text (net &minus;53% to &minus;83%).</li>
+      <li><strong>Professional:</strong> rendered text reads as less professional (net &minus;74% to &minus;100%).</li>
     </ul>
-    <p>Everything else depends on the model. &ldquo;Persuasive&rdquo; swings +99% (more persuasive) on GPT-4o but &minus;22% on GPT-5.5; &ldquo;confident,&rdquo; &ldquo;urgent,&rdquo; and &ldquo;high-risk&rdquo; all flip sign across providers. There is no single direction VLMs push in &mdash; different models have learned different associations with how text looks on the page.</p>
+    <p>The rest depend on the model. &ldquo;Persuasive&rdquo; swings +99% (more persuasive) on GPT-4o but &minus;22% on GPT-5.5; &ldquo;confident,&rdquo; &ldquo;urgent,&rdquo; and &ldquo;high-risk&rdquo; all flip sign across providers. There is no single direction VLMs push in. Different models have learned different associations with how text looks on the page.</p>
     <div class="fig-wrap"><img src="figures/v0b_directionality.png" alt="Direction of disagreement by dimension and model" loading="lazy" /></div>
 
     <h3 id="finding-3">3. Some dimensions move far more than others</h3>
-    <p>The headline 8 to 15 percent is an average across ten dimensions; per-dimension it&rsquo;s spread out. On GPT-4o, &ldquo;confident&rdquo; (35.5%) and &ldquo;trustworthy&rdquo; (27.0%) flip often; &ldquo;emotional&rdquo; (1.9%) and &ldquo;form-dependent&rdquo; (0.2%) barely move. Eight of the ten dimensions are statistically significant after multiple-comparison correction.</p>
+    <p>The headline 8 to 15 percent is an average across ten dimensions, and per dimension it spreads out. On GPT-4o, &ldquo;confident&rdquo; (35.5%) and &ldquo;trustworthy&rdquo; (27.0%) flip often, while &ldquo;emotional&rdquo; (1.9%) and &ldquo;form-dependent&rdquo; (0.2%) barely move. Eight of the ten dimensions are statistically significant after multiple-comparison correction.</p>
     <div class="fig-wrap"><img src="figures/v0b_by_dimension.png" alt="Flip rate by dimension" loading="lazy" /></div>
 
-    <h3 id="finding-4">4. Font choice nudges the gap a few points</h3>
-    <p>Within the image condition, the font matters, but less than the modality gap itself. Standard serif and sans faces (Times, Arial regular) are the most stable in every model; the widest-swinging variant differs by model &mdash; OpenDyslexic on GPT-4o (21.1%), Comic Sans on GPT-5.5 (14.1%), caps-only on Sonnet 5 (10.9%). The caps variant here is <strong>regular weight</strong> &mdash; an earlier version confounded &ldquo;all caps&rdquo; with &ldquo;bold,&rdquo; which this separates.</p>
+    <h3 id="finding-4">4. Font choice moves the gap a few points</h3>
+    <p>Within the image condition the font matters, though less than the modality switch itself. Standard serif and sans faces (Times, Arial regular) are the most stable in every model. The widest-swinging variant differs by model: OpenDyslexic on GPT-4o (21.1%), Comic Sans on GPT-5.5 (14.1%), caps-only on Sonnet 5 (10.9%). (The caps variant is set at regular weight, so capitalization is tested separately from boldness.)</p>
     <div class="fig-wrap"><img src="figures/v0b_by_variant.png" alt="Flip rate by typography variant" loading="lazy" /></div>
 
-    <h3 id="finding-5">5. The &ldquo;send it to a human?&rdquo; decision barely moves &mdash; and that&rsquo;s the honest result</h3>
-    <p>The question I most wanted to answer: when a model triages content, does reading it as an image instead of text change whether it flags the case for a human reviewer? I asked each model &ldquo;Should this be escalated to a human reviewer for safety, compliance, or potential user harm?&rdquo; on the same text-vs-image basis.</p>
-    <p>The short answer: <strong>the escalation decision is robust to modality, and I could not construct a clean test of the interesting case.</strong> The decision only moves near its threshold &mdash; content genuinely on the fence about escalation &mdash; and both stimulus sets I built sat far from that boundary. On the 120 everyday sentences the text model wants to escalate almost nothing (7, 1, and 0 of 120). I then wrote 48 genuinely concerning sentences (credential requests, threats, medical advice); the text model now escalates almost everything (44&ndash;45 of 48). Neither lands at the ~50% boundary where the decision is actually perturbable.</p>
-    <p>So the flips that remain are few, and their apparent direction is mostly an artifact of which way the baseline is saturated. Across the three models on the concerning set the direction isn&rsquo;t consistent (GPT-4o net +100%, GPT-5.5 &minus;42%, Sonnet 5 +33%) and only GPT-4o&rsquo;s is statistically significant. One signal is worth flagging as future work: <strong>GPT-5.5 was suggestively less likely to escalate account-security alerts when it read them as images</strong> (McNemar p=0.06) &mdash; a lead to chase, not a result to publish. The strong &ldquo;VLMs quietly drop borderline cases&rdquo; claim I started with does not survive a properly-powered, same-model test; testing it right needs escalation content calibrated to the decision boundary.</p>
+    <h3 id="finding-5">5. The &ldquo;send it to a human?&rdquo; decision barely moves</h3>
+    <p>The question I most wanted to answer: when a model triages content, does reading it as an image instead of text change whether it flags the case for a human? I asked each model &ldquo;Should this be escalated to a human reviewer for safety, compliance, or potential user harm?&rdquo; on the same text-versus-image basis.</p>
+    <p>The decision turned out to be robust to the modality switch, but I also couldn&rsquo;t build a clean test of the case that matters. The decision only moves near its threshold, on content the model is torn about, and both of my stimulus sets landed far from it. On the 120 everyday sentences, the text models escalate almost nothing (7, 1, and 0 of 120). So I wrote 48 sentences with real cause for concern (credential requests, threats, medical advice), and the text models escalate nearly all of them (44&ndash;45 of 48).</p>
+    <p>With the baseline pinned to one extreme or the other, the few flips that remain mostly reflect whichever direction was still available. Across the three models on the concerning set the direction isn&rsquo;t consistent (GPT-4o net +100%, GPT-5.5 &minus;42%, Sonnet 5 +33%), and only GPT-4o&rsquo;s reaches significance. One thing I want to follow up on: GPT-5.5 escalated fewer account-security alerts as images than as text (McNemar p=0.06), the kind of quiet drop a triage pipeline would care about, though it needs a bigger sample before I&rsquo;d call it a finding. The strong version of the claim I started with, that VLMs quietly drop borderline cases, did not survive a same-model test with adequate power. Testing it properly needs escalation content calibrated to the decision boundary.</p>
 
     <h2>Related Work</h2>
 
-    <p><strong>Visual text style and VLM judgments.</strong> The closest precedent is Wang, Larson, and Zhao (<a href="https://arxiv.org/abs/2604.27553" target="_blank" rel="noopener">2026</a>), who render a concept word in two style families and show the VLM&rsquo;s attribute description shifts with visual style even when the concept is read correctly &mdash; &ldquo;style leakage&rdquo; from surface into semantics. This project differs by comparing VLM judgments against an LLM baseline on the same content per model, scoring fixed binary dimensions, and reporting the generation trend.</p>
+    <p><strong>Visual text style and VLM judgments.</strong> The closest precedent is Wang, Larson, and Zhao (<a href="https://arxiv.org/abs/2604.27553" target="_blank" rel="noopener">2026</a>), who render a concept word in two style families and show the VLM&rsquo;s attribute description shifts with visual style even when the concept is read correctly, which they call style leakage from surface into semantics. This project differs by comparing VLM judgments against an LLM baseline on the same content per model, scoring fixed binary dimensions, and reporting the generation trend.</p>
 
-    <p><strong>The typography gap in VLM perception.</strong> Zhou et al. (<a href="https://arxiv.org/abs/2603.08497" target="_blank" rel="noopener"><em>Reading &ne; Seeing</em>, 2026</a>) build FontBench and find VLMs transcribe text near-perfectly but judge typographic <em>properties</em> (font family, style) poorly &mdash; evidence that the visual surface is processed unevenly, consistent with the modality gap measured here.</p>
+    <p><strong>The typography gap in VLM perception.</strong> Zhou et al. (<a href="https://arxiv.org/abs/2603.08497" target="_blank" rel="noopener"><em>Reading &ne; Seeing</em>, 2026</a>) build FontBench and find VLMs transcribe text near-perfectly but judge typographic properties (font family, style) poorly. The visual surface is processed unevenly, which is consistent with the modality gap measured here.</p>
 
-    <p><strong>Text bias in multimodal models.</strong> &ldquo;Text Speaks Louder than Vision&rdquo; (<a href="https://arxiv.org/pdf/2504.01589" target="_blank" rel="noopener">2025</a>) shows VLMs lean on textual/linguistic priors over visual evidence &mdash; the flip side of the question here, where the <em>rendering</em> of identical text perturbs the judgment.</p>
+    <p><strong>Text bias in multimodal models.</strong> &ldquo;Text Speaks Louder than Vision&rdquo; (<a href="https://arxiv.org/pdf/2504.01589" target="_blank" rel="noopener">2025</a>) shows VLMs lean on textual and linguistic priors over visual evidence. This project comes at the same tension from the other side: here the rendering of identical text perturbs the judgment.</p>
 
     <p><strong>Prompt-format sensitivity.</strong> Sclar, Choi, Tsvetkov, and Suhr (<a href="https://arxiv.org/abs/2310.11324" target="_blank" rel="noopener">2024</a>) show LLM accuracy swings across equivalent prompt formats; this is the visual analogue.</p>
 
-    <p><strong>Typographic attacks.</strong> Goh et al. (<a href="https://distill.pub/2021/multimodal-neurons/" target="_blank" rel="noopener">Distill 2021</a>) and Qi et al. (<a href="https://arxiv.org/abs/2306.13213" target="_blank" rel="noopener">AAAI 2024</a>) show adversarial text and visuals can steer multimodal models. The fonts here are ordinary, and the question is downstream judgment drift, not misreading.</p>
+    <p><strong>Typographic attacks.</strong> Goh et al. (<a href="https://distill.pub/2021/multimodal-neurons/" target="_blank" rel="noopener">Distill 2021</a>) and Qi et al. (<a href="https://arxiv.org/abs/2306.13213" target="_blank" rel="noopener">AAAI 2024</a>) show adversarial text and visuals can steer multimodal models. The fonts here are ordinary, and the models read them correctly; what I&rsquo;m measuring is judgment drift downstream of correct reading.</p>
 
     <h2 id="limitations">Limitations</h2>
     <ul>
-      <li><strong>Sentence-level, synthetic.</strong> Short synthetic sentences, not real documents; effects may shrink or compound at document scale.</li>
-      <li><strong>Rendering confounds.</strong> Fonts differ in ink coverage and rendered width even at matched point size (I now record image size and ink ratio per variant); some of the font effect is these low-level differences, not &ldquo;style.&rdquo;</li>
-      <li><strong>Reproducibility.</strong> Temperature 0 plus an API seed on OpenAI; the frontier models don&rsquo;t accept a temperature or seed, so their determinism is best-effort.</li>
-      <li><strong>Three models, two providers.</strong> Google&rsquo;s model was dropped mid-project &mdash; the previous-generation Gemini was retired by the provider (it now returns 404) and the current one timed out repeatedly. Model turnover is itself a finding about reproducibility.</li>
-      <li><strong>The escalation decision could not be properly tested.</strong> Both stimulus sets saturated away from the ~50% decision boundary (see Finding 5); the interesting borderline regime needs threshold-calibrated content.</li>
+      <li><strong>Sentence-level, synthetic.</strong> Short synthetic sentences, not real documents. Effects may shrink or compound at document scale.</li>
+      <li><strong>Rendering confounds.</strong> Fonts differ in ink coverage and rendered width even at matched point size (I record image size and ink ratio per variant). Some of the font effect is these low-level differences rather than style.</li>
+      <li><strong>Reproducibility.</strong> Temperature 0 plus an API seed on OpenAI. The frontier models accept neither a temperature nor a seed, so their determinism is best-effort.</li>
+      <li><strong>The escalation decision could not be fully tested.</strong> Both stimulus sets saturated away from the ~50% decision boundary (see Finding 5); the borderline regime needs threshold-calibrated content.</li>
       <li><strong>No mechanism.</strong> I can describe the patterns, not explain why a given model reads a given font the way it does.</li>
     </ul>
 
     <h2 id="whats-next">Future Directions</h2>
-    <p><strong>Close the decision link &mdash; the experiment that decides whether this matters.</strong> The open question is whether any of this moves a <em>decision</em>, not just a judgment. The clean test: pick a real gate (r&eacute;sum&eacute; screen, moderation triage, eligibility/approval), build cases the text model decides right at the ~50% line &mdash; genuinely on the fence &mdash; and measure whether rendering the same content as an image flips the outcome, and in which direction. Both stimulus sets here missed that boundary in opposite directions (<a href="#finding-5">Finding 5</a>); calibrating to it is the whole game. A real effect is a concrete risk for VLM-in-the-loop pipelines; a null is a genuine &ldquo;feed VLMs images freely, the gate is robust.&rdquo; Either answer changes what someone builds &mdash; which is what turns this from a novelty into a result.</p>
-    <p><strong>Pin down the accessibility-fairness effect.</strong> Does the OpenDyslexic gap survive at scale, is it directional (harsher?), and does it move a real gate? If yes, &ldquo;VLMs judge accessibility-formatted documents differently on identical content&rdquo; is a compliance-relevant finding, not a curiosity.</p>
-    <p><strong>Trace attribute &rarr; decision.</strong> Which judgment shifts actually propagate to decision shifts &mdash; does &ldquo;reads as less professional&rdquo; predict a hire/approve flip? That link is the mechanism that makes a subjective wobble consequential, and it&rsquo;s cheap to measure once the gate above exists.</p>
-    <p><strong>Real documents, and beyond fonts.</strong> R&eacute;sum&eacute;s, intake notes, benefits appeals; then color, highlighting, and layout &mdash; typography is one visual cue among many.</p>
-    <p><strong>Track the gap over time.</strong> It halved from GPT-4o to frontier; this MVP is the first datapoint in watching whether it keeps closing.</p>
+    <p><strong>Test the decision link.</strong> The open question is whether any of this moves a decision rather than just a judgment. The test I&rsquo;d run: pick a real gate (r&eacute;sum&eacute; screening, moderation triage, eligibility review), write cases the text model decides at roughly 50/50, and measure whether rendering the same content as an image changes the outcome, and in which direction. Both of my stimulus sets missed that boundary, in opposite directions (<a href="#finding-5">Finding 5</a>). If there&rsquo;s an effect, that&rsquo;s a concrete risk for VLM pipelines. If there isn&rsquo;t, that&rsquo;s also useful: it means the gate is robust and images are safe to feed it. Either answer changes what someone builds.</p>
+    <p><strong>Pin down the accessibility effect.</strong> Does the OpenDyslexic gap hold at larger sample sizes, does it lean harsher, and does it move a real gate? If yes, that&rsquo;s a compliance question for anyone scoring documents with a VLM.</p>
+    <p><strong>Connect judgments to decisions.</strong> Does &ldquo;reads as less professional&rdquo; predict a hire or approve flip? Cheap to measure once the gate above exists, and it&rsquo;s the mechanism that would make the subjective shifts matter.</p>
+    <p><strong>Real documents, and beyond fonts.</strong> R&eacute;sum&eacute;s, intake notes, benefits appeals; then color, highlighting, and layout. Typography is one visual cue among many.</p>
+    <p><strong>Track the gap over time.</strong> It halved between generations. This is the first datapoint in watching whether it keeps closing.</p>
 
     <hr class="footer-divider" />
 
