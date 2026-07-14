@@ -53,6 +53,11 @@ class AnthropicProvider(Provider):
             ],
         )
         self._capture_usage(resp)
+        # Fable-5-era API: classifier declines return HTTP 200 with a
+        # structured refusal stop_reason instead of raising. Tag explicitly
+        # so it can't be mistaken for a parse failure or an empty answer.
+        if getattr(resp, "stop_reason", None) == "refusal":
+            return "[REFUSAL]"
         for block in resp.content:
             if getattr(block, "type", None) == "text":
                 return block.text
@@ -95,6 +100,8 @@ class AnthropicProvider(Provider):
             ],
         )
         self._capture_usage(resp)
+        if getattr(resp, "stop_reason", None) == "refusal":
+            return "[REFUSAL]"
         for block in resp.content:
             if getattr(block, "type", None) == "text":
                 return block.text
