@@ -1,0 +1,13 @@
+provider,gate,variant_id,n_items,mean_delta_p,mean_delta_fav,ci_lo_fav,ci_hi_fav,sign_test_p,maj_flip_rate,maj_net_fav
+anthropic,moderation,T1_serif,20,-0.07291666666666667,0.07291666666666667,-0.004166666666666668,0.18125,0.375,0.1,2
+anthropic,moderation,T3_sans,20,-0.05625,0.05625,-0.0125,0.14791666666666667,1.0,0.1,2
+anthropic,resume,T1_serif,20,0.0,0.0,0.0,0.0,1.0,0.0,0
+anthropic,resume,T3_sans,20,0.0,0.0,0.0,0.0,1.0,0.0,0
+google,moderation,T1_serif,20,0.00625,-0.00625,-0.025,0.0125,1.0,0.0,0
+google,moderation,T3_sans,20,0.04791666666666668,-0.04791666666666668,-0.1625,0.02291666666666666,1.0,0.05,-1
+google,resume,T1_serif,20,0.0,0.0,0.0,0.0,1.0,0.0,0
+google,resume,T3_sans,20,0.0,0.0,0.0,0.0,1.0,0.0,0
+openai,moderation,T1_serif,20,-0.0625,0.0625,-0.00833333333333333,0.15005208333333356,0.6875,0.05,1
+openai,moderation,T3_sans,20,-0.09583333333333334,0.09583333333333334,0.029166666666666667,0.16875,0.03125,0.05,1
+openai,resume,T1_serif,20,-0.04375,-0.04375,-0.125,0.0125,1.0,0.05,-1
+openai,resume,T3_sans,20,-0.05208333333333333,-0.05208333333333333,-0.13125,0.0,0.25,0.05,-1

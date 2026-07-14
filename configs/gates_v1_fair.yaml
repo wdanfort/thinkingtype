@@ -1,0 +1,66 @@
+# Fairness scale-up experiment (#4)
+#
+# Scales the one cell from gates_v1 with an OpenDyslexic lean: moderation.
+# 40 threads x 5 severity levels (200 items), n_select 60 boundary items per
+# provider, within-image contrast A1_opendyslexic vs T3_sans. Same v1 prompt
+# as gates_v1 so the gates_v1 calibration records are reusable (copied into
+# this run's calibration JSONL before running; resume skips them).
+
+run_tag: gates_v1_fair
+seed: 42
+
+gates:
+  - moderation
+
+calibration:
+  repeats: 8
+  band: [0.15, 0.85]
+  n_select: 60
+
+vision:
+  repeats: 6
+
+variants:
+  - id: T3_sans
+    font_file: LiberationSans-Regular.ttf
+  - id: A1_opendyslexic
+    font_file: OpenDyslexic-Regular.otf
+
+render:
+  image_width: 1400
+  base_size: 40
+  padding_x: 90
+  padding_y: 70
+  max_text_width: 1220
+  font_normalization: ag_height
+  # Pin normalization to the gates_v1 font set so new renders match the
+  # cached gates_v1 images (sans 50pt, OpenDyslexic 40pt).
+  normalize_fonts:
+    - LiberationSerif-Regular.ttf
+    - LiberationSans-Regular.ttf
+    - ComicNeue-Regular.ttf
+    - OpenDyslexic-Regular.otf
+
+providers:
+  openai:
+    api_key_env: OPENAI_API_KEY
+    model_text: gpt-5.5
+    model_vision: gpt-5.5
+    service_tier: flex
+  anthropic:
+    api_key_env: ANTHROPIC_API_KEY
+    model_text: claude-sonnet-5
+    model_vision: claude-sonnet-5
+  google:
+    api_key_env: GOOGLE_API_KEY
+    model_text: models/gemini-3.5-flash
+    model_vision: models/gemini-3.5-flash
+    thinking_budget: 0
+
+inference:
+  temperature: null
+  max_retries: 6
+  rate_limit_sleep: 1.5
+  workers: 8
+  seed: 42
+  prompt_variant: v1

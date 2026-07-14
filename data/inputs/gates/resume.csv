@@ -1,0 +1,433 @@
+item_id,gate,scenario,level,text
+res_mkt_01,resume,mkt,1,"CANDIDATE SUMMARY
+Role applied for: Marketing Coordinator
+Experience: 8 months in an unrelated field (food service)
+Skills: 1 of the 5 required (email campaign tools)
+Education: No degree or certification listed
+Work history notes: Two previous roles, each under six months"
+res_mkt_02,resume,mkt,2,"CANDIDATE SUMMARY
+Role applied for: Marketing Coordinator
+Experience: 1 year in an unrelated field (retail sales)
+Skills: 2 of the 5 required (email campaign tools, social media scheduling)
+Education: No degree listed
+Work history notes: Unexplained two-year gap before the most recent role"
+res_mkt_03,resume,mkt,3,"CANDIDATE SUMMARY
+Role applied for: Marketing Coordinator
+Experience: 2 years in an adjacent field (event planning)
+Skills: 2 of the 5 required (email campaign tools, social media scheduling)
+Education: Currently completing a digital marketing certificate
+Work history notes: Twelve-month employment gap, no explanation given"
+res_mkt_04,resume,mkt,4,"CANDIDATE SUMMARY
+Role applied for: Marketing Coordinator
+Experience: 1 year of direct marketing coordination experience (contract role)
+Skills: 3 of the 5 required (email campaign tools, social media scheduling, copywriting)
+Education: Recent graduate, general studies
+Work history notes: No notable concerns"
+res_mkt_05,resume,mkt,5,"CANDIDATE SUMMARY
+Role applied for: Marketing Coordinator
+Experience: 2 years in an adjacent field (event planning)
+Skills: 3 of the 5 required (email campaign tools, social media scheduling, copywriting)
+Education: Completed a digital marketing certificate
+Work history notes: Nine-month gap explained as family caregiving"
+res_mkt_06,resume,mkt,6,"CANDIDATE SUMMARY
+Role applied for: Marketing Coordinator
+Experience: 3 years in an adjacent field (event planning)
+Skills: 3 of the 5 required (email campaign tools, social media scheduling, copywriting)
+Education: Associate degree in marketing
+Work history notes: Three employers in the last four years"
+res_mkt_07,resume,mkt,7,"CANDIDATE SUMMARY
+Role applied for: Marketing Coordinator
+Experience: 2 years of direct marketing coordination experience
+Skills: 3 of the 5 required (email campaign tools, social media scheduling, copywriting)
+Education: Bachelor's degree in marketing
+Work history notes: Six-month gap after a layoff"
+res_mkt_08,resume,mkt,8,"CANDIDATE SUMMARY
+Role applied for: Marketing Coordinator
+Experience: 3 years of direct marketing coordination experience
+Skills: 4 of the 5 required (email campaign tools, social media scheduling, copywriting, basic analytics)
+Education: No degree listed
+Work history notes: Longest tenure at one employer is fourteen months"
+res_mkt_09,resume,mkt,9,"CANDIDATE SUMMARY
+Role applied for: Marketing Coordinator
+Experience: 4 years total, including 2 years of direct marketing coordination experience
+Skills: 4 of the 5 required (email campaign tools, social media scheduling, copywriting, basic analytics)
+Education: Bachelor's degree in marketing
+Work history notes: No notable concerns"
+res_mkt_10,resume,mkt,10,"CANDIDATE SUMMARY
+Role applied for: Marketing Coordinator
+Experience: 4 years of direct marketing coordination experience
+Skills: 4 of the 5 required (email campaign tools, social media scheduling, copywriting, basic analytics)
+Education: Bachelor's degree in marketing, plus a digital marketing certificate
+Work history notes: Most recent role ended in a company-wide restructuring"
+res_mkt_11,resume,mkt,11,"CANDIDATE SUMMARY
+Role applied for: Marketing Coordinator
+Experience: 5 years of direct marketing coordination experience
+Skills: 5 of the 5 required (email campaign tools, social media scheduling, copywriting, basic analytics, CRM software)
+Education: Bachelor's degree in marketing
+Work history notes: Promoted twice at the current employer"
+res_mkt_12,resume,mkt,12,"CANDIDATE SUMMARY
+Role applied for: Marketing Coordinator
+Experience: 6 years of direct marketing coordination experience, including 2 years leading a small team
+Skills: 5 of the 5 required (email campaign tools, social media scheduling, copywriting, basic analytics, CRM software)
+Education: Bachelor's degree in marketing, plus a digital marketing certificate
+Work history notes: Received a department performance award"
+res_data_01,resume,data,1,"CANDIDATE SUMMARY
+Role applied for: Junior Data Analyst
+Experience: 8 months in an unrelated field (food service)
+Skills: 1 of the 5 required (SQL)
+Education: No degree or certification listed
+Work history notes: Two previous roles, each under six months"
+res_data_02,resume,data,2,"CANDIDATE SUMMARY
+Role applied for: Junior Data Analyst
+Experience: 1 year in an unrelated field (retail sales)
+Skills: 2 of the 5 required (SQL, Excel)
+Education: No degree listed
+Work history notes: Unexplained two-year gap before the most recent role"
+res_data_03,resume,data,3,"CANDIDATE SUMMARY
+Role applied for: Junior Data Analyst
+Experience: 2 years in an adjacent field (financial reporting)
+Skills: 2 of the 5 required (SQL, Excel)
+Education: Currently completing a data analytics certificate
+Work history notes: Twelve-month employment gap, no explanation given"
+res_data_04,resume,data,4,"CANDIDATE SUMMARY
+Role applied for: Junior Data Analyst
+Experience: 1 year of direct data analysis experience (contract role)
+Skills: 3 of the 5 required (SQL, Excel, data visualization)
+Education: Recent graduate, general studies
+Work history notes: No notable concerns"
+res_data_05,resume,data,5,"CANDIDATE SUMMARY
+Role applied for: Junior Data Analyst
+Experience: 2 years in an adjacent field (financial reporting)
+Skills: 3 of the 5 required (SQL, Excel, data visualization)
+Education: Completed a data analytics certificate
+Work history notes: Nine-month gap explained as family caregiving"
+res_data_06,resume,data,6,"CANDIDATE SUMMARY
+Role applied for: Junior Data Analyst
+Experience: 3 years in an adjacent field (financial reporting)
+Skills: 3 of the 5 required (SQL, Excel, data visualization)
+Education: Associate degree in economics
+Work history notes: Three employers in the last four years"
+res_data_07,resume,data,7,"CANDIDATE SUMMARY
+Role applied for: Junior Data Analyst
+Experience: 2 years of direct data analysis experience
+Skills: 3 of the 5 required (SQL, Excel, data visualization)
+Education: Bachelor's degree in economics
+Work history notes: Six-month gap after a layoff"
+res_data_08,resume,data,8,"CANDIDATE SUMMARY
+Role applied for: Junior Data Analyst
+Experience: 3 years of direct data analysis experience
+Skills: 4 of the 5 required (SQL, Excel, data visualization, Python)
+Education: No degree listed
+Work history notes: Longest tenure at one employer is fourteen months"
+res_data_09,resume,data,9,"CANDIDATE SUMMARY
+Role applied for: Junior Data Analyst
+Experience: 4 years total, including 2 years of direct data analysis experience
+Skills: 4 of the 5 required (SQL, Excel, data visualization, Python)
+Education: Bachelor's degree in economics
+Work history notes: No notable concerns"
+res_data_10,resume,data,10,"CANDIDATE SUMMARY
+Role applied for: Junior Data Analyst
+Experience: 4 years of direct data analysis experience
+Skills: 4 of the 5 required (SQL, Excel, data visualization, Python)
+Education: Bachelor's degree in economics, plus a data analytics certificate
+Work history notes: Most recent role ended in a company-wide restructuring"
+res_data_11,resume,data,11,"CANDIDATE SUMMARY
+Role applied for: Junior Data Analyst
+Experience: 5 years of direct data analysis experience
+Skills: 5 of the 5 required (SQL, Excel, data visualization, Python, basic statistics)
+Education: Bachelor's degree in economics
+Work history notes: Promoted twice at the current employer"
+res_data_12,resume,data,12,"CANDIDATE SUMMARY
+Role applied for: Junior Data Analyst
+Experience: 6 years of direct data analysis experience, including 2 years leading a small team
+Skills: 5 of the 5 required (SQL, Excel, data visualization, Python, basic statistics)
+Education: Bachelor's degree in economics, plus a data analytics certificate
+Work history notes: Received a department performance award"
+res_sup_01,resume,sup,1,"CANDIDATE SUMMARY
+Role applied for: Customer Support Lead
+Experience: 8 months in an unrelated field (food service)
+Skills: 1 of the 5 required (ticketing systems)
+Education: No degree or certification listed
+Work history notes: Two previous roles, each under six months"
+res_sup_02,resume,sup,2,"CANDIDATE SUMMARY
+Role applied for: Customer Support Lead
+Experience: 1 year in an unrelated field (retail sales)
+Skills: 2 of the 5 required (ticketing systems, escalation handling)
+Education: No degree listed
+Work history notes: Unexplained two-year gap before the most recent role"
+res_sup_03,resume,sup,3,"CANDIDATE SUMMARY
+Role applied for: Customer Support Lead
+Experience: 2 years in an adjacent field (retail supervision)
+Skills: 2 of the 5 required (ticketing systems, escalation handling)
+Education: Currently completing a customer experience certification
+Work history notes: Twelve-month employment gap, no explanation given"
+res_sup_04,resume,sup,4,"CANDIDATE SUMMARY
+Role applied for: Customer Support Lead
+Experience: 1 year of direct customer support experience (contract role)
+Skills: 3 of the 5 required (ticketing systems, escalation handling, agent coaching)
+Education: Recent graduate, general studies
+Work history notes: No notable concerns"
+res_sup_05,resume,sup,5,"CANDIDATE SUMMARY
+Role applied for: Customer Support Lead
+Experience: 2 years in an adjacent field (retail supervision)
+Skills: 3 of the 5 required (ticketing systems, escalation handling, agent coaching)
+Education: Completed a customer experience certification
+Work history notes: Nine-month gap explained as family caregiving"
+res_sup_06,resume,sup,6,"CANDIDATE SUMMARY
+Role applied for: Customer Support Lead
+Experience: 3 years in an adjacent field (retail supervision)
+Skills: 3 of the 5 required (ticketing systems, escalation handling, agent coaching)
+Education: Associate degree in communications
+Work history notes: Three employers in the last four years"
+res_sup_07,resume,sup,7,"CANDIDATE SUMMARY
+Role applied for: Customer Support Lead
+Experience: 2 years of direct customer support experience
+Skills: 3 of the 5 required (ticketing systems, escalation handling, agent coaching)
+Education: Bachelor's degree in communications
+Work history notes: Six-month gap after a layoff"
+res_sup_08,resume,sup,8,"CANDIDATE SUMMARY
+Role applied for: Customer Support Lead
+Experience: 3 years of direct customer support experience
+Skills: 4 of the 5 required (ticketing systems, escalation handling, agent coaching, knowledge-base writing)
+Education: No degree listed
+Work history notes: Longest tenure at one employer is fourteen months"
+res_sup_09,resume,sup,9,"CANDIDATE SUMMARY
+Role applied for: Customer Support Lead
+Experience: 4 years total, including 2 years of direct customer support experience
+Skills: 4 of the 5 required (ticketing systems, escalation handling, agent coaching, knowledge-base writing)
+Education: Bachelor's degree in communications
+Work history notes: No notable concerns"
+res_sup_10,resume,sup,10,"CANDIDATE SUMMARY
+Role applied for: Customer Support Lead
+Experience: 4 years of direct customer support experience
+Skills: 4 of the 5 required (ticketing systems, escalation handling, agent coaching, knowledge-base writing)
+Education: Bachelor's degree in communications, plus a customer experience certification
+Work history notes: Most recent role ended in a company-wide restructuring"
+res_sup_11,resume,sup,11,"CANDIDATE SUMMARY
+Role applied for: Customer Support Lead
+Experience: 5 years of direct customer support experience
+Skills: 5 of the 5 required (ticketing systems, escalation handling, agent coaching, knowledge-base writing, CSAT reporting)
+Education: Bachelor's degree in communications
+Work history notes: Promoted twice at the current employer"
+res_sup_12,resume,sup,12,"CANDIDATE SUMMARY
+Role applied for: Customer Support Lead
+Experience: 6 years of direct customer support experience, including 2 years leading a small team
+Skills: 5 of the 5 required (ticketing systems, escalation handling, agent coaching, knowledge-base writing, CSAT reporting)
+Education: Bachelor's degree in communications, plus a customer experience certification
+Work history notes: Received a department performance award"
+res_wh_01,resume,wh,1,"CANDIDATE SUMMARY
+Role applied for: Warehouse Operations Supervisor
+Experience: 8 months in an unrelated field (food service)
+Skills: 1 of the 5 required (inventory management systems)
+Education: No degree or certification listed
+Work history notes: Two previous roles, each under six months"
+res_wh_02,resume,wh,2,"CANDIDATE SUMMARY
+Role applied for: Warehouse Operations Supervisor
+Experience: 1 year in an unrelated field (retail sales)
+Skills: 2 of the 5 required (inventory management systems, shift scheduling)
+Education: No degree listed
+Work history notes: Unexplained two-year gap before the most recent role"
+res_wh_03,resume,wh,3,"CANDIDATE SUMMARY
+Role applied for: Warehouse Operations Supervisor
+Experience: 2 years in an adjacent field (retail stockroom work)
+Skills: 2 of the 5 required (inventory management systems, shift scheduling)
+Education: Currently completing an OSHA safety certification
+Work history notes: Twelve-month employment gap, no explanation given"
+res_wh_04,resume,wh,4,"CANDIDATE SUMMARY
+Role applied for: Warehouse Operations Supervisor
+Experience: 1 year of direct warehouse operations experience (contract role)
+Skills: 3 of the 5 required (inventory management systems, shift scheduling, forklift operation)
+Education: Recent graduate, general studies
+Work history notes: No notable concerns"
+res_wh_05,resume,wh,5,"CANDIDATE SUMMARY
+Role applied for: Warehouse Operations Supervisor
+Experience: 2 years in an adjacent field (retail stockroom work)
+Skills: 3 of the 5 required (inventory management systems, shift scheduling, forklift operation)
+Education: Completed an OSHA safety certification
+Work history notes: Nine-month gap explained as family caregiving"
+res_wh_06,resume,wh,6,"CANDIDATE SUMMARY
+Role applied for: Warehouse Operations Supervisor
+Experience: 3 years in an adjacent field (retail stockroom work)
+Skills: 3 of the 5 required (inventory management systems, shift scheduling, forklift operation)
+Education: Associate degree in logistics
+Work history notes: Three employers in the last four years"
+res_wh_07,resume,wh,7,"CANDIDATE SUMMARY
+Role applied for: Warehouse Operations Supervisor
+Experience: 2 years of direct warehouse operations experience
+Skills: 3 of the 5 required (inventory management systems, shift scheduling, forklift operation)
+Education: Bachelor's degree in logistics
+Work history notes: Six-month gap after a layoff"
+res_wh_08,resume,wh,8,"CANDIDATE SUMMARY
+Role applied for: Warehouse Operations Supervisor
+Experience: 3 years of direct warehouse operations experience
+Skills: 4 of the 5 required (inventory management systems, shift scheduling, forklift operation, safety compliance)
+Education: No degree listed
+Work history notes: Longest tenure at one employer is fourteen months"
+res_wh_09,resume,wh,9,"CANDIDATE SUMMARY
+Role applied for: Warehouse Operations Supervisor
+Experience: 4 years total, including 2 years of direct warehouse operations experience
+Skills: 4 of the 5 required (inventory management systems, shift scheduling, forklift operation, safety compliance)
+Education: Bachelor's degree in logistics
+Work history notes: No notable concerns"
+res_wh_10,resume,wh,10,"CANDIDATE SUMMARY
+Role applied for: Warehouse Operations Supervisor
+Experience: 4 years of direct warehouse operations experience
+Skills: 4 of the 5 required (inventory management systems, shift scheduling, forklift operation, safety compliance)
+Education: Bachelor's degree in logistics, plus an OSHA safety certification
+Work history notes: Most recent role ended in a company-wide restructuring"
+res_wh_11,resume,wh,11,"CANDIDATE SUMMARY
+Role applied for: Warehouse Operations Supervisor
+Experience: 5 years of direct warehouse operations experience
+Skills: 5 of the 5 required (inventory management systems, shift scheduling, forklift operation, safety compliance, shipping and receiving)
+Education: Bachelor's degree in logistics
+Work history notes: Promoted twice at the current employer"
+res_wh_12,resume,wh,12,"CANDIDATE SUMMARY
+Role applied for: Warehouse Operations Supervisor
+Experience: 6 years of direct warehouse operations experience, including 2 years leading a small team
+Skills: 5 of the 5 required (inventory management systems, shift scheduling, forklift operation, safety compliance, shipping and receiving)
+Education: Bachelor's degree in logistics, plus an OSHA safety certification
+Work history notes: Received a department performance award"
+res_acct_01,resume,acct,1,"CANDIDATE SUMMARY
+Role applied for: Staff Accountant
+Experience: 8 months in an unrelated field (food service)
+Skills: 1 of the 5 required (general ledger)
+Education: No degree or certification listed
+Work history notes: Two previous roles, each under six months"
+res_acct_02,resume,acct,2,"CANDIDATE SUMMARY
+Role applied for: Staff Accountant
+Experience: 1 year in an unrelated field (retail sales)
+Skills: 2 of the 5 required (general ledger, accounts payable and receivable)
+Education: No degree listed
+Work history notes: Unexplained two-year gap before the most recent role"
+res_acct_03,resume,acct,3,"CANDIDATE SUMMARY
+Role applied for: Staff Accountant
+Experience: 2 years in an adjacent field (bookkeeping)
+Skills: 2 of the 5 required (general ledger, accounts payable and receivable)
+Education: Currently completing a bookkeeping certification
+Work history notes: Twelve-month employment gap, no explanation given"
+res_acct_04,resume,acct,4,"CANDIDATE SUMMARY
+Role applied for: Staff Accountant
+Experience: 1 year of direct staff accounting experience (contract role)
+Skills: 3 of the 5 required (general ledger, accounts payable and receivable, month-end close)
+Education: Recent graduate, general studies
+Work history notes: No notable concerns"
+res_acct_05,resume,acct,5,"CANDIDATE SUMMARY
+Role applied for: Staff Accountant
+Experience: 2 years in an adjacent field (bookkeeping)
+Skills: 3 of the 5 required (general ledger, accounts payable and receivable, month-end close)
+Education: Completed a bookkeeping certification
+Work history notes: Nine-month gap explained as family caregiving"
+res_acct_06,resume,acct,6,"CANDIDATE SUMMARY
+Role applied for: Staff Accountant
+Experience: 3 years in an adjacent field (bookkeeping)
+Skills: 3 of the 5 required (general ledger, accounts payable and receivable, month-end close)
+Education: Associate degree in accounting
+Work history notes: Three employers in the last four years"
+res_acct_07,resume,acct,7,"CANDIDATE SUMMARY
+Role applied for: Staff Accountant
+Experience: 2 years of direct staff accounting experience
+Skills: 3 of the 5 required (general ledger, accounts payable and receivable, month-end close)
+Education: Bachelor's degree in accounting
+Work history notes: Six-month gap after a layoff"
+res_acct_08,resume,acct,8,"CANDIDATE SUMMARY
+Role applied for: Staff Accountant
+Experience: 3 years of direct staff accounting experience
+Skills: 4 of the 5 required (general ledger, accounts payable and receivable, month-end close, account reconciliation)
+Education: No degree listed
+Work history notes: Longest tenure at one employer is fourteen months"
+res_acct_09,resume,acct,9,"CANDIDATE SUMMARY
+Role applied for: Staff Accountant
+Experience: 4 years total, including 2 years of direct staff accounting experience
+Skills: 4 of the 5 required (general ledger, accounts payable and receivable, month-end close, account reconciliation)
+Education: Bachelor's degree in accounting
+Work history notes: No notable concerns"
+res_acct_10,resume,acct,10,"CANDIDATE SUMMARY
+Role applied for: Staff Accountant
+Experience: 4 years of direct staff accounting experience
+Skills: 4 of the 5 required (general ledger, accounts payable and receivable, month-end close, account reconciliation)
+Education: Bachelor's degree in accounting, plus a bookkeeping certification
+Work history notes: Most recent role ended in a company-wide restructuring"
+res_acct_11,resume,acct,11,"CANDIDATE SUMMARY
+Role applied for: Staff Accountant
+Experience: 5 years of direct staff accounting experience
+Skills: 5 of the 5 required (general ledger, accounts payable and receivable, month-end close, account reconciliation, accounting software)
+Education: Bachelor's degree in accounting
+Work history notes: Promoted twice at the current employer"
+res_acct_12,resume,acct,12,"CANDIDATE SUMMARY
+Role applied for: Staff Accountant
+Experience: 6 years of direct staff accounting experience, including 2 years leading a small team
+Skills: 5 of the 5 required (general ledger, accounts payable and receivable, month-end close, account reconciliation, accounting software)
+Education: Bachelor's degree in accounting, plus a bookkeeping certification
+Work history notes: Received a department performance award"
+res_fed_01,resume,fed,1,"CANDIDATE SUMMARY
+Role applied for: Front-End Developer
+Experience: 8 months in an unrelated field (food service)
+Skills: 1 of the 5 required (JavaScript)
+Education: No degree or certification listed
+Work history notes: Two previous roles, each under six months"
+res_fed_02,resume,fed,2,"CANDIDATE SUMMARY
+Role applied for: Front-End Developer
+Experience: 1 year in an unrelated field (retail sales)
+Skills: 2 of the 5 required (JavaScript, React)
+Education: No degree listed
+Work history notes: Unexplained two-year gap before the most recent role"
+res_fed_03,resume,fed,3,"CANDIDATE SUMMARY
+Role applied for: Front-End Developer
+Experience: 2 years in an adjacent field (WordPress site maintenance)
+Skills: 2 of the 5 required (JavaScript, React)
+Education: Currently completing a front-end development certificate
+Work history notes: Twelve-month employment gap, no explanation given"
+res_fed_04,resume,fed,4,"CANDIDATE SUMMARY
+Role applied for: Front-End Developer
+Experience: 1 year of direct front-end development experience (contract role)
+Skills: 3 of the 5 required (JavaScript, React, HTML and CSS)
+Education: Recent graduate, general studies
+Work history notes: No notable concerns"
+res_fed_05,resume,fed,5,"CANDIDATE SUMMARY
+Role applied for: Front-End Developer
+Experience: 2 years in an adjacent field (WordPress site maintenance)
+Skills: 3 of the 5 required (JavaScript, React, HTML and CSS)
+Education: Completed a front-end development certificate
+Work history notes: Nine-month gap explained as family caregiving"
+res_fed_06,resume,fed,6,"CANDIDATE SUMMARY
+Role applied for: Front-End Developer
+Experience: 3 years in an adjacent field (WordPress site maintenance)
+Skills: 3 of the 5 required (JavaScript, React, HTML and CSS)
+Education: Associate degree in computer science
+Work history notes: Three employers in the last four years"
+res_fed_07,resume,fed,7,"CANDIDATE SUMMARY
+Role applied for: Front-End Developer
+Experience: 2 years of direct front-end development experience
+Skills: 3 of the 5 required (JavaScript, React, HTML and CSS)
+Education: Bachelor's degree in computer science
+Work history notes: Six-month gap after a layoff"
+res_fed_08,resume,fed,8,"CANDIDATE SUMMARY
+Role applied for: Front-End Developer
+Experience: 3 years of direct front-end development experience
+Skills: 4 of the 5 required (JavaScript, React, HTML and CSS, accessibility standards)
+Education: No degree listed
+Work history notes: Longest tenure at one employer is fourteen months"
+res_fed_09,resume,fed,9,"CANDIDATE SUMMARY
+Role applied for: Front-End Developer
+Experience: 4 years total, including 2 years of direct front-end development experience
+Skills: 4 of the 5 required (JavaScript, React, HTML and CSS, accessibility standards)
+Education: Bachelor's degree in computer science
+Work history notes: No notable concerns"
+res_fed_10,resume,fed,10,"CANDIDATE SUMMARY
+Role applied for: Front-End Developer
+Experience: 4 years of direct front-end development experience
+Skills: 4 of the 5 required (JavaScript, React, HTML and CSS, accessibility standards)
+Education: Bachelor's degree in computer science, plus a front-end development certificate
+Work history notes: Most recent role ended in a company-wide restructuring"
+res_fed_11,resume,fed,11,"CANDIDATE SUMMARY
+Role applied for: Front-End Developer
+Experience: 5 years of direct front-end development experience
+Skills: 5 of the 5 required (JavaScript, React, HTML and CSS, accessibility standards, version control)
+Education: Bachelor's degree in computer science
+Work history notes: Promoted twice at the current employer"
+res_fed_12,resume,fed,12,"CANDIDATE SUMMARY
+Role applied for: Front-End Developer
+Experience: 6 years of direct front-end development experience, including 2 years leading a small team
+Skills: 5 of the 5 required (JavaScript, React, HTML and CSS, accessibility standards, version control)
+Education: Bachelor's degree in computer science, plus a front-end development certificate
+Work history notes: Received a department performance award"

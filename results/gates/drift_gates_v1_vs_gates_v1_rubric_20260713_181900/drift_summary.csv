@@ -1,0 +1,7 @@
+provider,gate,n_shared,model_a,model_b,flips,net_fav,mean_delta_p_fav,entered_band,left_band
+anthropic,moderation,60,claude-sonnet-5,claude-sonnet-5,2,-2,-0.03333333333333333,2,1
+anthropic,resume,72,claude-sonnet-5,claude-sonnet-5,3,-1,-0.019097222222222224,0,1
+google,moderation,60,models/gemini-3.5-flash,models/gemini-3.5-flash,1,1,0.0125,0,1
+google,resume,72,models/gemini-3.5-flash,models/gemini-3.5-flash,4,0,-0.008680555555555556,0,4
+openai,moderation,60,gpt-5.5,gpt-5.5,2,2,0.027083333333333334,1,1
+openai,resume,72,gpt-5.5,gpt-5.5,1,1,0.019097222222222224,2,1

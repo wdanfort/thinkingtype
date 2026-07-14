@@ -1,0 +1,4 @@
+provider,gate,n_items,mean_p_text,min_p_text,max_p_text,n_in_band
+anthropic,moderation,60,0.4875,0.0,1.0,1
+google,moderation,60,0.5041666666666667,0.0,1.0,3
+openai,moderation,60,0.4979166666666667,0.0,1.0,5

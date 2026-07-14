@@ -1,0 +1,70 @@
+# Rubric-shield experiment (#1)
+#
+# Re-runs the two gates that showed a modality effect in gates_v1 (moderation,
+# resume) with explicit written decision criteria added to the system prompt
+# (inference.prompt_variant: rubric). Recalibrates the boundary under the
+# rubric prompt, then measures the text->image modality shift on reference
+# fonts only. If the shift collapses toward zero (as the already-rubric'd
+# appeal gate did in gates_v1), a written rubric hardens the gate.
+
+run_tag: gates_v1_rubric
+seed: 42
+
+gates:
+  - moderation
+  - resume
+
+calibration:
+  repeats: 8
+  band: [0.15, 0.85]
+  n_select: 20
+
+vision:
+  repeats: 6
+
+# Reference fonts only: this experiment isolates the modality switch, not
+# typography. T3_sans is the analysis reference variant.
+variants:
+  - id: T1_serif
+    font_file: LiberationSerif-Regular.ttf
+  - id: T3_sans
+    font_file: LiberationSans-Regular.ttf
+
+render:
+  image_width: 1400
+  base_size: 40
+  padding_x: 90
+  padding_y: 70
+  max_text_width: 1220
+  font_normalization: ag_height
+  # Pin to the gates_v1 font set so renders match the cached gates_v1 images
+  # (serif 51pt, sans 50pt).
+  normalize_fonts:
+    - LiberationSerif-Regular.ttf
+    - LiberationSans-Regular.ttf
+    - ComicNeue-Regular.ttf
+    - OpenDyslexic-Regular.otf
+
+providers:
+  openai:
+    api_key_env: OPENAI_API_KEY
+    model_text: gpt-5.5
+    model_vision: gpt-5.5
+    service_tier: flex
+  anthropic:
+    api_key_env: ANTHROPIC_API_KEY
+    model_text: claude-sonnet-5
+    model_vision: claude-sonnet-5
+  google:
+    api_key_env: GOOGLE_API_KEY
+    model_text: models/gemini-3.5-flash
+    model_vision: models/gemini-3.5-flash
+    thinking_budget: 0
+
+inference:
+  temperature: null
+  max_retries: 6
+  rate_limit_sleep: 1.5
+  workers: 8
+  seed: 42
+  prompt_variant: rubric

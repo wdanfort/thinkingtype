@@ -1,0 +1,10 @@
+provider,gate,n_items,mean_p_text,min_p_text,max_p_text,n_in_band
+anthropic,appeal,20,0.5,0.0,1.0,0
+anthropic,moderation,20,0.48125,0.0,1.0,1
+anthropic,resume,20,0.51875,0.0,1.0,1
+google,appeal,20,0.5,0.0,1.0,0
+google,moderation,20,0.48125,0.0,1.0,1
+google,resume,20,0.48125,0.0,1.0,4
+openai,appeal,20,0.5,0.0,1.0,0
+openai,moderation,20,0.525,0.0,1.0,2
+openai,resume,20,0.475,0.0,1.0,1

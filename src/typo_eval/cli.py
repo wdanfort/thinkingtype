@@ -325,6 +325,197 @@ def cmd_compare(args: argparse.Namespace, config: TypoEvalConfig, logger: loggin
     logger.info(f"Comparison analysis complete. Results saved to {output_dir}")
 
 
+def _register_custom_gates(gates_config) -> dict:
+    """Register config-defined gates; return stimulus path overrides."""
+    from typo_eval.gates.prompts import GateSpec, register_gate_spec
+
+    overrides = {}
+    for name, cg in gates_config.custom_gates.items():
+        register_gate_spec(GateSpec(
+            gate=name,
+            prompt_id=cg.prompt_id or f"{name}_custom",
+            system_prompt=cg.system_prompt,
+            question=cg.question,
+            yes_is_favorable=cg.yes_is_favorable,
+        ))
+        if cg.stimulus_path:
+            overrides[name] = cg.stimulus_path
+    return overrides
+
+
+def _gates_paths(gates_config) -> dict:
+    """Standard paths for a gates run."""
+    repo_root = get_repo_root()
+    inputs_dir = repo_root / "data" / "inputs" / "gates"
+    # Per-run metadata so configs with different variant sets don't clobber
+    # each other; gates_v1 predates this and used the unsuffixed name.
+    metadata_path = inputs_dir / f"metadata_{gates_config.run_tag}.csv"
+    if not metadata_path.exists() and (inputs_dir / "metadata.csv").exists():
+        fallback = inputs_dir / "metadata.csv"
+    else:
+        fallback = metadata_path
+    return {
+        "repo_root": repo_root,
+        "inputs_dir": inputs_dir,
+        "rendered_dir": repo_root / "data" / "rendered" / "gates",
+        "metadata_path": metadata_path,
+        "metadata_read_path": fallback,
+        "run_dir": repo_root / "results" / "gates" / gates_config.run_tag,
+    }
+
+
+def cmd_gates_build(args: argparse.Namespace, logger: logging.Logger) -> None:
+    """Write gate stimulus CSVs."""
+    from typo_eval.gates.config import load_gates_config
+    from typo_eval.gates.stimuli import write_gate_csvs
+
+    gc = load_gates_config(args.config)
+    paths = _gates_paths(gc)
+    df = write_gate_csvs(paths["inputs_dir"], gc.gates)
+    logger.info(f"Wrote {len(df)} gate items to {paths['inputs_dir']}")
+    for gate, n in df.groupby("gate").size().items():
+        logger.info(f"  {gate}: {n} items")
+
+
+def cmd_gates_render(args: argparse.Namespace, logger: logging.Logger) -> None:
+    """Render all gate items under all variants."""
+    from typo_eval.gates.config import load_gates_config
+    from typo_eval.gates.render import render_gate_items
+    from typo_eval.gates.stimuli import load_gate_items
+
+    gc = load_gates_config(args.config)
+    overrides = _register_custom_gates(gc)
+    paths = _gates_paths(gc)
+    items_df = load_gate_items(paths["inputs_dir"], gc.gates, overrides)
+    metadata = render_gate_items(gc, items_df, paths["rendered_dir"], paths["repo_root"])
+    metadata.to_csv(paths["metadata_path"], index=False)
+    logger.info(f"Rendered {len(metadata)} images; metadata at {paths['metadata_path']}")
+
+
+def cmd_gates_calibrate(args: argparse.Namespace, logger: logging.Logger) -> None:
+    """Run text-mode calibration for one provider, then summarize + select."""
+    from typo_eval.gates.config import load_gates_config
+    from typo_eval.gates.engine import (
+        run_calibration,
+        select_boundary_items,
+        summarize_calibration,
+    )
+    from typo_eval.gates.stimuli import load_gate_items
+
+    gc = load_gates_config(args.config)
+    overrides = _register_custom_gates(gc)
+    paths = _gates_paths(gc)
+    run_dir = paths["run_dir"]
+    logger = _setup_logger(run_dir)
+    items_df = load_gate_items(paths["inputs_dir"], gc.gates, overrides)
+
+    jsonl_path = run_calibration(
+        gc, args.provider, items_df, run_dir,
+        limit=args.limit, dry_run=args.dry_run,
+    )
+    if args.dry_run:
+        return
+
+    summary = summarize_calibration(jsonl_path)
+    if not summary.empty:
+        # Copied/merged JSONLs may carry gates outside this config
+        summary = summary[summary["gate"].isin(gc.gates)]
+    if summary.empty:
+        logger.error("No calibration records found")
+        sys.exit(1)
+    cal_path = run_dir / "calibration" / f"summary_{args.provider}.csv"
+    summary.to_csv(cal_path, index=False)
+
+    selected = select_boundary_items(summary, gc)
+    sel_dir = run_dir / "selection"
+    sel_dir.mkdir(parents=True, exist_ok=True)
+    sel_path = sel_dir / f"selected_{args.provider}.csv"
+    selected.to_csv(sel_path, index=False)
+    for gate, grp in selected.groupby("gate"):
+        n_band = int(grp["in_band"].sum())
+        logger.info(
+            f"{gate}: selected {len(grp)} items ({n_band} in band), "
+            f"p_yes range [{grp['p_yes'].min():.2f}, {grp['p_yes'].max():.2f}]"
+        )
+    logger.info(f"Selection written to {sel_path}")
+
+
+def cmd_gates_run(args: argparse.Namespace, logger: logging.Logger) -> None:
+    """Run the vision arm for one provider on its selected items."""
+    import pandas as pd
+    from typo_eval.gates.config import load_gates_config
+    from typo_eval.gates.engine import run_vision
+
+    gc = load_gates_config(args.config)
+    _register_custom_gates(gc)
+    paths = _gates_paths(gc)
+    run_dir = paths["run_dir"]
+    logger = _setup_logger(run_dir)
+
+    sel_path = run_dir / "selection" / f"selected_{args.provider}.csv"
+    if not sel_path.exists():
+        logger.error(f"No selection file at {sel_path}; run gates-calibrate first")
+        sys.exit(1)
+    meta_path = paths["metadata_read_path"]
+    if not meta_path.exists():
+        logger.error(f"No render metadata at {meta_path}; run gates-render first")
+        sys.exit(1)
+
+    selected_df = pd.read_csv(sel_path)
+    metadata_df = pd.read_csv(meta_path)
+    run_vision(
+        gc, args.provider, selected_df, metadata_df, run_dir,
+        limit=args.limit, dry_run=args.dry_run,
+    )
+
+
+def cmd_gates_analyze(args: argparse.Namespace, logger: logging.Logger) -> None:
+    """Analyze a gates run."""
+    from typo_eval.gates.analyze import analyze_gates_run
+    from typo_eval.gates.config import load_gates_config
+
+    gc = load_gates_config(args.config)
+    _register_custom_gates(gc)
+    paths = _gates_paths(gc)
+    analysis_dir = analyze_gates_run(gc, paths["run_dir"])
+    logger.info(f"Analysis complete: {analysis_dir}")
+
+
+def cmd_gates_drift(args: argparse.Namespace, logger: logging.Logger) -> None:
+    """Compare two gates runs (model upgrade, prompt change, vendor swap)."""
+    import datetime as _dt
+    from typo_eval.gates.config import load_gates_config
+    from typo_eval.gates.drift import compare_runs
+
+    if args.config and Path(args.config).exists() and args.config.endswith((".yaml", ".yml")):
+        try:
+            gc = load_gates_config(args.config)
+            _register_custom_gates(gc)
+        except Exception:
+            pass  # drift only needs custom-gate favorability if gates are custom
+
+    repo_root = get_repo_root()
+    gates_root = repo_root / "results" / "gates"
+
+    def resolve(tag_or_path: str) -> Path:
+        p = Path(tag_or_path)
+        return p if p.exists() else gates_root / tag_or_path
+
+    run_a, run_b = resolve(args.run_a), resolve(args.run_b)
+    for p, flag in [(run_a, "--run-a"), (run_b, "--run-b")]:
+        if not p.exists():
+            logger.error(f"{flag}: no run at {p}")
+            sys.exit(1)
+    stamp = _dt.datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    out_dir = gates_root / f"drift_{run_a.name}_vs_{run_b.name}_{stamp}"
+    report = compare_runs(
+        run_a, run_b, out_dir,
+        label_a=args.run_a, label_b=args.run_b,
+        provider=args.provider,
+    )
+    logger.info(f"Drift report: {report}")
+
+
 def cmd_all(args: argparse.Namespace, config: TypoEvalConfig, logger: logging.Logger) -> None:
     """Run full pipeline: generate -> render -> ocr -> run -> analyze."""
     logger.info("Running full pipeline...")
@@ -392,6 +583,35 @@ def main() -> None:
     compare_parser.add_argument("--provider", choices=["openai", "anthropic", "google"], help="Filter to specific provider")
     compare_parser.add_argument("--model", help="Filter to models containing this substring")
 
+    # gates commands (decision-gate experiment; use a gates config YAML)
+    subparsers.add_parser("gates-build", help="Write gate stimulus CSVs")
+    subparsers.add_parser("gates-render", help="Render gate documents for all variants")
+    for name, help_text in [
+        ("gates-calibrate", "Text-mode calibration + boundary selection"),
+        ("gates-run", "Vision arm on selected boundary items"),
+    ]:
+        p = subparsers.add_parser(name, help=help_text)
+        p.add_argument(
+            "--provider",
+            choices=["openai", "anthropic", "google"],
+            required=True,
+            help="Inference provider",
+        )
+        p.add_argument("--dry-run", action="store_true", help="Print planned calls without executing")
+        p.add_argument("--limit", type=int, help="Limit number of inference calls")
+    subparsers.add_parser("gates-analyze", help="Analyze a gates run")
+
+    drift_parser = subparsers.add_parser(
+        "gates-drift",
+        help="Compare two gates runs (model upgrade / prompt change / vendor swap)",
+    )
+    drift_parser.add_argument("--run-a", required=True, help="Baseline run tag or path")
+    drift_parser.add_argument("--run-b", required=True, help="Comparison run tag or path")
+    drift_parser.add_argument(
+        "--provider", choices=["openai", "anthropic", "google"],
+        help="Restrict comparison to one provider",
+    )
+
     # all command
     all_parser = subparsers.add_parser("all", help="Run full pipeline")
     all_parser.add_argument("--dry-run", action="store_true", help="Print planned calls without executing")
@@ -410,6 +630,20 @@ def main() -> None:
     if not args.command:
         parser.print_help()
         sys.exit(0)
+
+    # Gates commands use their own config schema; dispatch before loading
+    # the v0 config.
+    gates_commands = {
+        "gates-build": cmd_gates_build,
+        "gates-render": cmd_gates_render,
+        "gates-calibrate": cmd_gates_calibrate,
+        "gates-run": cmd_gates_run,
+        "gates-analyze": cmd_gates_analyze,
+        "gates-drift": cmd_gates_drift,
+    }
+    if args.command in gates_commands:
+        gates_commands[args.command](args, logger)
+        return
 
     # Load config
     try:

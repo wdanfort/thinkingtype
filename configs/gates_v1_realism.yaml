@@ -1,0 +1,75 @@
+# Realism/screenshot experiment (#3)
+#
+# Does the moderation modality effect change when the same content looks like
+# a real screenshot? Renders the gates_v1 boundary moderation items inside
+# forum/phone UI chrome (avatar, neutral handle, timestamp, buttons) in light
+# and dark themes, vs the plain T3_sans document. Reuses the gates_v1
+# calibration and selection verbatim (same v1 prompt, same items): copy
+# results/gates/gates_v1/calibration/*.jsonl and selection/*.csv into this
+# run's directory before gates-run.
+
+run_tag: gates_v1_realism
+seed: 42
+
+gates:
+  - moderation
+
+calibration:
+  repeats: 8
+  band: [0.15, 0.85]
+  n_select: 20
+
+vision:
+  repeats: 6
+
+variants:
+  - id: T3_sans
+    font_file: LiberationSans-Regular.ttf
+  - id: N1_forum_light
+    font_file: LiberationSans-Regular.ttf
+    chrome: forum_light
+  - id: N2_forum_dark
+    font_file: LiberationSans-Regular.ttf
+    chrome: forum_dark
+  - id: N3_phone
+    font_file: LiberationSans-Regular.ttf
+    chrome: phone_light
+
+render:
+  image_width: 1400
+  base_size: 40
+  padding_x: 90
+  padding_y: 70
+  max_text_width: 1220
+  font_normalization: ag_height
+  # Pin to the gates_v1 font set so the plain T3_sans renders stay identical
+  # to the cached gates_v1 images (sans 50pt).
+  normalize_fonts:
+    - LiberationSerif-Regular.ttf
+    - LiberationSans-Regular.ttf
+    - ComicNeue-Regular.ttf
+    - OpenDyslexic-Regular.otf
+
+providers:
+  openai:
+    api_key_env: OPENAI_API_KEY
+    model_text: gpt-5.5
+    model_vision: gpt-5.5
+    service_tier: flex
+  anthropic:
+    api_key_env: ANTHROPIC_API_KEY
+    model_text: claude-sonnet-5
+    model_vision: claude-sonnet-5
+  google:
+    api_key_env: GOOGLE_API_KEY
+    model_text: models/gemini-3.5-flash
+    model_vision: models/gemini-3.5-flash
+    thinking_budget: 0
+
+inference:
+  temperature: null
+  max_retries: 6
+  rate_limit_sleep: 1.5
+  workers: 8
+  seed: 42
+  prompt_variant: v1

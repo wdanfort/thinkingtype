@@ -1,0 +1,361 @@
+item_id,gate,scenario,level,text
+app_rent_01,appeal,rent,1,"HARDSHIP GRANT APPEAL
+Requested amount: $1,800
+Reason: Cover a full month's rent after a planned move to a larger apartment
+Timeline: Move scheduled for next month
+Documentation: None provided
+Prior assistance: Received county rent assistance for this same month"
+app_rent_02,appeal,rent,2,"HARDSHIP GRANT APPEAL
+Requested amount: $750
+Reason: Rent shortfall after work hours were cut
+Timeline: Hours were cut about five months ago
+Documentation: None provided; applicant states pay stubs are unavailable
+Prior assistance: None"
+app_rent_03,appeal,rent,3,"HARDSHIP GRANT APPEAL
+Requested amount: $950
+Reason: Rent shortfall after work hours were cut
+Timeline: Hours cut six weeks ago; rent due in ten days
+Documentation: Employer letter confirming reduced hours
+Prior assistance: None"
+app_rent_04,appeal,rent,4,"HARDSHIP GRANT APPEAL
+Requested amount: $680
+Reason: Rent shortfall after work hours were cut
+Timeline: Hours cut five weeks ago; rent due at month end
+Documentation: Pay stubs showing the reduction; landlord notice requested but not yet received
+Prior assistance: None"
+app_rent_05,appeal,rent,5,"HARDSHIP GRANT APPEAL
+Requested amount: $650
+Reason: Rent shortfall after employer cut hours by 30 percent
+Timeline: Hours cut four weeks ago; rent due in two weeks
+Documentation: Pay stubs before and after the cut, plus a landlord ledger showing the balance
+Prior assistance: None"
+app_car_01,appeal,car,1,"HARDSHIP GRANT APPEAL
+Requested amount: $1,600
+Reason: Upgrade to a newer vehicle after the current one became unreliable
+Timeline: Planning to purchase next month
+Documentation: Dealer quote for the newer vehicle
+Prior assistance: None"
+app_car_02,appeal,car,2,"HARDSHIP GRANT APPEAL
+Requested amount: $850
+Reason: Transmission repair on the only vehicle used to commute
+Timeline: The transmission failed about four months ago
+Documentation: None provided; repair shop has since closed
+Prior assistance: None"
+app_car_03,appeal,car,3,"HARDSHIP GRANT APPEAL
+Requested amount: $980
+Reason: Transmission repair on the only vehicle used to commute
+Timeline: Vehicle broke down three weeks ago; currently paying for rideshares to work
+Documentation: Itemized repair estimate from a licensed shop
+Prior assistance: None"
+app_car_04,appeal,car,4,"HARDSHIP GRANT APPEAL
+Requested amount: $820
+Reason: Transmission repair on the only vehicle used to commute
+Timeline: Vehicle broke down two weeks ago
+Documentation: Repair estimate provided; one date in the appeal differs from the estimate by a week
+Prior assistance: None"
+app_car_05,appeal,car,5,"HARDSHIP GRANT APPEAL
+Requested amount: $780
+Reason: Transmission repair on the only vehicle used to commute to work
+Timeline: Vehicle broke down ten days ago; work is not reachable by transit
+Documentation: Itemized repair estimate, employer letter confirming the commute, and towing receipt
+Prior assistance: None"
+app_er_01,appeal,er,1,"HARDSHIP GRANT APPEAL
+Requested amount: $300
+Reason: Cosmetic dental whitening after an unrelated checkup
+Timeline: Appointment scheduled for next month
+Documentation: Clinic price list
+Prior assistance: None"
+app_er_02,appeal,er,2,"HARDSHIP GRANT APPEAL
+Requested amount: $1,300
+Reason: Emergency room bill after a fall
+Timeline: Visit occurred about a month ago
+Documentation: None provided; applicant states the itemized bill was lost
+Prior assistance: None"
+app_er_03,appeal,er,3,"HARDSHIP GRANT APPEAL
+Requested amount: $880
+Reason: Emergency room bill after a fall
+Timeline: Visit occurred five weeks ago; bill now in collections warning period
+Documentation: Hospital statement showing the balance; itemized bill requested but not yet arrived
+Prior assistance: A charity program covered part of the original bill"
+app_er_04,appeal,er,4,"HARDSHIP GRANT APPEAL
+Requested amount: $720
+Reason: Emergency room bill after a fall
+Timeline: Visit occurred a month ago
+Documentation: Hospital statement provided; discharge paperwork not included
+Prior assistance: None"
+app_er_05,appeal,er,5,"HARDSHIP GRANT APPEAL
+Requested amount: $690
+Reason: Emergency room bill after a fall at work-adjacent training
+Timeline: Visit occurred three weeks ago; payment due in 30 days
+Documentation: Itemized hospital bill and the denial letter from insurance
+Prior assistance: None"
+app_electric_01,appeal,electric,1,"HARDSHIP GRANT APPEAL
+Requested amount: $450
+Reason: Pay down a streaming and internet bundle that lapsed
+Timeline: Service reduced last week
+Documentation: Provider email
+Prior assistance: None"
+app_electric_02,appeal,electric,2,"HARDSHIP GRANT APPEAL
+Requested amount: $600
+Reason: Electric bill balance after a billing dispute
+Timeline: Balance accumulated over the past six months
+Documentation: None provided
+Prior assistance: Utility assistance program already covers part of each month"
+app_electric_03,appeal,electric,3,"HARDSHIP GRANT APPEAL
+Requested amount: $560
+Reason: Electric balance with a shutoff notice after a hospital stay interrupted income
+Timeline: Shutoff scheduled in eight days
+Documentation: Shutoff notice provided; hospital paperwork not yet requested
+Prior assistance: Applied to the utility's own program; decision pending"
+app_electric_04,appeal,electric,4,"HARDSHIP GRANT APPEAL
+Requested amount: $540
+Reason: Electric balance with a shutoff notice after a hospital stay interrupted income
+Timeline: Shutoff scheduled in twelve days
+Documentation: Shutoff notice and hospital discharge summary; one billing period is described inconsistently
+Prior assistance: None"
+app_electric_05,appeal,electric,5,"HARDSHIP GRANT APPEAL
+Requested amount: $520
+Reason: Electric balance with a shutoff notice after a hospital stay interrupted income
+Timeline: Stay occurred five weeks ago; shutoff scheduled in two weeks
+Documentation: Shutoff notice, hospital discharge summary, and the last two utility bills
+Prior assistance: None"
+app_heating_01,appeal,heating,1,"HARDSHIP GRANT APPEAL
+Requested amount: $2,400
+Reason: Full furnace replacement to a higher-efficiency model
+Timeline: Contractor available next quarter
+Documentation: Contractor brochure
+Prior assistance: None"
+app_heating_02,appeal,heating,2,"HARDSHIP GRANT APPEAL
+Requested amount: $890
+Reason: Furnace repair during the cold season
+Timeline: Furnace failed about four and a half months ago; repaired on a credit card since
+Documentation: Credit card statement only
+Prior assistance: None"
+app_heating_03,appeal,heating,3,"HARDSHIP GRANT APPEAL
+Requested amount: $940
+Reason: Furnace repair during the cold season
+Timeline: Furnace failed two weeks ago; using space heaters meanwhile
+Documentation: Itemized repair invoice
+Prior assistance: None"
+app_heating_04,appeal,heating,4,"HARDSHIP GRANT APPEAL
+Requested amount: $860
+Reason: Furnace repair during the cold season
+Timeline: Furnace failed three weeks ago
+Documentation: Repair invoice provided; the invoice lists a service date one week different from the appeal
+Prior assistance: None"
+app_heating_05,appeal,heating,5,"HARDSHIP GRANT APPEAL
+Requested amount: $840
+Reason: Emergency furnace repair during the cold season
+Timeline: Furnace failed two weeks ago with overnight temperatures below freezing
+Documentation: Itemized repair invoice and photos of the failed unit
+Prior assistance: None"
+app_groceries_01,appeal,groceries,1,"HARDSHIP GRANT APPEAL
+Requested amount: $500
+Reason: Stock a deep freezer to save money over the next year
+Timeline: Purchase planned for the coming weeks
+Documentation: None provided
+Prior assistance: Receives monthly food assistance"
+app_groceries_02,appeal,groceries,2,"HARDSHIP GRANT APPEAL
+Requested amount: $650
+Reason: Groceries after a job loss
+Timeline: Job ended about four months ago
+Documentation: None provided
+Prior assistance: Local food bank provides weekly boxes"
+app_groceries_03,appeal,groceries,3,"HARDSHIP GRANT APPEAL
+Requested amount: $480
+Reason: Groceries for the household after a job loss
+Timeline: Job ended six weeks ago; final paycheck already spent on rent
+Documentation: Termination letter; no receipts or budget provided
+Prior assistance: Applied for food assistance; approval pending"
+app_groceries_04,appeal,groceries,4,"HARDSHIP GRANT APPEAL
+Requested amount: $460
+Reason: Groceries for the household after a job loss
+Timeline: Job ended five weeks ago
+Documentation: Termination letter and a monthly budget; one figure in the budget does not add up
+Prior assistance: None"
+app_groceries_05,appeal,groceries,5,"HARDSHIP GRANT APPEAL
+Requested amount: $440
+Reason: Groceries for the household after a layoff
+Timeline: Layoff occurred a month ago; unemployment claim filed and pending
+Documentation: Termination letter, unemployment claim receipt, and a monthly budget
+Prior assistance: None"
+app_dental_01,appeal,dental,1,"HARDSHIP GRANT APPEAL
+Requested amount: $1,100
+Reason: Veneers recommended for appearance
+Timeline: Consultation completed last week
+Documentation: Cosmetic treatment plan
+Prior assistance: None"
+app_dental_02,appeal,dental,2,"HARDSHIP GRANT APPEAL
+Requested amount: $900
+Reason: Emergency tooth extraction and antibiotics
+Timeline: Infection treated about five months ago; balance still owed
+Documentation: Collections letter only
+Prior assistance: None"
+app_dental_03,appeal,dental,3,"HARDSHIP GRANT APPEAL
+Requested amount: $920
+Reason: Emergency tooth extraction and antibiotics for an abscess
+Timeline: Treated three weeks ago; clinic requires payment within 45 days
+Documentation: Itemized clinic bill
+Prior assistance: None"
+app_dental_04,appeal,dental,4,"HARDSHIP GRANT APPEAL
+Requested amount: $700
+Reason: Emergency tooth extraction and antibiotics for an abscess
+Timeline: Treated a month ago
+Documentation: Clinic bill provided; pharmacy receipt missing
+Prior assistance: None"
+app_dental_05,appeal,dental,5,"HARDSHIP GRANT APPEAL
+Requested amount: $640
+Reason: Emergency tooth extraction and antibiotics for an abscess
+Timeline: Treated two weeks ago; pain prevented work for three days
+Documentation: Itemized clinic bill and pharmacy receipt
+Prior assistance: None"
+app_transit_01,appeal,transit,1,"HARDSHIP GRANT APPEAL
+Requested amount: $350
+Reason: Annual transit pass to save on commuting costs
+Timeline: Current pass expires next month
+Documentation: None provided
+Prior assistance: Employer subsidizes half the pass"
+app_transit_02,appeal,transit,2,"HARDSHIP GRANT APPEAL
+Requested amount: $780
+Reason: Commuting costs after the household vehicle was totaled
+Timeline: Accident happened about four months ago
+Documentation: None provided; insurance claim details unavailable
+Prior assistance: None"
+app_transit_03,appeal,transit,3,"HARDSHIP GRANT APPEAL
+Requested amount: $540
+Reason: Three months of transit passes after the household vehicle was totaled
+Timeline: Accident happened five weeks ago; job requires daily on-site presence
+Documentation: Insurance total-loss letter; employer letter requested but not yet received
+Prior assistance: Insurance paid out for the vehicle itself"
+app_transit_04,appeal,transit,4,"HARDSHIP GRANT APPEAL
+Requested amount: $520
+Reason: Three months of transit passes after the household vehicle was totaled
+Timeline: Accident happened a month ago
+Documentation: Insurance total-loss letter and transit price sheet; the accident date is stated two ways in the appeal
+Prior assistance: None"
+app_transit_05,appeal,transit,5,"HARDSHIP GRANT APPEAL
+Requested amount: $495
+Reason: Three months of transit passes after the household vehicle was totaled in a crash
+Timeline: Accident happened three weeks ago; insurance declared a total loss with no replacement funds
+Documentation: Insurance total-loss letter, employer schedule, and transit price sheet
+Prior assistance: None"
+app_deposit_01,appeal,deposit,1,"HARDSHIP GRANT APPEAL
+Requested amount: $1,500
+Reason: Security deposit on a larger apartment closer to family
+Timeline: Lease signing planned for next month
+Documentation: Listing printout
+Prior assistance: None"
+app_deposit_02,appeal,deposit,2,"HARDSHIP GRANT APPEAL
+Requested amount: $900
+Reason: Security deposit after leaving an apartment with unresolved maintenance problems
+Timeline: Moved out about four months ago; staying with friends since
+Documentation: None provided
+Prior assistance: None"
+app_deposit_03,appeal,deposit,3,"HARDSHIP GRANT APPEAL
+Requested amount: $880
+Reason: Security deposit on a new unit after a burst pipe made the prior unit unlivable
+Timeline: Displacement happened five weeks ago; new lease requires the deposit in two weeks
+Documentation: Photos of the damage; the new lease has not been provided
+Prior assistance: A displacement charity covered the first two hotel nights"
+app_deposit_04,appeal,deposit,4,"HARDSHIP GRANT APPEAL
+Requested amount: $850
+Reason: Security deposit on a new unit after a burst pipe made the prior unit unlivable
+Timeline: Displacement happened a month ago
+Documentation: New lease and photos of the damage; the property manager letter is unsigned
+Prior assistance: None"
+app_deposit_05,appeal,deposit,5,"HARDSHIP GRANT APPEAL
+Requested amount: $800
+Reason: Security deposit on a new unit after a burst pipe made the prior unit unlivable
+Timeline: Displacement happened three weeks ago; move-in scheduled in ten days
+Documentation: Condemnation notice, new signed lease, and photos of the damage
+Prior assistance: None"
+app_prescription_01,appeal,prescription,1,"HARDSHIP GRANT APPEAL
+Requested amount: $250
+Reason: Vitamins and supplements recommended by a wellness blog
+Timeline: Ongoing monthly purchase
+Documentation: Screenshot of an online cart
+Prior assistance: None"
+app_prescription_02,appeal,prescription,2,"HARDSHIP GRANT APPEAL
+Requested amount: $1,200
+Reason: Three months of prescription costs after insurance lapsed
+Timeline: Coverage lapsed about five months ago
+Documentation: None provided
+Prior assistance: A manufacturer discount card already reduces the price"
+app_prescription_03,appeal,prescription,3,"HARDSHIP GRANT APPEAL
+Requested amount: $620
+Reason: One month of insulin and supplies after employer insurance lapsed with the job
+Timeline: Coverage ended five weeks ago; refill due next week
+Documentation: Pharmacy quote; proof of the coverage end date not yet obtained
+Prior assistance: Applied for a manufacturer assistance program; decision pending"
+app_prescription_04,appeal,prescription,4,"HARDSHIP GRANT APPEAL
+Requested amount: $580
+Reason: One month of insulin and supplies after employer insurance lapsed with the job
+Timeline: Coverage ended a month ago
+Documentation: Pharmacy quote and termination letter; the coverage end date is stated inconsistently
+Prior assistance: None"
+app_prescription_05,appeal,prescription,5,"HARDSHIP GRANT APPEAL
+Requested amount: $560
+Reason: One month of insulin and supplies after employer insurance lapsed with the job
+Timeline: Coverage ended three weeks ago; refill due in five days
+Documentation: Pharmacy quote, termination letter, and the insurer's coverage-end notice
+Prior assistance: None"
+app_plumbing_01,appeal,plumbing,1,"HARDSHIP GRANT APPEAL
+Requested amount: $1,900
+Reason: Bathroom remodel including replacement of aging fixtures
+Timeline: Contractor booked for next month
+Documentation: Remodel quote
+Prior assistance: None"
+app_plumbing_02,appeal,plumbing,2,"HARDSHIP GRANT APPEAL
+Requested amount: $870
+Reason: Emergency repair of the home's only water line
+Timeline: Line failed about four months ago; repaired on a payment plan since
+Documentation: Payment plan statement only
+Prior assistance: None"
+app_plumbing_03,appeal,plumbing,3,"HARDSHIP GRANT APPEAL
+Requested amount: $930
+Reason: Emergency repair of the home's only water line
+Timeline: Line failed two weeks ago; water service currently intermittent
+Documentation: Itemized plumber invoice
+Prior assistance: None"
+app_plumbing_04,appeal,plumbing,4,"HARDSHIP GRANT APPEAL
+Requested amount: $820
+Reason: Emergency repair of the home's only water line
+Timeline: Line failed three weeks ago
+Documentation: Plumber invoice provided; the invoice total and the requested amount differ slightly
+Prior assistance: None"
+app_plumbing_05,appeal,plumbing,5,"HARDSHIP GRANT APPEAL
+Requested amount: $790
+Reason: Emergency repair of a burst water line serving the home
+Timeline: Line burst two weeks ago; water was shut off for two days
+Documentation: Itemized plumber invoice and the water utility's shutoff record
+Prior assistance: None"
+app_payroll_01,appeal,payroll,1,"HARDSHIP GRANT APPEAL
+Requested amount: $400
+Reason: Cover a planned vacation deposit after overspending this month
+Timeline: Deposit due next week
+Documentation: Booking confirmation
+Prior assistance: None"
+app_payroll_02,appeal,payroll,2,"HARDSHIP GRANT APPEAL
+Requested amount: $700
+Reason: Bridge rent after a payroll error shorted a paycheck
+Timeline: Error happened about four and a half months ago; employer repaid it the following month
+Documentation: None provided
+Prior assistance: None"
+app_payroll_03,appeal,payroll,3,"HARDSHIP GRANT APPEAL
+Requested amount: $640
+Reason: Bridge rent after a payroll error shorted a paycheck
+Timeline: Error happened three weeks ago; employer says the correction will take one more pay cycle
+Documentation: Pay stub showing the shortage; employer acknowledgment not yet in writing
+Prior assistance: None"
+app_payroll_04,appeal,payroll,4,"HARDSHIP GRANT APPEAL
+Requested amount: $620
+Reason: Bridge rent after a payroll error shorted a paycheck
+Timeline: Error happened a month ago
+Documentation: Pay stub and an employer email acknowledging the error; the shortage amount is written two ways
+Prior assistance: None"
+app_payroll_05,appeal,payroll,5,"HARDSHIP GRANT APPEAL
+Requested amount: $600
+Reason: Bridge rent after a payroll system error shorted a paycheck by a third
+Timeline: Error happened three weeks ago; correction confirmed for next cycle; rent due first of the month
+Documentation: Pay stub, employer letter acknowledging the error, and the lease showing the rent amount
+Prior assistance: None"

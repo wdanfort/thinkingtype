@@ -1,0 +1,94 @@
+# Decision-gate experiment v1
+#
+# Tests whether rendering identical content as an image moves real gate
+# decisions (resume screen, moderation, hardship-grant appeal) on items
+# calibrated to each model's own decision boundary, and whether
+# accessibility formatting (OpenDyslexic, large print) shifts outcomes.
+#
+# Model ids carried over from configs/v0b_frontier.yaml (verified against
+# each provider's models API on 2026-07-05).
+
+run_tag: gates_v1
+seed: 42
+
+gates:
+  - resume
+  - moderation
+  - appeal
+
+calibration:
+  repeats: 8
+  band: [0.15, 0.85]
+  n_select: 20
+
+vision:
+  repeats: 6
+
+# Visual variants: fonts (controls + accessibility), color, highlighting,
+# and layout density. T3_sans is the within-image reference.
+variants:
+  - id: T1_serif
+    font_file: LiberationSerif-Regular.ttf
+
+  - id: T3_sans
+    font_file: LiberationSans-Regular.ttf
+
+  - id: T7_comic
+    font_file: ComicNeue-Regular.ttf
+
+  - id: A1_opendyslexic
+    font_file: OpenDyslexic-Regular.otf
+
+  - id: A2_large_sans
+    font_file: LiberationSans-Regular.ttf
+    size_scale: 1.5
+
+  - id: C1_red
+    font_file: LiberationSans-Regular.ttf
+    text_color: "#B00000"
+
+  - id: C2_gray
+    font_file: LiberationSans-Regular.ttf
+    text_color: "#8C8C8C"
+
+  - id: H1_highlight
+    font_file: LiberationSans-Regular.ttf
+    highlight_color: "#FFF2A8"
+
+  - id: L1_cramped
+    font_file: LiberationSans-Regular.ttf
+    size_scale: 0.75
+    line_spacing: 1.0
+
+render:
+  image_width: 1400
+  base_size: 40
+  padding_x: 90
+  padding_y: 70
+  max_text_width: 1220
+  font_normalization: ag_height
+
+providers:
+  openai:
+    api_key_env: OPENAI_API_KEY
+    model_text: gpt-5.5
+    model_vision: gpt-5.5
+    service_tier: flex
+  anthropic:
+    api_key_env: ANTHROPIC_API_KEY
+    model_text: claude-sonnet-5
+    model_vision: claude-sonnet-5
+  google:
+    api_key_env: GOOGLE_API_KEY
+    model_text: models/gemini-3.5-flash
+    model_vision: models/gemini-3.5-flash
+    # Same rationale as v0b: thinking multiplies cost ~2.4x on one-token
+    # answers; pilot checks agreement.
+    thinking_budget: 0
+
+inference:
+  temperature: null  # reasoning-era models reject explicit temperature
+  max_retries: 6
+  rate_limit_sleep: 1.5
+  workers: 8
+  seed: 42
