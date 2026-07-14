@@ -128,13 +128,21 @@
        keep the numbers consistent with the tables below (moderation
        +10 to +13pp; résumé Gemini +15.6pp vs GPT-5.5 −4.2pp; OpenDyslexic
        −4 to −6pp, 17 of 21 moved items toward removal).
+
+
+
+
+       
        ════════════════════════════════════════════════════════════════════ -->
-  <h1>Presentation changes AI decisions</h1>
-  <p><strong>The same borderline content, shown to the same model as plain text or as an image, gets a different decision — and the direction depends on which model is looking.</strong></p>
-  <p class="disclaimer">Independent research on my own time; views are my own, not my employer's.</p>
+  <h1>Font choice influences VLMs</h1>
+  <p><strong>Given the same text, typography modestly flips decisions and qualitative classifications across VLMs and LLMs</strong></p>
+  <p class="disclaimer">Independent research. Views are my own, not my employer's!</p>
+
+  <p>I got really into typography this year, and so I wanted to measure how the same text was &ldquo;read&rdquo; by vision language models vs. large language models.</p>
+  <p>I created an eval harness to characterize how, for a given model class across 3 providers, changing fonts influenced qualitative assessments (i.e. trustworthy, professional) as well as decisions (&ldquo;flag this policy violation,&rdquo; &ldquo;show this r&eacute;sum&eacute; to a hiring manager&rdquo;).</p>
 
   <div class="tldr">
-    <p><strong>TL;DR.</strong> I built three synthetic decision gates — remove this comment, advance this résumé, grant this appeal — and calibrated each one to each model's own decision boundary, where a decision can actually move. Then I gave every model the same items as plain text and as images of the same content. Three results. <strong>One:</strong> borderline harassment that a model removes as text survives as an image 10–13 points more often (GPT-5.5 and Claude Sonnet 5), and résumé screening drifts in <em>opposite directions</em> depending on vendor — Gemini advances image résumés 16 points more, GPT-5.5 slightly fewer. <strong>Two:</strong> writing the decision criteria into the prompt eliminated the drift completely for two of three models — and did almost nothing for the third. <strong>Three:</strong> comments rendered in a dyslexia-accessibility font only ever drifted one way: toward removal.</p>
+    <p><strong>Fonts still matter!</strong> And the switch from text to image matters even more: borderline harassment that a model removes as text survives as an image 10–13 points more often (GPT-5.5, Claude Sonnet 5), and r&eacute;sum&eacute; screening drifts in <em>opposite directions</em> depending on vendor — Gemini advances image r&eacute;sum&eacute;s 16 points more, GPT-5.5 slightly fewer. Writing the decision criteria into the prompt eliminated the drift for two of three models — and did almost nothing for the third. And comments rendered in a dyslexia-accessibility font only ever drifted one way: toward removal.</p>
   </div>
   <!-- ✏️ END EDIT 1 ═══════════════════════════════════════════════════════ -->
 
