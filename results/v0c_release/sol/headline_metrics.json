@@ -1,0 +1,33 @@
+{
+  "run_id": "v0c_release",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "timestamp": "2026-07-15T12:10:42.821751",
+  "dimension_analysis": {
+    "overall_flip_rate": 0.106875,
+    "overall_ci": [
+      0.09353645833333332,
+      0.120625
+    ],
+    "n_comparisons": 9600,
+    "top_flipping_dimension": "confident",
+    "top_flipping_dimension_rate": 0.31666666666666665,
+    "top_flipping_variant": "T7_comic",
+    "top_flipping_variant_rate": 0.1425
+  },
+  "decision_analysis": {
+    "flip_rate": 0.0125,
+    "flip_ci": [
+      0.003125,
+      0.023958333333333335
+    ],
+    "n_decisions": 960,
+    "direction_net_bias": 0.3333333333333333,
+    "direction_interpretation": "Mixed"
+  },
+  "key_correlations": {
+    "emotional_decision_lift": 87.18181818181819,
+    "urgent_decision_lift": 10.928571428571427,
+    "immediate_action_decision_lift": 9.295918367346937
+  }
+}

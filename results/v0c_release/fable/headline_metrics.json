@@ -1,0 +1,33 @@
+{
+  "run_id": "v0c_release_fable",
+  "provider": "anthropic",
+  "model": "claude-fable-5",
+  "timestamp": "2026-07-15T13:55:59.588186",
+  "dimension_analysis": {
+    "overall_flip_rate": 0.08636703320166542,
+    "overall_ci": [
+      0.07391480481399798,
+      0.0995743131193933
+    ],
+    "n_comparisons": 9367,
+    "top_flipping_dimension": "confident",
+    "top_flipping_dimension_rate": 0.19189765458422176,
+    "top_flipping_variant": "T7_comic",
+    "top_flipping_variant_rate": 0.10806174957118353
+  },
+  "decision_analysis": {
+    "flip_rate": 0.027251184834123223,
+    "flip_ci": [
+      0.008187134502923977,
+      0.050971809533681134
+    ],
+    "n_decisions": 844,
+    "direction_net_bias": -0.5652173913043478,
+    "direction_interpretation": "Vision less likely to escalate"
+  },
+  "key_correlations": {
+    "urgent_decision_lift": 13.327615780445969,
+    "high_risk_decision_lift": 7.953586497890296,
+    "immediate_action_decision_lift": 3.3803418803418803
+  }
+}

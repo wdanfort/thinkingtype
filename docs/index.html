@@ -301,6 +301,29 @@
   <!-- ✏️ END EDIT 7b ══════════════════════════════════════════════════════ -->
 
   <!-- ════════════════════════════════════════════════════════════════════
+       ✏️ EDIT 7c · FINDING 6 PROSE (sentence flip-rate trendline — added
+       July 15 from the v0c rerun on Fable 5 + Sol; demo bars updated too)
+       Table is data — don't edit. Prose is yours.
+       ════════════════════════════════════════════════════════════════════ -->
+  <h3>6. The text/image gap stopped closing — it reopened at OpenAI</h3>
+  <p>The sentence-level judgment eval (the one behind the demo above: same 120 sentences, 10 yes/no judgments each, text vs. image) now spans three release points:</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Model</th><th>Generation</th><th>Flip rate</th><th>95% CI</th></tr></thead>
+      <tbody>
+        <tr><td>GPT-4o</td><td>previous</td><td>15.2%</td><td>[13.5%, 17.1%]</td></tr>
+        <tr><td>Claude Sonnet 5</td><td>July main run</td><td>9.5%</td><td>[8.1%, 10.9%]</td></tr>
+        <tr><td>GPT-5.5</td><td>July main run</td><td>7.8%</td><td>[6.7%, 8.9%]</td></tr>
+        <tr><td>Claude Fable 5</td><td>newest release</td><td>8.6%</td><td>[7.4%, 10.0%]</td></tr>
+        <tr><td>GPT-5.6 Sol</td><td>newest release</td><td><strong>10.7%</strong></td><td>[9.4%, 12.1%]</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Anthropic's gap kept inching down (9.5% → 8.6%, overlapping CIs). <mark>OpenAI's reopened: 7.8% → 10.7%, and the confidence intervals don't overlap.</mark> The comfortable story — "each generation reads images more like text" — lasted exactly one release cycle. Consistency between text-mode and image-mode judgment is not a capability that automatically improves; it's a property each release either has or doesn't.</p>
+  <p>One more wrinkle from this run: Fable 5 declined to answer 1.5% of sentence judgments (183 of 11,880 calls, excluded from the flip rates above) — and the refusals themselves were presentation-sensitive: six times more common on images than text, clustered on the monospace and OpenDyslexic renders rather than the serif and sans ones. Even the decision <em>not to judge</em> depends on the font.</p>
+  <!-- ✏️ END EDIT 7c ══════════════════════════════════════════════════════ -->
+
+  <!-- ════════════════════════════════════════════════════════════════════
        ✏️ EDIT 8 · BUILDERS SECTION
        The most product-facing prose on the page — make it sound like you.
        ════════════════════════════════════════════════════════════════════ -->
@@ -348,20 +371,22 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
   const DEMO_SENTENCE = "Failure to complete this step may affect access";
 
   const VARIANTS = [
-    { id:'T1',  label:'Times Regular', family:"'Times New Roman', Times, serif",       weight:'normal', xform:'none',      gpt4o:12.5, gpt55:6.2,  sonnet5:8.6  },
-    { id:'T2',  label:'Times Bold',    family:"'Times New Roman', Times, serif",       weight:'bold',   xform:'none',      gpt4o:13.2, gpt55:6.8,  sonnet5:9.4  },
-    { id:'T3',  label:'Arial Regular', family:"Arial, Helvetica, sans-serif",          weight:'normal', xform:'none',      gpt4o:13.4, gpt55:6.4,  sonnet5:9.0  },
-    { id:'T4',  label:'Arial Bold',    family:"Arial, Helvetica, sans-serif",          weight:'bold',   xform:'none',      gpt4o:13.2, gpt55:6.5,  sonnet5:9.4  },
-    { id:'T5b', label:'Arial Caps',    family:"Arial, Helvetica, sans-serif",          weight:'normal', xform:'uppercase', gpt4o:15.2, gpt55:7.1,  sonnet5:10.9 },
-    { id:'T6',  label:'Monospace',     family:"'Courier New', Courier, monospace",     weight:'normal', xform:'none',      gpt4o:14.3, gpt55:6.4,  sonnet5:8.8  },
-    { id:'T7',  label:'Comic Sans',    family:"'Comic Sans MS','Comic Neue',cursive",  weight:'normal', xform:'none',      gpt4o:18.6, gpt55:14.1, sonnet5:9.5  },
-    { id:'A1',  label:'OpenDyslexic',  family:"'OpenDyslexic', serif",                 weight:'normal', xform:'none',      gpt4o:21.1, gpt55:8.7,  sonnet5:10.1 },
+    { id:'T1',  label:'Times Regular', family:"'Times New Roman', Times, serif",       weight:'normal', xform:'none',      gpt4o:12.5, gpt55:6.2,  sonnet5:8.6,  fable5:7.0,  sol:8.9  },
+    { id:'T2',  label:'Times Bold',    family:"'Times New Roman', Times, serif",       weight:'bold',   xform:'none',      gpt4o:13.2, gpt55:6.8,  sonnet5:9.4,  fable5:8.8,  sol:9.8  },
+    { id:'T3',  label:'Arial Regular', family:"Arial, Helvetica, sans-serif",          weight:'normal', xform:'none',      gpt4o:13.4, gpt55:6.4,  sonnet5:9.0,  fable5:7.4,  sol:9.6  },
+    { id:'T4',  label:'Arial Bold',    family:"Arial, Helvetica, sans-serif",          weight:'bold',   xform:'none',      gpt4o:13.2, gpt55:6.5,  sonnet5:9.4,  fable5:8.6,  sol:10.6 },
+    { id:'T5b', label:'Arial Caps',    family:"Arial, Helvetica, sans-serif",          weight:'normal', xform:'uppercase', gpt4o:15.2, gpt55:7.1,  sonnet5:10.9, fable5:8.4,  sol:10.6 },
+    { id:'T6',  label:'Monospace',     family:"'Courier New', Courier, monospace",     weight:'normal', xform:'none',      gpt4o:14.3, gpt55:6.4,  sonnet5:8.8,  fable5:9.3,  sol:10.0 },
+    { id:'T7',  label:'Comic Sans',    family:"'Comic Sans MS','Comic Neue',cursive",  weight:'normal', xform:'none',      gpt4o:18.6, gpt55:14.1, sonnet5:9.5,  fable5:10.8, sol:14.2 },
+    { id:'A1',  label:'OpenDyslexic',  family:"'OpenDyslexic', serif",                 weight:'normal', xform:'none',      gpt4o:21.1, gpt55:8.7,  sonnet5:10.1, fable5:8.9,  sol:11.8 },
   ];
 
   const PROVIDERS = [
-    { key:'gpt4o',   label:'GPT-4o',          model:'previous generation', baseline:15.2, color:'#3b82f6' },
-    { key:'sonnet5', label:'Claude Sonnet 5', model:'frontier',            baseline:9.5,  color:'#8b5cf6' },
-    { key:'gpt55',   label:'GPT-5.5',         model:'frontier',            baseline:7.8,  color:'#10b981' },
+    { key:'gpt4o',   label:'GPT-4o',          model:'previous generation',  baseline:15.2, color:'#3b82f6' },
+    { key:'sonnet5', label:'Claude Sonnet 5', model:'July main run',        baseline:9.5,  color:'#8b5cf6' },
+    { key:'gpt55',   label:'GPT-5.5',         model:'July main run',        baseline:7.8,  color:'#10b981' },
+    { key:'fable5',  label:'Claude Fable 5',  model:'newest release',       baseline:8.6,  color:'#d946ef' },
+    { key:'sol',     label:'GPT-5.6 Sol',     model:'newest release',       baseline:10.7, color:'#f59e0b' },
   ];
 
   const MAX_PCT = 25;

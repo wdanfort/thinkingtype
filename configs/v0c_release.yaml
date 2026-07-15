@@ -1,0 +1,151 @@
+# Typography Evaluation Harness v0c - Release tracking (July 2026)
+#
+# Identical design to v0b_frontier.yaml (120 sentences, seed 42, same 8
+# typography variants, same 10 dimensions, same model for text and vision
+# within each provider). Only the model ids change, to extend the
+# generation trendline: GPT-4o -> GPT-5.5/Sonnet-5 -> GPT-5.6-Sol/Fable-5.
+# Google omitted: gemini-3.5-flash is unchanged since v0b.
+
+run_id: v0c_release
+seed: 42
+
+inputs:
+  sentences:
+    enabled: true
+    n_sentences: 120
+    categories:
+      - neutral
+      - cta
+      - authority
+      - warning
+      - promo
+      - procedural
+    source: synthetic
+    path: null
+  artifacts:
+    enabled: false
+    n_each_type: 6
+    types:
+      - email
+      - notification
+      - alert
+      - form
+    source: synthetic
+    path: null
+
+typography_variants:
+  - id: T1_times_regular
+    font_file: LiberationSerif-Regular.ttf
+    size: 48
+    weight: regular
+    uppercase: false
+    line_spacing: 1.25
+
+  - id: T2_times_bold
+    font_file: LiberationSerif-Bold.ttf
+    size: 48
+    weight: bold
+    uppercase: false
+    line_spacing: 1.25
+
+  - id: T3_arial_regular
+    font_file: LiberationSans-Regular.ttf
+    size: 48
+    weight: regular
+    uppercase: false
+    line_spacing: 1.25
+
+  - id: T4_arial_bold
+    font_file: LiberationSans-Bold.ttf
+    size: 48
+    weight: bold
+    uppercase: false
+    line_spacing: 1.25
+
+  - id: T5b_arial_caps
+    font_file: LiberationSans-Regular.ttf
+    size: 48
+    weight: regular
+    uppercase: true
+    line_spacing: 1.25
+
+  - id: T6_monospace
+    font_file: LiberationMono-Regular.ttf
+    size: 48
+    weight: regular
+    uppercase: false
+    line_spacing: 1.25
+
+  - id: T7_comic
+    font_file: ComicNeue-Regular.ttf
+    size: 48
+    weight: regular
+    uppercase: false
+    line_spacing: 1.25
+
+  - id: A1_opendyslexic_regular
+    font_file: OpenDyslexic-Regular.otf
+    size: 48
+    weight: regular
+    uppercase: false
+    line_spacing: 1.25
+
+render:
+  image_width: 1200
+  container:
+    padding: 80
+    radius: 24
+    fill: null
+    outline: null
+  margins: 40
+  max_text_width: 1000
+  # Keep ag_height to preserve stimulus comparability with v0/v0b runs.
+  font_normalization: ag_height
+
+ocr:
+  enabled: true
+  tesseract_lang: eng
+
+providers:
+  openai:
+    api_key_env: OPENAI_API_KEY
+    model_text: gpt-5.6-sol
+    model_vision: gpt-5.6-sol
+    # flex tier was queuing ~60s/item on Sol image calls (2026-07-15);
+    # standard tier for wall-clock sanity on reruns
+    service_tier: standard
+  anthropic:
+    api_key_env: ANTHROPIC_API_KEY
+    model_text: claude-fable-5
+    model_vision: claude-fable-5
+
+inference:
+  mode: both
+  temperature: null  # reasoning-era models reject explicit temperature
+  repeats: 1
+  seed: 42
+  dimensions:
+    - urgent
+    - immediate_action
+    - formal
+    - trustworthy
+    - persuasive
+    - emotional
+    - professional
+    - high_risk
+    - confident
+    - form_dependent
+  decision_prompt_id: escalation_v1
+  max_retries: 6
+  rate_limit_sleep: 1.5
+  fail_fast: false
+
+analysis:
+  compute_heatmaps: true
+  bootstrap:
+    n_boot: 2000
+    alpha: 0.05
+  outputs:
+    save_csv: true
+    save_png: true
+    save_md: true
