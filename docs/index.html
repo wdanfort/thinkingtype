@@ -189,7 +189,7 @@
     <li><strong>Three gates</strong>, each a real yes/no decision: content-moderation removal, résumé screening, and a hardship-grant appeal. 192 hand-built synthetic items on graded strength ladders (no names or demographics by design).</li>
     <li><strong>Boundary calibration:</strong> each model's text-mode p(yes) is measured with 8 repeated samples per item, and the 20 items nearest <em>that model's</em> flip point per gate go on to the vision arm. Calibration succeeded: mean text p(yes) of selected items is 0.48–0.53 in every model × gate cell.</li>
     <li><strong>Vision arm:</strong> the selected items rendered as images (9 visual variants — serif, sans, comic, OpenDyslexic, large print, cramped, red, low-contrast, highlighted) at 6 repeats each. The same model judges both modalities, so every comparison is text-vs-image within one model, never model-vs-model.</li>
-    <li><strong>Models:</strong> GPT-5.5, Claude Sonnet 5, Gemini 3.5 Flash. About 14,000 API calls across the main run, plus three follow-up experiments.</li>
+    <li><strong>Models:</strong> GPT-5.5, Claude Sonnet 5, Gemini 3.5 Flash in the main run (about 14,000 API calls, plus three follow-up experiments); Claude Fable 5 and GPT-5.6 Sol in a July 14 release-tracking rerun (~5,900 calls each, fresh calibration).</li>
     <li><strong>Statistics:</strong> the reported effect is Δfavorability = p(yes as image) − p(yes as text), signed so positive favors the person being judged. 95% CIs come from a bootstrap clustered by item; directional claims use sign tests. <strong>Bold</strong> cells are CIs that exclude zero.</li>
   </ul>
   <p>Built with Claude Code. → <a href="https://github.com/wdanfort/thinkingtype">Code, data, and full reports</a></p>
@@ -277,6 +277,28 @@
   </div>
   <p>The effect is sparse (7–18% of boundary items) and small in aggregate (4–6 points). But it is stubbornly one-directional: <mark>pooled across models, 17 of 21 items that moved, moved toward removal</mark> (sign test p ≈ 0.007, with the caveat that the models saw overlapping items). Across two sample sizes and two stimulus banks, a comment rendered in an accessibility font was never treated more leniently at the boundary — only harsher. Anyone moderating rendered content should be testing format neutrality as a property, the way demographic neutrality already gets tested.</p>
   <!-- ✏️ END EDIT 7 ═══════════════════════════════════════════════════════ -->
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       ✏️ EDIT 7b · FINDING 5 PROSE (across model releases — added July 14
+       from the gates_v2 run on Claude Fable 5 + GPT-5.6 Sol)
+       Table is data — don't edit. Prose is yours.
+       ════════════════════════════════════════════════════════════════════ -->
+  <h3>5. One release later, the biases moved: smaller on moderation, flipped on r&eacute;sum&eacute;s</h3>
+  <p>Within days of Claude Fable 5 and GPT-5.6 Sol shipping, I reran the identical protocol on both (fresh calibration, so each model is tested at its own boundary). Same gates, same items, new release:</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Gate</th><th>Sonnet 5 → Fable 5</th><th>GPT-5.5 → GPT-5.6 Sol</th></tr></thead>
+      <tbody>
+        <tr><td>Moderation</td><td><strong>+0.131</strong> → −0.060 (ns)</td><td><strong>+0.100</strong> → +0.046 (ns)</td></tr>
+        <tr><td>R&eacute;sum&eacute;</td><td>−0.010 (ns) → +0.071 [0.000, +0.163]</td><td><strong>−0.042</strong> → +0.056 [−0.007, +0.123]</td></tr>
+        <tr><td>Appeal</td><td>+0.021 (ns) → −0.002 (ns)</td><td>−0.017 (ns) → +0.017 (ns)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tablenote">Δfavorability (image − text) per release; bold = 95% CI excludes zero. Both new-model r&eacute;sum&eacute; CIs touch zero — read the direction, not the magnitude.</p>
+  <p>Three things moved. <mark>The moderation image-leniency shrank at both vendors</mark> — Fable 5's point estimate actually leans slightly <em>harsher</em> on images where Sonnet 5 was 13 points more lenient, and Sol roughly halved GPT-5.5's gap. <mark>The r&eacute;sum&eacute; drift flipped direction at OpenAI</mark> (advance fewer as images → advance more) and appeared at Anthropic where there was none. And the rubric-backed appeal gate stayed immune in its fourth and fifth models — two generations, five models, still the most durable mitigation found here.</p>
+  <p>The underlying text-mode boundaries barely moved between releases (0–3 items per cell) — what changed is how each new model treats <em>images</em>. Which is the point of measuring per release: a pipeline tuned around last month's bias now has it wrong in size, direction, or both. Presentation drift is a property of a model <em>version</em>, not a vendor.</p>
+  <!-- ✏️ END EDIT 7b ══════════════════════════════════════════════════════ -->
 
   <!-- ════════════════════════════════════════════════════════════════════
        ✏️ EDIT 8 · BUILDERS SECTION

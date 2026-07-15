@@ -1,0 +1,7 @@
+provider,gate,n_shared,model_a,model_b,flips,net_fav,mean_delta_p_fav,entered_band,left_band
+anthropic,appeal,59,claude-sonnet-5,claude-fable-5,1,1,0.01059322033898305,1,0
+anthropic,moderation,60,claude-sonnet-5,claude-fable-5,3,3,0.0375,1,1
+anthropic,resume,72,claude-sonnet-5,claude-fable-5,2,0,-0.005208333333333333,0,1
+openai,appeal,60,gpt-5.5,gpt-5.6-sol,0,0,0.0,0,0
+openai,moderation,60,gpt-5.5,gpt-5.6-sol,3,1,0.014583333333333334,1,1
+openai,resume,72,gpt-5.5,gpt-5.6-sol,1,1,0.019097222222222224,4,1
