@@ -69,11 +69,7 @@
       margin-bottom: 2rem;
     }
     .disclaimer { color: var(--muted); font-style: italic; font-size: 0.92rem; }
-    .tldr {
-      border-left: 3px solid var(--accent);
-      padding: 0.25rem 0 0.25rem 1.1rem;
-      margin: 1.75rem 0;
-    }
+    .tldr { margin: 1.75rem 0; }
     .tablewrap { overflow-x: auto; margin: 1.25rem 0; }
     table {
       border-collapse: collapse;
@@ -156,6 +152,21 @@
   <div class="tldr">
     <p>In a general sense, VLMs produce skewed results, with yes/no answers flipping on 8 to 15% of judgments compared to using an LLM. This divergence was consistent across providers, and it seemed to decrease with newer model generations (GPT-4o 15.2% to GPT-5.5 7.8%). That trend just broke: GPT-5.6 Sol&rsquo;s text-vision divergence reopened meaningfully (7.8% to 10.7%, non-overlapping confidence intervals) while Fable 5 continued flattening (9.5% to 8.6%).</p>
     <p>The answer to my original question appears to be yes! Fonts have a modest impact on flipping qualitative assessments and decisions (see the demos below). Times regular is the most stable font in every model I tested; plain serif is the closest thing to &ldquo;reads like text.&rdquo; Comic Sans and OpenDyslexic are the most flip-prone. And one direction is disturbingly consistent: comments rendered in OpenDyslexic, the dyslexia-accessibility font, were never treated more gently at the decision boundary, only more harshly (17 of the 21 items that moved).</p>
+  <div class="demo" id="demo">
+    <h3 style="margin-top:0">Try it: same sentence, different presentation</h3>
+    <p class="demo-sub">Pick a font. The bars show how often each model's answers flipped between text and image for that font, next to the model's average across all fonts (the vertical marker).</p>
+
+    <div class="font-picker" id="fontPicker"></div>
+
+    <div class="sentence-preview">
+      <div class="preview-label">Sample sentence in the selected font</div>
+      <div id="sentenceDisplay">Failure to complete this step may affect access</div>
+    </div>
+
+    <p class="chart-heading">Text-vs-image flip rate on the same content, by model</p>
+    <div class="flip-chart" id="flipChart"></div>
+    <p class="chart-note">Flip rate = how often the model's image answer disagreed with its own text answer on identical content (120 sentences, 10 questions each).</p>
+  </div>
     <p>I believe these findings are somewhat novel because of the focus on downstream decisions and qualitative assessments of things like trust, persuasiveness, or professionalism. Much of the literature is about whether fonts change accuracy or have cybersecurity implications, so I think this fills a gap with product-level implications. I&rsquo;d love any feedback on methodology, future directions, or implications.</p>
     <p>Given that these findings shift across providers and models, I&rsquo;m planning to run this benchmark against future major model releases. All of the code and data are <a href="https://github.com/wdanfort/thinkingtype">publicly available</a>, and design and coding were all done with Claude Code.</p>
   </div>
@@ -179,21 +190,6 @@
   <h2>Experiment 1: one sentence, ten questions, eight fonts</h2>
   <p>The first experiment is simple. I wrote 120 short, everyday sentences (warnings, promos, instructions). For each one, I asked a model ten yes/no questions: is this urgent? Is it trustworthy? Is it professional? Then I turned the same sentence into a picture, in eight different fonts, and asked the same ten questions about the picture. When the answer about the picture disagreed with the answer about the text, I counted a flip. Same model, same words. Only the format changed.</p>
 
-  <div class="demo" id="demo">
-    <h3 style="margin-top:0">Try it: same sentence, different presentation</h3>
-    <p class="demo-sub">Pick a font. The bars show how often each model's answers flipped between text and image for that font, next to the model's average across all fonts (the vertical marker).</p>
-
-    <div class="font-picker" id="fontPicker"></div>
-
-    <div class="sentence-preview">
-      <div class="preview-label">Sample sentence in the selected font</div>
-      <div id="sentenceDisplay">Failure to complete this step may affect access</div>
-    </div>
-
-    <p class="chart-heading">Text-vs-image flip rate on the same content, by model</p>
-    <div class="flip-chart" id="flipChart"></div>
-    <p class="chart-note">Flip rate = how often the model's image answer disagreed with its own text answer on identical content (120 sentences, 10 questions each).</p>
-  </div>
   <!-- ✏️ END EDIT 2b ══════════════════════════════════════════════════════ -->
 
   <!-- ════════════════════════════════════════════════════════════════════
@@ -204,13 +200,13 @@
   <p>Overall, 8 to 15% of judgments flip when the model sees a picture instead of text, depending on the model. Some fonts flip more than others (Comic Sans and OpenDyslexic lead in most models), but the bigger factor is the model itself. And the trend across model generations looked comforting, right up until this month:</p>
   <div class="tablewrap">
     <table>
-      <thead><tr><th>Model</th><th>Generation</th><th>Flip rate</th><th>95% CI</th></tr></thead>
+      <thead><tr><th>Model</th><th>Flip rate</th><th>95% CI</th></tr></thead>
       <tbody>
-        <tr><td>GPT-4o</td><td>previous</td><td>15.2%</td><td>[13.5%, 17.1%]</td></tr>
-        <tr><td>Claude Sonnet 5</td><td>July main run</td><td>9.5%</td><td>[8.1%, 10.9%]</td></tr>
-        <tr><td>GPT-5.5</td><td>July main run</td><td>7.8%</td><td>[6.7%, 8.9%]</td></tr>
-        <tr><td>Claude Fable 5</td><td>newest release</td><td>8.6%</td><td>[7.4%, 10.0%]</td></tr>
-        <tr><td>GPT-5.6 Sol</td><td>newest release</td><td><strong>10.7%</strong></td><td>[9.4%, 12.1%]</td></tr>
+        <tr><td>GPT-4o</td><td>15.2%</td><td>[13.5%, 17.1%]</td></tr>
+        <tr><td>Claude Sonnet 5</td><td>9.5%</td><td>[8.1%, 10.9%]</td></tr>
+        <tr><td>GPT-5.5</td><td>7.8%</td><td>[6.7%, 8.9%]</td></tr>
+        <tr><td>Claude Fable 5</td><td>8.6%</td><td>[7.4%, 10.0%]</td></tr>
+        <tr><td>GPT-5.6 Sol</td><td><strong>10.7%</strong></td><td>[9.4%, 12.1%]</td></tr>
       </tbody>
     </table>
   </div>
@@ -286,7 +282,7 @@
     </table>
   </div>
   <p class="tablenote">How much more often the model said yes to the image than the text. Plain fonts only, 20 edge cases per cell, 95% intervals clustered by item.</p>
-  <p><mark>Borderline harassment that a model removes as text survives as an image 10 to 13 points more often</mark> (GPT-5.5 and Sonnet 5). Every flip in those cells went the same direction: toward keeping the comment up. Vision-mode review appears more permissive exactly where moderation is hardest.</p>
+  <p>Borderline harassment that a model removes as text survives as an image 10 to 13 points more often (GPT-5.5 and Sonnet 5). Every flip in those cells went the same direction: toward keeping the comment up. Vision-mode review appears more permissive exactly where moderation is hardest.</p>
   <p>Resume screening splits by vendor. Gemini advanced borderline candidates about 16 points more often as images, and a fifth of its edge cases flipped on format alone. GPT-5.5 went slightly the other way. Same content, opposite directions, which tells me this drift is learned behavior rather than something inherent to reading images.</p>
   <p>The appeal test barely moved in any model. It was also the only test whose prompt spelled out explicit decision criteria. That looked like a clue, so it became the next experiment.</p>
   <!-- ✏️ END EDIT 4 ═══════════════════════════════════════════════════════ -->
@@ -309,7 +305,7 @@
     </table>
   </div>
   <p class="tablenote">Edge cases were re-found under the rubric prompt, so each prompt is tested at its own boundary.</p>
-  <p>The encouraging part: with the criteria written out, Sonnet and Gemini agreed with their own text answers on <mark>every one of 40 resume items. 480 image calls, zero disagreements.</mark> The terse prompt had produced 12 to 20% flips on the same conditions.</p>
+  <p>The encouraging part: with the criteria written out, Sonnet and Gemini agreed with their own text answers on every one of 40 resume items. 480 image calls, zero disagreements. The terse prompt had produced 12 to 20% flips on the same conditions.</p>
   <p>The catch: GPT-5.5's drift passed through the rubric almost untouched, on both tests. So the cheapest known fix is real and free, but it depends on the provider. Whether it works for your model on your task is something to test, not assume.</p>
   <!-- ✏️ END EDIT 5 ═══════════════════════════════════════════════════════ -->
 
@@ -333,7 +329,7 @@
     <img src="assets/items/mod_bookclub_02__N1_forum_light.png" alt="The same book club comment rendered inside a fake forum card with avatar, username, timestamp, and reply and report buttons." loading="lazy" />
     <figcaption>The same book-club comment from the demo above, inside forum chrome. This is the actual image the models judged in this experiment.</figcaption>
   </figure>
-  <p>I wondered whether my plain lab renders were the problem, so I re-ran the moderation items inside realistic UI. Three vendors, three answers. Sonnet's leniency mostly disappears when the content looks like a real forum post. Gemini stays small and flat either way. <mark>GPT-5.5 gets worse: realistic screenshots are its weakest case</mark>, and every one of its screenshot conditions is significant. Nobody's gap vanished under realism, and I don't yet know the mechanism. This run measures the effect, not the why.</p>
+  <p>I wondered whether my plain lab renders were the problem, so I re-ran the moderation items inside realistic UI. Three vendors, three answers. Sonnet's leniency mostly disappears when the content looks like a real forum post. Gemini stays small and flat either way. GPT-5.5 gets worse: realistic screenshots are its weakest case, and every one of its screenshot conditions is significant. Nobody's gap vanished under realism, and I don't yet know the mechanism. This run measures the effect, not the why.</p>
   <!-- ✏️ END EDIT 6 ═══════════════════════════════════════════════════════ -->
 
   <!-- ════════════════════════════════════════════════════════════════════
@@ -352,7 +348,7 @@
       </tbody>
     </table>
   </div>
-  <p>The effect is sparse (7 to 18% of edge cases) and small in aggregate (4 to 6 points). But it never pointed the other way. <mark>Pooled across models, 17 of the 21 items that moved, moved toward removal</mark> (sign test p ≈ 0.007, with the caveat that the models saw overlapping items). In two sample sizes and two stimulus banks, a comment in an accessibility font was never treated more gently, only more harshly. I think anyone moderating rendered content should test format neutrality the same way demographic neutrality already gets tested.</p>
+  <p>The effect is sparse (7 to 18% of edge cases) and small in aggregate (4 to 6 points). But it never pointed the other way. Pooled across models, 17 of the 21 items that moved, moved toward removal (sign test p ≈ 0.007, with the caveat that the models saw overlapping items). In two sample sizes and two stimulus banks, a comment in an accessibility font was never treated more gently, only more harshly. I think anyone moderating rendered content should test format neutrality the same way demographic neutrality already gets tested.</p>
   <!-- ✏️ END EDIT 7 ═══════════════════════════════════════════════════════ -->
 
   <!-- ════════════════════════════════════════════════════════════════════
@@ -373,7 +369,7 @@
     </table>
   </div>
   <p class="tablenote">Same measure as above, one column per release. Bold means the 95% interval excludes zero. Both new-model resume intervals touch zero, so read the direction, not the size.</p>
-  <p>Three things changed. <mark>The moderation leniency shrank at both vendors.</mark> Fable 5 actually leans slightly harsher on images where Sonnet 5 had been 13 points more lenient, and Sol roughly halved GPT-5.5's gap. <mark>The resume drift flipped direction at OpenAI</mark>, from advancing fewer image resumes to advancing more, and showed up at Anthropic where there had been none. And the appeal test, the one with criteria in the prompt, stayed solid for its fourth and fifth models.</p>
+  <p>Three things changed. The moderation leniency shrank at both vendors. Fable 5 actually leans slightly harsher on images where Sonnet 5 had been 13 points more lenient, and Sol roughly halved GPT-5.5's gap. The resume drift flipped direction at OpenAI, from advancing fewer image resumes to advancing more, and showed up at Anthropic where there had been none. And the appeal test, the one with criteria in the prompt, stayed solid for its fourth and fifth models.</p>
   <p>Meanwhile the text-mode answers barely moved between releases (0 to 3 items per cell). What changed is how each new model treats images. That is the argument for tracking this per release: a pipeline tuned around last month's bias now has it wrong in size, in direction, or both.</p>
   <!-- ✏️ END EDIT 7b ══════════════════════════════════════════════════════ -->
 
@@ -482,7 +478,7 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
     var markerPct = (p.baseline / MAX_PCT * 100).toFixed(2);
     row.innerHTML =
       '<div class="provider-label">' + p.label +
-        '<span class="provider-model">' + p.model + '</span></div>' +
+        '</div>' +
       '<div class="bar-track">' +
         '<div class="bar-fill" id="bar-' + p.key + '" style="background:' + p.color + '"></div>' +
         '<div class="bar-marker" id="mkr-' + p.key + '" style="left:' + markerPct + '%"></div>' +
@@ -563,7 +559,7 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
     var row = document.createElement('div');
     row.className = 'provider-row';
     row.innerHTML =
-      '<div class="provider-label">' + p.label + '<span class="provider-model">' + p.model + '</span></div>' +
+      '<div class="provider-label">' + p.label + '</div>' +
       '<div class="dbar-track"><div class="dbar-center"></div><div class="dbar-fill" id="gbar-' + p.key + '" style="background:' + p.color + '"></div></div>' +
       '<div class="bar-value" id="gval-' + p.key + '"></div>';
     gChart.appendChild(row);
