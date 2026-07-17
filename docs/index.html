@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ThinkingType: typography influences vision language models</title>
-  <meta name="description" content="Given the same text, VLMs and LLMs make different decisions and qualitative judgements. The magnitude differs across providers, models, and fonts. ThinkingType is a benchmark tracking this over time." />
+  <title>ThinkingType: Can Comic Sans flip agentic decisions?</title>
+  <meta name="description" content="A new typography benchmark for evaluating VLM vs. LLM qualitative judgements and decisions. Fonts flip 8 to 15% of judgments, accessibility fonts drift harsher, and the biases move with every model release." />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Typography influences vision language models" />
-  <meta property="og:description" content="Given the same text, VLMs and LLMs make different decisions and qualitative judgements, varying by provider, model, and font. A benchmark tracking it over time." />
+  <meta property="og:title" content="Can Comic Sans flip agentic decisions?" />
+  <meta property="og:description" content="A new typography benchmark for evaluating VLM vs. LLM qualitative judgements and decisions, tracked across model releases." />
   <meta property="og:url" content="https://wdanfort.github.io/thinkingtype/" />
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="ThinkingType" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Typography influences vision language models" />
-  <meta name="twitter:description" content="Given the same text, VLMs and LLMs make different decisions and qualitative judgements, varying by provider, model, and font. A benchmark tracking it over time." />
+  <meta name="twitter:title" content="Can Comic Sans flip agentic decisions?" />
+  <meta name="twitter:description" content="A new typography benchmark for evaluating VLM vs. LLM qualitative judgements and decisions, tracked across model releases." />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -146,20 +146,18 @@
 
        
        ════════════════════════════════════════════════════════════════════ -->
-  <h1>Typography influences vision language models</h1>
-  <p><strong>Given the same text, VLMs and LLMs seem to make different decisions and qualitative judgements. The magnitude differs across providers, models, and fonts, with product implications for designing evals and fairness. I&rsquo;m creating a new benchmark (ThinkingType) to track this over time.</strong></p>
+  <h1>Can Comic Sans flip agentic decisions?</h1>
+  <p><strong>A new typography benchmark for evaluating VLM vs. LLM qualitative judgements and decisions</strong></p>
   <p class="disclaimer">Views are my own and not my employer&rsquo;s.</p>
 
-  <p>I got into typography this year. Being 2026, I was curious how the same text was &ldquo;read&rdquo; by vision language models vs. large language models. Is Comic Sans interpreted as unprofessional? Are vision language models comparatively more likely to pass a resume along to the next round if it&rsquo;s written in Times New Roman?</p>
-  <p>I&rsquo;m creating a benchmark to characterize how, for a given model class across 3 providers, changing fonts influenced qualitative assessments (i.e. trustworthy, professional) as well as downstream decisions (&ldquo;flag this policy violation,&rdquo; &ldquo;approve this resume&rdquo;). I believe this work is somewhat novel because I&rsquo;m teasing apart how fonts, typography, and other presentation cues influence qualitative perceptions and decisions.</p>
+  <p>I got into typography this year after reading &ldquo;Thinking with Type.&rdquo; Being 2026, I soon became curious how fonts were &ldquo;read&rdquo; by vision language models. Is Comic Sans seen as unprofessional? Would an agent be less likely to recommend a resume written in OpenDyslexic? If the answer is yes, then typography should be explicitly controlled and evaluated when incorporating VLMs in products.</p>
+  <p>To answer this: I built a lightweight benchmark to characterize how, for a given model class across 3 providers, changing fonts influenced qualitative assessments (i.e. trustworthy, professional) and downstream decisions (&ldquo;flag this policy violation,&rdquo; &ldquo;approve this resume&rdquo;). I compared across 120 synthetic sentences and 330 synthetic artifacts whether using a VLM to analyze an image of text flipped a response or decision as compared to the same words input directly into LLMs (more on methods below).</p>
 
   <div class="tldr">
-    <p><strong>TLDR what I found:</strong></p>
-    <ul>
-      <li>A measurable shift between analyzing the same text using an LLM vs. an image of it with a VLM: 8 to 15% of yes/no judgments flip depending on the model. At genuine decision boundaries the shift moves real calls, too. Borderline harassment survives moderation 10 to 13 points more often as a screenshot. That a text/image gap exists is in line with prior research on vision-mode reasoning; which <em>direction</em> it pushes real decisions is, I believe, the newer part.</li>
-      <li>While certain fonts have less &ldquo;text-vision&rdquo; divergence, accessible fonts like OpenDyslexic only ever drifted towards negative findings (not escalating, not trusting, removed more often). Of the 21 decision items that moved, 17 moved against the accessibility-font version.</li>
-      <li>Each model performs differently across these dimensions, and the differences don&rsquo;t hold still: the text/image gap was closing generation over generation (GPT-4o 15.2% &rarr; GPT-5.5 7.8%) until this month&rsquo;s releases, when OpenAI&rsquo;s newest reopened it (10.7%). Explicitly prompting a control against this, by writing the decision criteria into the prompt, greatly reduces the discrepancy for two of three providers.</li>
-    </ul>
+    <p>In a general sense, VLMs produce skewed results, with yes/no answers flipping on 8 to 15% of judgments compared to using an LLM. This divergence was consistent across providers, and it seemed to decrease with newer model generations (GPT-4o 15.2% to GPT-5.5 7.8%). That trend just broke: GPT-5.6 Sol&rsquo;s text-vision divergence reopened meaningfully (7.8% to 10.7%, non-overlapping confidence intervals) while Fable 5 continued flattening (9.5% to 8.6%).</p>
+    <p>The answer to my original question appears to be yes! Fonts have a modest impact on flipping qualitative assessments and decisions (see the demos below). Times regular is the most stable font in every model I tested; plain serif is the closest thing to &ldquo;reads like text.&rdquo; Comic Sans and OpenDyslexic are the most flip-prone. And one direction is disturbingly consistent: comments rendered in OpenDyslexic, the dyslexia-accessibility font, were never treated more gently at the decision boundary, only more harshly (17 of the 21 items that moved).</p>
+    <p>I believe these findings are somewhat novel because of the focus on downstream decisions and qualitative assessments of things like trust, persuasiveness, or professionalism. Much of the literature is about whether fonts change accuracy or have cybersecurity implications, so I think this fills a gap with product-level implications. I&rsquo;d love any feedback on methodology, future directions, or implications.</p>
+    <p>Given that these findings shift across providers and models, I&rsquo;m planning to run this benchmark against future major model releases. All of the code and data are <a href="https://github.com/wdanfort/thinkingtype">publicly available</a>, and design and coding were all done with Claude Code.</p>
   </div>
   <!-- ✏️ END EDIT 1 ═══════════════════════════════════════════════════════ -->
 
@@ -217,6 +215,7 @@
     </table>
   </div>
   <p>Anthropic's gap kept inching down (9.5% to 8.6%, overlapping intervals). OpenAI's reopened: 7.8% to 10.7%, and the intervals don't overlap. Going in, I assumed each generation simply reads images more like text. That assumption lasted one release. Text/image consistency seems to be a property each release either has or doesn't, which is exactly why I'm building this benchmark to track it.</p>
+  <p>The font-level patterns held up across models. Times regular is the most stable font everywhere. Comic Sans is the most flip-prone in 4 of 5 models, and in GPT-5.5 it is a genuine outlier: 14.1% versus 6 to 9% for everything else, more than double its own serif baseline. OpenDyslexic is in the top two for 4 of 5 models. Bold versus regular barely matters (under 1.5 points either way); the typeface is the lever, not the weight.</p>
   <p>One more wrinkle: Fable 5 declined to answer 1.5% of the sentence questions (183 of 11,880 calls, excluded from the rates above). The refusals were six times more common on images than on text, and they clustered on the monospace and OpenDyslexic renders rather than the serif and sans ones. Even the decision <em>not to judge</em> depends on the font.</p>
   <!-- ✏️ END EDIT 7c ══════════════════════════════════════════════════════ -->
 
@@ -387,7 +386,9 @@
     <li><strong>Screenshot moderation is measurably more permissive on borderline content.</strong> If content reaches your review pipeline as images, borderline harassment survives more often than the identical text would. Judge extracted text where you can. Where you can't, test image against text on your own borderline cases.</li>
     <li><strong>Vision-model resume screening depends on the vendor.</strong> The direction of the bias flips between providers, and it flipped again within one provider in a single release. Don't let a vision model make the advance/reject call on scanned documents without a text-extraction cross-check.</li>
     <li><strong>Put the decision criteria in the prompt, then verify it worked.</strong> It's free, and it removed most or all of the drift in two of three models. It is not a guarantee. The model it didn't fix is the one I would have least expected.</li>
-    <li><strong>Test format neutrality.</strong> Accessibility-font variants belong in moderation evaluation sets. The check runs in an afternoon: see <a href="https://github.com/wdanfort/thinkingtype/blob/main/docs/GATE_DRIFT.md">the drift monitor guide</a>.</li>
+    <li><strong>Test format neutrality.</strong> Accessibility-font variants belong in moderation evaluation sets. The check runs in an afternoon: see <a href="https://github.com/wdanfort/thinkingtype/blob/main/docs/GATE_DRIFT.md">the drift monitor guide</a>. Today nobody checks whether their model treats dyslexia-friendly text differently. Mine did.</li>
+    <li><strong>Model upgrades silently change presentation bias.</strong> If you ship on top of a VLM, a presentation-drift check belongs in your model-upgrade eval, right next to the accuracy regressions you already run.</li>
+    <li><strong>Refusal rates are presentation-sensitive too.</strong> If you measure refusals in your evals, measure them per format. One model in this study refused six times more often on images than text, and the refusals clustered by font.</li>
   </ul>
   <!-- ✏️ END EDIT 8 ═══════════════════════════════════════════════════════ -->
 
@@ -404,6 +405,19 @@
     <li>Mechanisms are unmeasured throughout. This project establishes that presentation moves decisions, not yet why.</li>
   </ul>
   <!-- ✏️ END EDIT 9 ═══════════════════════════════════════════════════════ -->
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       ✏️ EDIT 9b · NEXT STEPS
+       ════════════════════════════════════════════════════════════════════ -->
+  <h2>Next steps</h2>
+  <ul>
+    <li><strong>Freeze the benchmark.</strong> Version the item banks, publish a hash manifest of the renders, tag it v1. The per-release comparisons only mean something if the instrument provably doesn't move.</li>
+    <li><strong>Close the Gemini gap.</strong> The judgment track never ran on Gemini (the decision track did). One config edit.</li>
+    <li><strong>Find the mechanism.</strong> Is the drift a reading problem or a style problem? The test: have the model transcribe the image, then judge its own transcription. If that matches the text judgments, the drift is about presentation-as-context, not misreading. This is the experiment I most want to run next.</li>
+    <li><strong>Go deeper on accessibility.</strong> More assistive formats (large print, high contrast, letter spacing), more items, enough statistical power to pin down per-provider effects.</li>
+    <li><strong>Keep tracking releases.</strong> Every major model release gets the same protocol, and the trendline tables grow one row at a time. That's the point of a benchmark.</li>
+  </ul>
+  <!-- ✏️ END EDIT 9b ══════════════════════════════════════════════════════ -->
 
   <h2>Reproduce</h2>
   <pre><code>typo-eval --config configs/gates_v1.yaml gates-build
