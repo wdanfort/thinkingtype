@@ -29,8 +29,9 @@ built to track this over time.
 - **The experiments:** individual questions answered using the instrument. Rubric
   prompts, screenshot realism, and the fairness scale-up were one-time follow-ups;
   they inform interpretation and mitigation but don't rerun each release.
-- **Administrations so far:** Track 1 on GPT-4o, GPT-5.5, Claude Sonnet 5, Gemini 3.5
-  Flash (July main run), Claude Fable 5, GPT-5.6 Sol (July 15). Track 2 on GPT-5.5,
+- **Administrations so far:** Track 1 on GPT-4o, GPT-5.5, Claude Sonnet 5 (July main
+  run), Claude Fable 5, GPT-5.6 Sol (July 15). NOTE: Gemini was configured for Track 1
+  but that leg never ran — there are no Track 1 Gemini numbers. Track 2 on GPT-5.5,
   Sonnet 5, Gemini 3.5 Flash (gates_v1, early July), Fable 5, Sol (gates_v2, July 14).
 - **Honest gaps vs. a "real" benchmark:** item banks should be declared frozen/versioned;
   no held-out private item set yet (public items can leak into training data);
@@ -99,6 +100,37 @@ built to track this over time.
   rates). Refusals were ~6x more common on images than text (157 vs 26) and clustered
   by font: monospace 44, OpenDyslexic 39, vs. serif 7, Arial regular 2. Zero refusals
   in the gates runs. GPT-5.6 Sol: zero refusals anywhere.
+
+### Track 1: per-font flip rates (all five models, % with 95% CI)
+| Font | GPT-4o | GPT-5.5 | Sonnet 5 | Fable 5 | Sol |
+|---|---|---|---|---|---|
+| Times regular | 12.5 [10.7,14.4] | 6.2 [4.9,7.5] | 8.6 [7.0,10.2] | 7.0 [5.6,8.5] | 8.9 [7.4,10.3] |
+| Times bold | 13.2 [11.3,15.2] | 6.8 [5.5,8.2] | 9.4 [7.5,11.3] | 8.8 [7.1,10.6] | 9.8 [8.1,11.5] |
+| Arial regular | 13.4 [11.5,15.6] | 6.4 [5.2,7.6] | 9.0 [7.4,10.6] | 7.4 [5.8,9.0] | 9.6 [7.8,11.4] |
+| Arial bold | 13.2 [11.3,15.3] | 6.5 [5.2,7.8] | 9.4 [7.6,11.3] | 8.6 [7.0,10.3] | 10.6 [8.9,12.2] |
+| Arial caps-only | 15.2 [13.1,17.5] | 7.1 [5.6,8.7] | 10.9 [9.3,12.6] | 8.4 [6.9,10.0] | 10.6 [8.9,12.4] |
+| Monospace | 14.3 [12.2,16.4] | 6.4 [5.1,7.8] | 8.8 [7.2,10.5] | 9.3 [7.6,10.9] | 10.0 [8.3,11.6] |
+| Comic Sans | 18.6 [16.7,20.8] | 14.1 [12.6,15.4] | 9.5 [7.8,11.2] | 10.8 [9.0,12.6] | 14.2 [12.5,16.1] |
+| OpenDyslexic | 21.1 [19.2,23.0] | 8.7 [7.3,10.1] | 10.1 [8.5,11.8] | 8.9 [7.3,10.6] | 11.8 [10.2,13.5] |
+
+Font-level observations (Track 1):
+- Times regular is the most stable font in every model tested. Plain serif is the
+  closest thing to "reads like text."
+- Comic Sans is the most flip-prone font in 4 of 5 models (all except Sonnet 5, where
+  caps-only leads). In GPT-5.5 it is a dramatic outlier: 14.1% vs 6-9% for everything
+  else, more than double its own serif baseline.
+- OpenDyslexic is in the top two most flip-prone for 4 of 5 models, and was GPT-4o's
+  worst (21.1%). Note the contrast with Track 2: high judgment flippiness here, and
+  systematically harsher decisions there.
+- Each model has a distinctive "worst font": GPT-4o and Sol -> OpenDyslexic/Comic,
+  GPT-5.5 -> Comic (extreme), Sonnet 5 -> caps-only, Fable 5 -> Comic then monospace.
+  Fable's monospace ranking echoes its refusal clustering (monospace was also its
+  most-refused font).
+- Weight barely matters: bold vs regular moves flip rates by ~0.2-1.3 points, far
+  less than typeface choice does.
+
+(Per-font decision shifts for Track 2 are in the "Per-variant pooled decision
+shifts" section below: same 9 visual styles, decision-level, pooled over tests.)
 
 ### Track 2, gates_v1 (GPT-5.5, Sonnet 5, Gemini 3.5 Flash; plain fonts, 20 edge cases/cell)
 | Test | GPT-5.5 | Sonnet 5 | Gemini 3.5 Flash |
