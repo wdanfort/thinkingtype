@@ -1,27 +1,24 @@
-# Typography Evaluation Harness v0
+# ThinkingType
 
-A reproducible CLI pipeline for evaluating how AI vision models interpret typographic presentation of text. This tool generates typography-rendered images, runs OCR baselines, and measures how visual presentation affects model judgments.
+A lightweight benchmark measuring how typography and presentation influence
+vision-language-model judgments and decisions. The same content is shown to the
+same model as plain text and as a rendered image (varying font, size, layout,
+and color), and ThinkingType measures how often the answer changes. Results,
+interactive demos, and the full writeup: **https://wdanfort.github.io/thinkingtype/**
 
-## Quick Start
+The benchmark has two tracks:
 
-```bash
-# Install dependencies
-pip install -e .
+- **Sentence track (judgments):** 120 synthetic sentences x 8 fonts x 10 yes/no
+  questions (urgent? trustworthy? professional?). Metric: flip rate — how often
+  the model's image answer disagrees with its own text answer.
+- **Decision track (gates):** ~330 synthetic decision items across three tests
+  (moderation removal, resume screening, hardship-grant appeal), calibrated to
+  each model's own decision boundary. Metric: decision shift — how much more
+  often the model says yes to the image than to the identical text.
 
-# Run the full pipeline (requires API keys)
-typo-eval --config configs/v0_default.yaml all
-
-# Or run individual steps
-typo-eval generate --config configs/v0_default.yaml
-typo-eval render --config configs/v0_default.yaml
-typo-eval ocr --config configs/v0_default.yaml
-typo-eval run --config configs/v0_default.yaml --provider openai
-typo-eval analyze --config configs/v0_default.yaml
-```
+The full fact sheet of results lives in [FACTS.md](FACTS.md).
 
 ## Installation
-
-### Python Dependencies
 
 ```bash
 pip install -e .
@@ -30,9 +27,7 @@ pip install -e .
 pip install -e ".[dev]"
 ```
 
-### System Dependencies
-
-**Tesseract OCR** is required for OCR baseline generation:
+**Tesseract OCR** is required for the sentence track's legibility-check stage:
 
 ```bash
 # Linux (Debian/Ubuntu)
@@ -53,172 +48,17 @@ Open-source fonts are bundled in `assets/fonts/`. To download fresh copies:
 python scripts/fetch_fonts.py
 ```
 
-Required fonts (all OFL/open-source licensed):
-- Liberation Serif (Regular, Bold) - Serif
-- Liberation Sans (Regular, Bold) - Sans-serif
-- Liberation Mono (Regular) - Monospace
-- Comic Neue (Regular) - Comic style
-- OpenDyslexic (Regular) - Accessibility
+Bundled fonts (all open-source licensed):
+- Liberation Serif (Regular, Bold)
+- Liberation Sans (Regular, Bold)
+- Liberation Mono (Regular)
+- Comic Neue (Regular) — an open-source Comic Sans analogue; site prose says
+  "Comic Sans" as shorthand for this font
+- OpenDyslexic (Regular)
 
-## Configuration
+## API keys
 
-Configuration is via YAML files in `configs/`:
-
-- `v0_default.yaml` - Full pipeline with sentences enabled
-- `v0_sentences_only.yaml` - Sentences only
-- `v0_artifacts_only.yaml` - Artifacts only
-
-### Key Configuration Options
-
-```yaml
-seed: 42  # For reproducibility
-
-inputs:
-  sentences:
-    enabled: true
-    n_sentences: 36
-  artifacts:
-    enabled: false
-
-inference:
-  mode: both  # "dimensions", "decision", or "both"
-  temperature: 0.0
-  dimensions:
-    - urgent
-    - formal
-    - trustworthy
-    # ... 10 total
-
-providers:
-  openai:
-    model_text: gpt-4o-mini
-    model_vision: gpt-4o
-  anthropic:
-    model_text: claude-sonnet-4-20250514
-    model_vision: claude-sonnet-4-20250514
-  google:
-    model_text: gemini-1.5-pro
-    model_vision: gemini-1.5-pro
-```
-
-## Pipeline Phases
-
-### 1. Generate (`typo-eval generate`)
-
-Creates input datasets:
-- `data/inputs/sentences.csv` - Sentence texts with categories
-- `data/inputs/artifacts.csv` - Artifact texts (if enabled)
-
-### 2. Render (`typo-eval render`)
-
-Renders typography images:
-- `data/rendered/sentences/sentence_###/<variant>.png`
-- Uses container framing to prevent clipping
-
-### 3. OCR (`typo-eval ocr`)
-
-Runs Tesseract OCR on rendered images:
-- `data/ocr/sentences/sentence_###.txt` - Deduped OCR baseline per sentence
-- OCR is run once per sentence (not per variant) for proper comparison
-
-### 4. Run (`typo-eval run`)
-
-Runs inference with configurable modes:
-
-**Dimensions Mode**: 10 binary perception questions (urgent, formal, trustworthy, etc.)
-
-**Decision Mode**: Escalation judgment ("Should this be escalated to a human reviewer?")
-
-Outputs:
-- `results/runs/<run_id>/raw/responses.jsonl` - Canonical append-only log
-- `results/runs/<run_id>/raw/responses.csv` - Derived table
-
-Supports resume: rerunning skips completed calls automatically.
-
-### 5. Analyze (`typo-eval analyze`)
-
-Computes:
-- Flip rates vs OCR baseline (by variant, sentence, dimension)
-- Bootstrap confidence intervals
-- Heatmaps (sentence x variant)
-
-Outputs:
-- `results/runs/<run_id>/analysis/summary.md`
-- `results/runs/<run_id>/analysis/flip_*.csv`
-- `results/runs/<run_id>/analysis/figures/*.png`
-
-### 6. Compare (`typo-eval compare`)
-
-Compares multiple runs across different providers, models, or configurations:
-- Overall flip rates by provider
-- Flip rates by variant across providers
-- Flip rates by dimension across providers
-- Statistical comparisons
-
-Outputs:
-- `results/comparisons/comparison_<timestamp>/comparison_*.csv`
-- `results/comparisons/comparison_<timestamp>/figures/*.png`
-- `results/comparisons/comparison_<timestamp>/comparison_summary.md`
-
-## Directory Structure
-
-```
-configs/
-  v0_default.yaml
-assets/
-  fonts/           # Bundled open-source fonts
-data/
-  inputs/          # Generated sentences/artifacts
-  rendered/        # Typography images
-  ocr/             # OCR text baselines
-  manifests/       # Run metadata
-results/
-  runs/<run_id>/
-    raw/           # responses.jsonl, responses.csv
-    analysis/      # CSVs, figures, summary.md
-  comparisons/     # Cross-run comparisons
-src/typo_eval/
-  cli.py           # CLI entrypoint
-  config.py        # Configuration schema
-  render.py        # Image rendering
-  ocr.py           # Tesseract OCR
-  inference.py     # Model inference
-  analysis.py      # Analysis and plotting
-  providers/       # OpenAI, Anthropic, Google
-scripts/
-  fetch_fonts.py
-  install_tesseract.sh
-tests/
-```
-
-## CLI Reference
-
-```bash
-# Full pipeline
-typo-eval --config <config.yaml> all
-
-# Individual commands
-typo-eval --config <config.yaml> generate
-typo-eval --config <config.yaml> render
-typo-eval --config <config.yaml> ocr
-typo-eval --config <config.yaml> run [--provider openai|anthropic|google] [--dry-run] [--limit N]
-typo-eval --config <config.yaml> analyze [--run <run_id>]
-typo-eval --config <config.yaml> compare [--run-ids RUN1 RUN2 ...] [--provider openai|anthropic|google] [--model MODEL_SUBSTRING]
-```
-
-### Options
-
-- `--config` - Path to YAML config file
-- `--provider` - Inference provider (openai, anthropic, google)
-- `--dry-run` - Print planned calls without executing
-- `--limit N` - Limit number of inference calls
-- `--run <run_id>` - Specify run ID for analysis
-- `--run-ids` - List of specific run IDs to compare
-- `--model` - Filter comparison to models containing this substring
-
-## API Keys
-
-Set environment variables or use `.env` file:
+Set environment variables or use a `.env` file:
 
 ```bash
 export OPENAI_API_KEY=sk-...
@@ -226,42 +66,118 @@ export ANTHROPIC_API_KEY=sk-ant-...
 export GOOGLE_API_KEY=...
 ```
 
-## Supported Model Providers
+## Reproducing the v1 results
 
-The harness supports three major AI vision model providers with the latest models:
+### Decision track (gates)
 
-- **OpenAI**: GPT-4o (vision), GPT-4o-mini (text)
-- **Anthropic**: Claude Sonnet 4 (vision and text) - Latest model with improved vision capabilities
-- **Google**: Gemini 1.5 Pro (vision and text) - Advanced production model with vision support
+Matches the site's Reproduce section:
 
-All providers support configurable temperature (default 0.0 for reproducibility) and both text (OCR baseline) and vision (rendered images) inference modes.
+```bash
+typo-eval --config configs/gates_v1.yaml gates-build
+typo-eval --config configs/gates_v1.yaml gates-render
+typo-eval --config configs/gates_v1.yaml gates-calibrate --provider <p>
+typo-eval --config configs/gates_v1.yaml gates-run --provider <p>
+typo-eval --config configs/gates_v1.yaml gates-analyze
+```
 
-## Key Design Decisions
+Follow-up experiment configs: `gates_v1_rubric.yaml` (criteria written into the
+prompt), `gates_v1_realism.yaml` (forum/phone screenshot chrome),
+`gates_v1_fair.yaml` (OpenDyslexic fairness scale-up), and `gates_v2.yaml`
+(July 2026 release-tracking rerun). Compare any two runs with:
 
-1. **Deduped OCR**: OCR baseline is run once per sentence (not per variant) to avoid inflating comparison counts.
+```bash
+typo-eval gates-drift --run-a gates_v1 --run-b gates_v2
+```
 
-2. **Container Framing**: Images use rounded rectangle containers to prevent the "poster effect" where edge rendering artifacts affect model perception.
+Per-run reports, item-level CSVs, and forest plots are in
+[results/gates/](results/gates/). The drift monitor for testing your own
+model x gate combinations is documented in [docs/GATE_DRIFT.md](docs/GATE_DRIFT.md).
 
-3. **Resume Support**: JSONL logging with deduplication allows interrupted runs to resume without re-running completed calls.
+### Sentence track (judgments)
 
-4. **Strict Parsing**: Yes/No responses are parsed strictly with clear error handling for invalid responses.
+```bash
+typo-eval --config configs/v0c_release.yaml generate
+typo-eval --config configs/v0c_release.yaml render
+typo-eval --config configs/v0c_release.yaml ocr
+typo-eval --config configs/v0c_release.yaml run --provider <p>
+typo-eval --config configs/v0c_release.yaml analyze
+```
+
+`v0c_release.yaml` is the July 2026 administration (Claude Fable 5, GPT-5.6
+Sol); `v0b_frontier.yaml` and `v0b_oldgen_fixed.yaml` are the earlier
+administrations (GPT-5.5 / Claude Sonnet 5, and GPT-4o). All use seed 42 and
+identical variants, so every administration judges the same 120 sentences.
+
+**Text baseline note:** the text arm sends the original sentence text directly
+to the model (`data/inputs/sentences.csv`); it is not derived from OCR. The
+`ocr` stage runs Tesseract on the rendered images as a separate legibility
+check only — its output is not part of the text-vs-image comparison, so OCR
+errors cannot confound the flip rates.
+
+## Models used in the v1 results
+
+Models are configurable per provider in each YAML config (`model_text` /
+`model_vision`). The published v1 numbers come from:
+
+| Track | Models |
+|---|---|
+| Sentence (judgments) | GPT-4o, GPT-5.5, Claude Sonnet 5, Claude Fable 5, GPT-5.6 Sol |
+| Decision (gates) | GPT-5.5, Claude Sonnet 5, Gemini 3.5 Flash, Claude Fable 5, GPT-5.6 Sol |
+
+The sentence track was not run on Gemini (the decision track was).
+
+## CLI reference
+
+```bash
+typo-eval --config <config.yaml> <command>
+```
+
+Sentence track: `generate`, `render`, `ocr`, `run [--provider ...] [--limit N]
+[--shard i/N]`, `analyze [--run <run_id>]`, `compare`, or `all` for the full
+pipeline.
+
+Decision track: `gates-build`, `gates-render`, `gates-calibrate --provider <p>`,
+`gates-run --provider <p>`, `gates-analyze`, and
+`gates-drift --run-a <A> --run-b <B> [--provider <p>]`.
+
+## Directory structure
+
+```
+configs/            # YAML configs (v0*/v0c_* sentence track, gates_* decision track)
+assets/fonts/       # Bundled open-source fonts
+data/
+  inputs/           # Sentence CSV + gate item banks (committed)
+  rendered/         # Rendered stimulus images (generated locally)
+  ocr/              # Tesseract output (legibility check)
+  manifests/        # Run metadata
+results/
+  gates/            # Decision-track reports, analysis CSVs, drift reports (committed)
+  runs/<run_id>/    # Raw JSONL response logs + per-run analysis (generated locally)
+src/typo_eval/
+  cli.py            # CLI entrypoint
+  config.py         # Configuration schema
+  render.py         # Image rendering
+  ocr.py            # Tesseract OCR
+  inference.py      # Model inference
+  analysis.py       # Sentence-track analysis
+  gates/            # Decision-track pipeline (stimuli, calibration, analysis, drift)
+  providers/        # OpenAI, Anthropic, Google
+scripts/
+  fetch_fonts.py
+  install_tesseract.sh
+tests/
+```
 
 ## Development
 
 ```bash
-# Install dev dependencies
 pip install -e ".[dev]"
-
-# Run tests
 pytest tests/
-
-# Format code
 ruff format src/ tests/
 ruff check src/ tests/ --fix
 ```
 
 ## License
 
-MIT License. See LICENSE file.
-
-Fonts are licensed under their respective open-source licenses (OFL, GPL+exception).
+MIT License. See [LICENSE](LICENSE). Fonts are licensed under their respective
+open-source licenses (OFL, GPL+exception).

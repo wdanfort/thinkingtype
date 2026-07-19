@@ -1,2 +1,0 @@
-Errors in submission can cause processing
-issues

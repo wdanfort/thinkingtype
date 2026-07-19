@@ -145,8 +145,8 @@
     <li>Fonts influence decisions and judgments for VLMs at the margins.
       <ol>
         <li>Times regular is the most stable font in every model I tested; plain serif is the closest thing to &ldquo;reads like text.&rdquo;</li>
-        <li>Comic Sans and OpenDyslexic are the likeliest to flip a judgment, with as much as 21% of judgments flipping (OpenDyslexic on GPT-4o) and Comic Sans at 14% on both GPT-5.5 and GPT-5.6 Sol, roughly double their plain-serif baselines.</li>
-        <li>At the decision boundary, OpenDyslexic only ever drifted harsher judgements: 17 of the 21 items that moved, moved toward removal.</li>
+        <li>Comic Neue (an open-source Comic Sans analogue) and OpenDyslexic are the likeliest to flip a judgment, with as much as 21% of judgments flipping (OpenDyslexic on GPT-4o) and Comic Sans at 14% on both GPT-5.5 and GPT-5.6 Sol, roughly double their plain-serif baselines.</li>
+        <li>At the decision boundary, OpenDyslexic only ever drifted harsher judgments: 17 of the 21 items that moved, moved toward removal.</li>
       </ol>
     </li>
   </ol>
@@ -167,7 +167,7 @@
     <p class="chart-note">Flip rate = how often the model's image answer disagreed with its own text answer on identical content (120 sentences, 10 questions each).</p>
   </div>
 
-  <p>I think these are novel results because of the focus on influencing downstream decisions and qualitative assessments. My scan of recent work on AI x typography has focused more on VLM accuracy, cybersecurity, and things like <a href="https://www.mixfont.com/experiments/decoy-font">DecoyFont</a>.</p>
+  <p>I haven&rsquo;t found prior work focused on influencing downstream decisions and qualitative assessments. My scan of recent work on AI x typography has focused more on VLM accuracy, cybersecurity, and things like <a href="https://www.mixfont.com/experiments/decoy-font">DecoyFont</a>.</p>
   <p>Given that these findings shift across providers and models, I&rsquo;m planning to run this benchmark against future major model releases. All of the code, methodology, and data are publicly available in the <a href="https://github.com/wdanfort/thinkingtype">github</a>. Design and coding were all done with Claude Code. I&rsquo;d love any feedback on methodology, future directions, or implications (especially if you&rsquo;re working on VLMs and have dealt with this in the wild), so please <a href="mailto:wbdanforth@gmail.com">reach out</a>.</p>
 
   <h2>Quick Product Implications</h2>
@@ -179,7 +179,7 @@
 
   <h2>Key Limitations</h2>
   <ol>
-    <li>All benchmark artifacts, including sentence examples, are synthetic, and so may not mirror real world results. I tried to generate them to be on the borderline for decisions and criteria. However, the fact that they differ across providers and models suggested that this was a durable phenomenon.</li>
+    <li>All benchmark artifacts, including sentence examples, are synthetic, and so may not mirror real world results. I tried to generate them to be on the borderline for decisions and criteria. However, the effect appearing in every provider tested suggests it is not an artifact of a single model family.</li>
     <li>Most results rest on 20 edge cases per model per test (60 for the accessibility comparison). Due to budget constraints, I chose to limit my choice of variables and outputs tested to balance cost and reasonable confidence intervals.</li>
     <li>Stimuli are synthetic single-page documents with no names or demographics, by design. Real documents have messier content, but would make isolating to font alone more challenging.</li>
     <li>Methods for directly comparing LLMs and VLMs. I needed to take a picture of words for the VLMs, and did my best to control for any confounders. I believe that all vision images are at least consistent, which allows for directional evaluation.</li>
