@@ -149,12 +149,12 @@
   <div class="tldr">
     <p>ThinkingType is a new, lightweight benchmark measuring how changing typography influences qualitative assessments (i.e. trustworthy, professional) and downstream decisions (&ldquo;flag this policy violation,&rdquo; &ldquo;approve this resume&rdquo;). The v0 harness compares using a VLM to analyze an image of text on binary questions versus the same words input directly into LLMs, across 120 synthetic sentences and 330 synthetic artifacts. My main findings:</p>
     <ul>
-      <li>Averaged across all runs, VLMs generally produce skewed results, with yes/no answers flipping on 8 to 15% of judgments compared to using an LLM &ndash; although this could be a confounder.</li>
+      <li>Averaged across all runs, VLMs generally produce skewed results, with yes/no answers flipping on 8 to 15% of judgments compared to using an LLM &ndash; although some of this could be confounded by my rendering choices (image size, quality, layout) rather than typography itself.</li>
       <li>This vision-text divergence exists (and differs) across the 3 providers tested and changes with each new generation (GPT-4o 15.2% &rarr; GPT-5.5 7.8% &rarr; GPT-5.6 Sol 10.7%).</li>
       <li>Fonts influence decisions and judgments for VLMs at the margins.
         <ul>
           <li>Times regular is the most stable font in every model I tested; plain serif is the closest thing to &ldquo;reads like text.&rdquo;</li>
-          <li>Comic Sans and OpenDyslexic are the likeliest to flip a judgment negatively, with as much as 21% of judgments flipping (OpenDyslexic on GPT-4o) and Comic Sans at 14% on both GPT-5.5 and GPT-5.6 Sol, roughly double their plain-serif baselines. At the decision boundary, OpenDyslexic only ever drifted harsher: 17 of the 21 items that moved, moved toward removal.</li>
+          <li>Comic Sans and OpenDyslexic are the likeliest to flip a judgment, with as much as 21% of judgments flipping (OpenDyslexic on GPT-4o) and Comic Sans at 14% on both GPT-5.5 and GPT-5.6 Sol, roughly double their plain-serif baselines. At the decision boundary, OpenDyslexic only ever drifted harsher: 17 of the 21 items that moved, moved toward removal.</li>
         </ul>
       </li>
     </ul>
@@ -173,8 +173,8 @@
     <div class="flip-chart" id="flipChart"></div>
     <p class="chart-note">Flip rate = how often the model's image answer disagreed with its own text answer on identical content (120 sentences, 10 questions each).</p>
   </div>
-    <p>I think these are novel results because of the focus on influencing downstream decisions and qualitative assessments. My scan of recent work on AI x typography has focused more on VLM accuracy, cybersecurity, and cool recent things like DecoyFont.</p>
-    <p>Given that these findings shift across providers and models, I&rsquo;m planning to run this benchmark against future major model releases. All of the code, methodology, and data are publicly available in the <a href="https://github.com/wdanfort/thinkingtype">github</a>. Design and coding were all done with Claude Code. I&rsquo;d love any feedback on methodology, future directions, or implications (especially if you&rsquo;re working on VLMs and have dealt with this in the wild), so please reach out.</p>
+    <p>I think these are novel results because of the focus on influencing downstream decisions and qualitative assessments. My scan of recent work on AI x typography has focused more on VLM accuracy, cybersecurity, and cool recent things like <a href="https://www.mixfont.com/experiments/decoy-font">DecoyFont</a>.</p>
+    <p>Given that these findings shift across providers and models, I&rsquo;m planning to run this benchmark against future major model releases. All of the code, methodology, and data are publicly available in the <a href="https://github.com/wdanfort/thinkingtype">github</a>. Design and coding were all done with Claude Code. I&rsquo;d love any feedback on methodology, future directions, or implications (especially if you&rsquo;re working on VLMs and have dealt with this in the wild), so please <a href="mailto:wbdanforth@gmail.com">reach out</a>.</p>
   </div>
   <!-- ✏️ END EDIT 1 ═══════════════════════════════════════════════════════ -->
 
