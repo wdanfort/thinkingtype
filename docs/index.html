@@ -138,17 +138,18 @@
   <p><strong>Does a VLM &ldquo;read&rdquo; a Comic Sans resume as unprofessional?</strong></p>
   <p class="disclaimer">Views are my own and not my employer&rsquo;s &middot; v1, last updated July 20th, 2026.</p>
 
-  <p>I built ThinkingType as a new, lightweight benchmark measuring how changing typography influences qualitative assessments (i.e. trustworthy, professional) and downstream decisions (&ldquo;flag this policy violation,&rdquo; &ldquo;approve this resume&rdquo;). The v1 compares using a VLM to analyze an image of text on binary questions versus the same words input directly into LLMs, across 120 synthetic sentences and 330 synthetic artifacts. My main findings:</p>
+  <p>I built ThinkingType as a new, lightweight benchmark measuring how typography influences qualitative assessments (e.g. trustworthy, professional) and downstream decisions (&ldquo;flag this policy violation,&rdquo; &ldquo;approve this resume&rdquo;). v1 asks the same binary questions two ways &mdash; as a rendered image and as plain text to the same model &mdash; across 120 synthetic sentences and 330 synthetic artifacts. My main findings:</p>
   <ol>
-    <li>VLMs generally produce divergent results from text only, with yes/no answers flipping on 8 to 15% of judgments compared to using an LLM.</li>
+    <li>Reading text as an image changes answers. Depending on model, 8 to 15% of yes/no judgments flip when the same model answers from an image instead of plain text.</li>
     <li>This vision-text divergence exists (and differs) across the 3 providers tested and changes with each new generation.</li>
     <li>Fonts influence decisions and judgments for VLMs at the margins.
       <ol>
         <li>Times regular is the most stable font in every model I tested; plain serif is the closest thing to &ldquo;reads like text.&rdquo;</li>
-        <li>Comic Neue (an open-source Comic Sans analogue) and OpenDyslexic are the likeliest to flip a judgment, with as much as 21% of judgments flipping (OpenDyslexic on GPT-4o) and Comic Sans at 14% on both GPT-5.5 and GPT-5.6 Sol, roughly double their plain-serif baselines.</li>
-        <li>At the decision boundary, OpenDyslexic only ever drifted harsher judgments: 17 of the 21 items that moved, moved toward removal.</li>
+        <li>Comic Neue (an open-source Comic Sans analogue, labeled &ldquo;Comic Sans&rdquo; in charts and tables below) and OpenDyslexic are the likeliest to flip a judgment, with as much as 21% of judgments flipping (OpenDyslexic on GPT-4o) and Comic Neue at 14% on both GPT-5.5 and GPT-5.6 Sol, roughly double their plain-serif baselines.</li>
+        <li>In the accessibility comparison, OpenDyslexic skewed consistently harsher at the decision boundary: 17 of the 21 items that moved, moved toward removal. (This is a separate, larger test than the pooled decision shifts in the appendix.)</li>
       </ol>
     </li>
+    <li>Refusals are presentation-sensitive. Fable 5 refused six times more often on images than on identical text, and the refusals clustered by font.</li>
   </ol>
 
   <figure class="item-fig" role="img" aria-label="Line chart of text-vision flip rate across model generations. OpenAI: GPT-4o 15.2%, GPT-5.5 7.8%, GPT-5.6 Sol 10.7%. Anthropic: Claude Sonnet 5 9.5%, Claude Fable 5 8.6%.">
@@ -210,7 +211,12 @@
 
   <div class="demo" id="demo">
     <h3 style="margin-top:0">Try it: same sentence, different presentation</h3>
-    <p class="demo-sub">Pick a font. The bars show how often each model's answers flipped between text and image for that font, next to the model's average across all fonts (the vertical marker).</p>
+    <p class="demo-sub">Pick a sentence and a font. The bars show how often each model's answers flipped between text and image for that view, next to the model's average across all fonts and sentences (the vertical marker).</p>
+
+    <div style="margin:0 0 0.9rem;">
+      <label for="sentencePicker" style="font-size:0.8rem;color:var(--muted);display:block;margin-bottom:0.3rem;">Sentence &middot; the ten with the most divergent results across models, or the full-set average</label>
+      <select id="sentencePicker" style="max-width:100%;font:inherit;font-size:0.85rem;padding:0.35rem 0.5rem;background:var(--bg);color:var(--fg);border:1px solid var(--rule);border-radius:6px;"></select>
+    </div>
 
     <div class="font-picker" id="fontPicker"></div>
 
@@ -221,25 +227,25 @@
 
     <p class="chart-heading">Text-vs-image flip rate on the same content, by model</p>
     <div class="flip-chart" id="flipChart"></div>
-    <p class="chart-note">Flip rate = how often the model's image answer disagreed with its own text answer on identical content (120 sentences, 10 questions each).</p>
+    <p class="chart-note">Flip rate = how often the model's image answer disagreed with its own text answer on identical content. The pp delta compares the current view against that model's all-font, all-sentence average (the vertical marker). For a single sentence, the bar is the share of its ten questions that flipped in that font &mdash; each cell is only 10 comparisons, so values move in coarse 10-point steps.</p>
   </div>
 
-  <p>I haven&rsquo;t found prior work focused on influencing downstream decisions and qualitative assessments. My scan of recent work on AI x typography has focused more on VLM accuracy, cybersecurity, and things like <a href="https://www.mixfont.com/experiments/decoy-font">DecoyFont</a>.</p>
-  <p>Given that these findings shift across providers and models, I&rsquo;m planning to run this benchmark against future major model releases. All of the code, methodology, and data are publicly available in the <a href="https://github.com/wdanfort/thinkingtype">github</a>. Design and coding were all done with Claude Code. I&rsquo;d love any feedback on methodology, future directions, or implications (especially if you&rsquo;re working on VLMs and have dealt with this in the wild), so please <a href="mailto:wbdanforth@gmail.com">reach out</a>.</p>
+  <p>I haven&rsquo;t found prior work focused on downstream decisions and qualitative assessments. The recent work I&rsquo;ve found on AI &times; typography focuses more on VLM accuracy, cybersecurity, and things like <a href="https://www.mixfont.com/experiments/decoy-font">DecoyFont</a>.</p>
+  <p>Given that these findings shift across providers and models, I&rsquo;m planning to run this benchmark against future major model releases. All of the code, methodology, and data are publicly available on <a href="https://github.com/wdanfort/thinkingtype">GitHub</a>. Design and coding were done with Claude Code. I want feedback on methodology and gaps &mdash; especially from anyone running VLMs on real documents in production &mdash; so please <a href="mailto:wbdanforth@gmail.com">reach out</a>.</p>
 
   <h2>Quick Product Implications</h2>
   <ol>
-    <li><strong>Vision-text consistency is not stable across provider, model, or generation.</strong> Typography should be included in internal product evals to identify drift, even though its impact is at the margins.</li>
-    <li><strong>Decision drift can be controlled.</strong> For experiments involving changing decisions, I was able to significantly reduce divergence with clear prompt rubrics (for two of the three providers tested).</li>
-    <li><strong>Refusal rates are presentation-sensitive too.</strong> If you measure refusals in your evals, measure them per format. Fable 5 refused six times more often on images than text, and the refusals clustered by font.</li>
+    <li><strong>Vision-text consistency is not stable across provider, model, or generation.</strong> Typography should be included in internal product evals to identify drift.</li>
+    <li><strong>Decision drift can be controlled.</strong> Clear prompt rubrics eliminated divergence for one of the three providers tested and cut it in half for a second.</li>
+    <li><strong>Measure refusals per format.</strong> Refusal rates differ between image and text presentation of the same content (finding 4), so a single pooled refusal number will hide it.</li>
   </ol>
 
   <h2>Key Limitations</h2>
   <ol>
-    <li>All benchmark artifacts, including sentence examples, are synthetic, and so may not mirror real world results. I tried to generate them to be on the borderline for decisions and criteria. However, the effect appearing in every provider tested suggests it is not an artifact of a single model family.</li>
+    <li>All benchmark artifacts, including sentence examples, are synthetic, and so may not mirror real world results. I tried to generate them to be on the borderline for decisions and criteria. However, the effect appearing in every provider tested suggests it is not an artifact of a single model family &mdash; though real-world magnitudes remain untested.</li>
     <li>Most results rest on 20 edge cases per model per test (60 for the accessibility comparison). Due to budget constraints, I chose to limit my choice of variables and outputs tested to balance cost and reasonable confidence intervals.</li>
     <li>Stimuli are synthetic single-page documents with no names or demographics, by design. Real documents have messier content, but would make isolating to font alone more challenging.</li>
-    <li>Methods for directly comparing LLMs and VLMs. I needed to take a picture of words for the VLMs, and did my best to control for any confounders. I believe that all vision images are at least consistent, which allows for directional evaluation.</li>
+    <li>Directly comparing text and vision requires rendering words to an image, which introduces confounders beyond font. The rendering pipeline is identical across fonts, so font-to-font comparisons are apples-to-apples; the absolute image-vs-text gap should be read directionally.</li>
   </ol>
 
   <h2>Next steps</h2>
@@ -250,7 +256,7 @@
   </ol>
 
   <h2>Why build this?</h2>
-  <p>I got into typography this year after reading &ldquo;Thinking with Type.&rdquo; Type design mirrors the tech and culture of the day, so since it&rsquo;s 2026, I was curious about how agents are influenced by, and may potentially shape, popular fonts and design conventions. Is Comic Sans still seen as unprofessional? Would an agent be then less likely to recommend a resume written in OpenDyslexic? What does the future of typography look like when it&rsquo;s increasingly consumed by both people and robots? This project is a first-pass attempt to understand this.</p>
+  <p>I got into typography this year after reading &ldquo;Thinking with Type.&rdquo; Type design mirrors the tech and culture of the day, so since it&rsquo;s 2026, I was curious about how agents are influenced by, and may potentially shape, popular fonts and design conventions. Is Comic Sans still seen as unprofessional? Would an agent then be less likely to recommend a resume written in OpenDyslexic? What does the future of typography look like when it&rsquo;s increasingly consumed by both people and robots? This project is a first-pass attempt to understand this.</p>
 
   <h2>Reproduce</h2>
   <pre><code>typo-eval --config configs/gates_v1.yaml gates-build
@@ -329,10 +335,15 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
     { key:'sol',     label:'GPT-5.6 Sol',     model:'newest release',       baseline:10.7, color:'#f59e0b' },
   ];
 
-  const MAX_PCT = 25;
-  let active = VARIANTS[0];
+  const MAX_ALL = 25;   // % scale, all-sentences view
+  const MAX_ONE = 100;  // % scale, single-sentence view (n=10 per cell)
+  // Top-10 most divergent sentences; per model x font = % of the 10 questions
+  // that flipped for that sentence. Computed from the raw run logs. Measured data.
+  const SENTENCES = [{"id":15,"text":"The following requirements must be acknowledged","overall":32.0,"gpt4o":{"T1":0,"T2":0,"T3":0,"T4":0,"T5b":0,"T6":0,"T7":0,"A1":33},"gpt55":{"T1":30,"T2":30,"T3":20,"T4":30,"T5b":30,"T6":20,"T7":40,"A1":20},"sonnet5":{"T1":50,"T2":50,"T3":40,"T4":60,"T5b":30,"T6":40,"T7":50,"A1":40},"fable5":{"T1":20,"T2":10,"T3":20,"T4":40,"T5b":20,"T6":20,"T7":0,"A1":20},"sol":{"T1":50,"T2":40,"T3":50,"T4":40,"T5b":40,"T6":40,"T7":40,"A1":50}},{"id":71,"text":"The requirements listed below apply to all requests","overall":20.3,"gpt4o":{"T1":20,"T2":67,"T3":25,"T4":33,"T5b":25,"T6":50,"T7":40,"A1":67},"gpt55":{"T1":20,"T2":10,"T3":20,"T4":10,"T5b":0,"T6":20,"T7":30,"A1":10},"sonnet5":{"T1":20,"T2":20,"T3":20,"T4":20,"T5b":10,"T6":20,"T7":20,"A1":20},"fable5":{"T1":20,"T2":40,"T3":20,"T4":30,"T5b":10,"T6":20,"T7":10,"A1":10},"sol":{"T1":20,"T2":30,"T3":20,"T4":30,"T5b":10,"T6":20,"T7":20,"A1":20}},{"id":111,"text":"Check the box to acknowledge the statement above","overall":19.5,"gpt4o":{"T1":0,"T2":0,"T3":0,"T4":0,"T5b":0,"T6":0,"T7":25,"A1":0},"gpt55":{"T1":10,"T2":20,"T3":10,"T4":10,"T5b":10,"T6":10,"T7":20,"A1":10},"sonnet5":{"T1":20,"T2":20,"T3":10,"T4":20,"T5b":20,"T6":10,"T7":10,"A1":10},"fable5":{"T1":20,"T2":50,"T3":20,"T4":20,"T5b":30,"T6":20,"T7":20,"A1":20},"sol":{"T1":20,"T2":30,"T3":20,"T4":30,"T5b":40,"T6":30,"T7":30,"A1":40}},{"id":65,"text":"These conditions apply regardless of prior arrangements","overall":18.7,"gpt4o":{"T1":25,"T2":25,"T3":50,"T4":33,"T5b":50,"T6":33,"T7":50,"A1":50},"gpt55":{"T1":30,"T2":10,"T3":20,"T4":20,"T5b":30,"T6":30,"T7":30,"A1":10},"sonnet5":{"T1":30,"T2":40,"T3":20,"T4":40,"T5b":30,"T6":30,"T7":40,"A1":30},"fable5":{"T1":10,"T2":0,"T3":20,"T4":10,"T5b":0,"T6":10,"T7":10,"A1":10},"sol":{"T1":10,"T2":0,"T3":10,"T4":10,"T5b":10,"T6":0,"T7":10,"A1":0}},{"id":52,"text":"Verifying your details now could prevent issues later","overall":18.2,"gpt4o":{"T1":25,"T2":50,"T3":50,"T4":50,"T5b":50,"T6":50,"T7":50,"A1":100},"gpt55":{"T1":20,"T2":20,"T3":20,"T4":20,"T5b":10,"T6":10,"T7":30,"A1":20},"sonnet5":{"T1":20,"T2":10,"T3":10,"T4":20,"T5b":20,"T6":20,"T7":10,"A1":10},"fable5":{"T1":10,"T2":20,"T3":22,"T4":20,"T5b":10,"T6":20,"T7":20,"A1":30},"sol":{"T1":20,"T2":20,"T3":30,"T4":10,"T5b":10,"T6":0,"T7":20,"A1":0}},{"id":83,"text":"Missing documentation can affect the final decision","overall":18.0,"gpt4o":{"T1":0,"T2":0,"T3":100,"T4":0,"T5b":0,"T6":0,"T7":0,"A1":0},"gpt55":{"T1":20,"T2":30,"T3":20,"T4":20,"T5b":20,"T6":20,"T7":30,"A1":20},"sonnet5":{"T1":20,"T2":20,"T3":30,"T4":30,"T5b":20,"T6":10,"T7":40,"A1":0},"fable5":{"T1":0,"T2":10,"T3":0,"T4":10,"T5b":0,"T6":0,"T7":0,"A1":10},"sol":{"T1":40,"T2":30,"T3":30,"T4":30,"T5b":30,"T6":0,"T7":10,"A1":20}},{"id":81,"text":"Repeated attempts may temporarily restrict your access","overall":17.7,"gpt4o":{"T1":0,"T2":0,"T3":0,"T4":0,"T5b":0,"T6":0,"T7":0,"A1":0},"gpt55":{"T1":10,"T2":10,"T3":10,"T4":0,"T5b":0,"T6":0,"T7":10,"A1":10},"sonnet5":{"T1":10,"T2":10,"T3":10,"T4":10,"T5b":30,"T6":10,"T7":10,"A1":10},"fable5":{"T1":30,"T2":30,"T3":30,"T4":20,"T5b":20,"T6":0,"T7":50,"A1":0},"sol":{"T1":20,"T2":30,"T3":30,"T4":30,"T5b":30,"T6":30,"T7":50,"A1":30}},{"id":101,"text":"Expanded tools are ready in your account","overall":17.7,"gpt4o":{"T1":33,"T2":50,"T3":33,"T4":100,"T5b":33,"T6":100,"T7":50,"A1":100},"gpt55":{"T1":0,"T2":10,"T3":10,"T4":10,"T5b":10,"T6":0,"T7":10,"A1":10},"sonnet5":{"T1":20,"T2":20,"T3":20,"T4":20,"T5b":20,"T6":20,"T7":20,"A1":30},"fable5":{"T1":10,"T2":20,"T3":10,"T4":30,"T5b":12,"T6":10,"T7":30,"A1":20},"sol":{"T1":10,"T2":10,"T3":20,"T4":10,"T5b":20,"T6":20,"T7":30,"A1":20}},{"id":93,"text":"A refreshed experience is ready for you to explore","overall":17.4,"gpt4o":{"T1":0,"T2":0,"T3":0,"T4":0,"T5b":0,"T6":0,"T7":0,"A1":33},"gpt55":{"T1":20,"T2":10,"T3":10,"T4":10,"T5b":10,"T6":10,"T7":20,"A1":20},"sonnet5":{"T1":10,"T2":10,"T3":20,"T4":10,"T5b":0,"T6":20,"T7":20,"A1":20},"fable5":{"T1":30,"T2":30,"T3":30,"T4":20,"T5b":20,"T6":20,"T7":30,"A1":30},"sol":{"T1":20,"T2":30,"T3":20,"T4":20,"T5b":30,"T6":10,"T7":10,"A1":10}},{"id":47,"text":"This confirmation applies to the most recent request","overall":17.3,"gpt4o":{"T1":25,"T2":50,"T3":33,"T4":33,"T5b":33,"T6":33,"T7":50,"A1":50},"gpt55":{"T1":30,"T2":20,"T3":20,"T4":30,"T5b":30,"T6":30,"T7":40,"A1":30},"sonnet5":{"T1":20,"T2":10,"T3":10,"T4":20,"T5b":20,"T6":0,"T7":30,"A1":10},"fable5":{"T1":0,"T2":0,"T3":0,"T4":0,"T5b":0,"T6":20,"T7":20,"A1":0},"sol":{"T1":10,"T2":10,"T3":0,"T4":30,"T5b":30,"T6":10,"T7":20,"A1":10}}];
 
-  // Build font picker
+  let active = VARIANTS[0];
+  let activeSent = 'all';
+
   const picker = document.getElementById('fontPicker');
   VARIANTS.forEach(function(v) {
     var btn = document.createElement('button');
@@ -341,58 +352,64 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
     btn.style.fontFamily = v.family;
     btn.style.fontWeight = v.weight;
     btn.style.textTransform = v.xform;
-    btn.addEventListener('click', function() { selectVariant(v); });
+    btn.addEventListener('click', function() { active = v; render(); });
     picker.appendChild(btn);
   });
 
-  // Build chart rows
+  const sentSel = document.getElementById('sentencePicker');
+  var optAll = document.createElement('option');
+  optAll.value = 'all';
+  optAll.textContent = 'All 120 sentences (average)';
+  sentSel.appendChild(optAll);
+  SENTENCES.forEach(function(sn, i) {
+    var o = document.createElement('option');
+    o.value = i;
+    var t = sn.text.length > 58 ? sn.text.slice(0, 58) + '\u2026' : sn.text;
+    o.textContent = '\u201C' + t + '\u201D \u00B7 ' + sn.overall.toFixed(0) + '% of judgments flip';
+    sentSel.appendChild(o);
+  });
+  sentSel.addEventListener('change', function() {
+    activeSent = this.value === 'all' ? 'all' : parseInt(this.value, 10);
+    render();
+  });
+
   var chart = document.getElementById('flipChart');
   PROVIDERS.forEach(function(p) {
     var row = document.createElement('div');
     row.className = 'provider-row';
-    var markerPct = (p.baseline / MAX_PCT * 100).toFixed(2);
     row.innerHTML =
-      '<div class="provider-label">' + p.label +
-        '</div>' +
+      '<div class="provider-label">' + p.label + '</div>' +
       '<div class="bar-track">' +
         '<div class="bar-fill" id="bar-' + p.key + '" style="background:' + p.color + '"></div>' +
-        '<div class="bar-marker" id="mkr-' + p.key + '" style="left:' + markerPct + '%"></div>' +
+        '<div class="bar-marker" id="mkr-' + p.key + '"></div>' +
       '</div>' +
       '<div class="bar-value" id="val-' + p.key + '"></div>';
     chart.appendChild(row);
   });
 
-  function selectVariant(v) {
-    active = v;
-
-    // Update buttons
+  function render() {
     document.querySelectorAll('#fontPicker .font-btn').forEach(function(btn, i) {
-      btn.classList.toggle('active', VARIANTS[i].id === v.id);
+      btn.classList.toggle('active', VARIANTS[i].id === active.id);
     });
-
-    // Update sentence preview
     var disp = document.getElementById('sentenceDisplay');
-    disp.style.fontFamily = v.family;
-    disp.style.fontWeight = v.weight;
-    disp.style.textTransform = v.xform;
-    disp.textContent = DEMO_SENTENCE;
-
-    // Update bars
+    disp.style.fontFamily = active.family;
+    disp.style.fontWeight = active.weight;
+    disp.style.textTransform = active.xform;
+    disp.textContent = activeSent === 'all' ? DEMO_SENTENCE : SENTENCES[activeSent].text;
+    var max = activeSent === 'all' ? MAX_ALL : MAX_ONE;
     PROVIDERS.forEach(function(p) {
-      var rate = v[p.key];
-      var pct = (rate / MAX_PCT * 100).toFixed(2);
-      var delta = rate - p.baseline;
+      var val = activeSent === 'all' ? active[p.key] : SENTENCES[activeSent][p.key][active.id];
+      var delta = val - p.baseline;
       var sign = delta >= 0 ? '+' : '';
       var cls = delta > 0.5 ? 'delta-up' : delta < -0.5 ? 'delta-dn' : 'delta-eq';
-
-      document.getElementById('bar-' + p.key).style.width = pct + '%';
+      document.getElementById('bar-' + p.key).style.width = (Math.min(val, max) / max * 100).toFixed(2) + '%';
+      document.getElementById('mkr-' + p.key).style.left = (p.baseline / max * 100).toFixed(2) + '%';
       document.getElementById('val-' + p.key).innerHTML =
-        rate.toFixed(1) + '%<span class="bar-delta ' + cls + '">' +
+        (activeSent === 'all' ? val.toFixed(1) : val.toFixed(0)) + '%<span class="bar-delta ' + cls + '">' +
         sign + delta.toFixed(1) + 'pp</span>';
     });
   }
-
-  selectVariant(active);
+  render();
 
 </script>
 </body>
