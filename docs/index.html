@@ -151,6 +151,63 @@
     </li>
   </ol>
 
+  <figure class="item-fig" role="img" aria-label="Line chart of text-vision flip rate across model generations. OpenAI: GPT-4o 15.2%, GPT-5.5 7.8%, GPT-5.6 Sol 10.7%. Anthropic: Claude Sonnet 5 9.5%, Claude Fable 5 8.6%.">
+    <p class="chart-heading" style="margin-bottom:0.25rem">Flip rate across model generations</p>
+    <div style="display:flex; gap:1.25rem; font-size:0.78rem; color:var(--muted); margin-bottom:0.35rem;">
+      <span><svg width="10" height="10" style="vertical-align:-1px"><circle cx="5" cy="5" r="4.5" fill="#10b981"/></svg> OpenAI</span>
+      <span><svg width="10" height="10" style="vertical-align:-1px"><rect x="0.5" y="0.5" width="9" height="9" fill="#8b5cf6"/></svg> Anthropic</span>
+    </div>
+    <svg viewBox="0 0 640 290" style="width:100%; max-width:44rem; height:auto; font-family:Georgia, serif;">
+      <!-- gridlines + y labels -->
+      <g stroke="var(--rule)" stroke-width="1">
+        <line x1="60" y1="250" x2="600" y2="250"/>
+        <line x1="60" y1="188.9" x2="600" y2="188.9"/>
+        <line x1="60" y1="127.8" x2="600" y2="127.8"/>
+        <line x1="60" y1="66.7" x2="600" y2="66.7"/>
+      </g>
+      <g fill="var(--muted)" font-size="12" text-anchor="end">
+        <text x="52" y="254">0%</text>
+        <text x="52" y="192.9">5%</text>
+        <text x="52" y="131.8">10%</text>
+        <text x="52" y="70.7">15%</text>
+      </g>
+      <!-- CI whiskers -->
+      <g stroke="#10b981" stroke-opacity="0.45" stroke-width="1.5">
+        <line x1="110" y1="41.0" x2="110" y2="85.0"/>
+        <line x1="320" y1="141.2" x2="320" y2="168.1"/>
+        <line x1="530" y1="102.1" x2="530" y2="135.1"/>
+      </g>
+      <g stroke="#8b5cf6" stroke-opacity="0.45" stroke-width="1.5">
+        <line x1="320" y1="116.8" x2="320" y2="151.0"/>
+        <line x1="530" y1="127.8" x2="530" y2="159.6"/>
+      </g>
+      <!-- lines -->
+      <polyline points="110,64.2 320,154.7 530,119.2" fill="none" stroke="#10b981" stroke-width="2"/>
+      <polyline points="320,133.9 530,144.9" fill="none" stroke="#8b5cf6" stroke-width="2"/>
+      <!-- markers: circles OpenAI, squares Anthropic, surface ring -->
+      <g fill="#10b981" stroke="var(--bg)" stroke-width="2">
+        <circle cx="110" cy="64.2" r="5"><title>GPT-4o: 15.2% [13.5, 17.1]</title></circle>
+        <circle cx="320" cy="154.7" r="5"><title>GPT-5.5: 7.8% [6.7, 8.9]</title></circle>
+        <circle cx="530" cy="119.2" r="5"><title>GPT-5.6 Sol: 10.7% [9.4, 12.1]</title></circle>
+      </g>
+      <g fill="#8b5cf6" stroke="var(--bg)" stroke-width="2">
+        <rect x="315" y="128.9" width="10" height="10"><title>Claude Sonnet 5: 9.5% [8.1, 10.9]</title></rect>
+        <rect x="525" y="139.9" width="10" height="10"><title>Claude Fable 5: 8.6% [7.4, 10.0]</title></rect>
+      </g>
+      <!-- point labels -->
+      <g fill="var(--fg)" font-size="12.5">
+        <text x="124" y="60">GPT-4o &middot; 15.2%</text>
+        <text x="320" y="185" text-anchor="middle">GPT-5.5 &middot; 7.8%</text>
+        <text x="538" y="96" text-anchor="end">GPT-5.6 Sol &middot; 10.7%</text>
+        <text x="320" y="112" text-anchor="middle">Sonnet 5 &middot; 9.5%</text>
+        <text x="538" y="172" text-anchor="end">Fable 5 &middot; 8.6%</text>
+      </g>
+      <!-- x axis note -->
+      <text x="330" y="278" text-anchor="middle" fill="var(--muted)" font-size="12">release lineage &rarr; (each vendor&rsquo;s successive flagship, left to right)</text>
+    </svg>
+    <figcaption>Share of yes/no judgments that flip between text and image, per model; whiskers are 95% CIs. The gap was closing generation over generation until GPT-5.6 Sol reopened it.</figcaption>
+  </figure>
+
   <div class="demo" id="demo">
     <h3 style="margin-top:0">Try it: same sentence, different presentation</h3>
     <p class="demo-sub">Pick a font. The bars show how often each model's answers flipped between text and image for that font, next to the model's average across all fonts (the vertical marker).</p>
