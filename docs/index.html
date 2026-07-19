@@ -70,6 +70,7 @@
     }
     .disclaimer { color: var(--muted); font-style: italic; font-size: 0.92rem; }
     .tldr { margin: 1.75rem 0; }
+    ol ol { list-style: lower-alpha; margin-top: 0.4rem; }
     .tablewrap { overflow-x: auto; margin: 1.25rem 0; }
     table {
       border-collapse: collapse;
@@ -131,33 +132,25 @@
   <div class="kicker">t · h · i · n · k · i · n · g · t · y · p · e</div>
 
   <!-- ════════════════════════════════════════════════════════════════════
-       ✏️ EDIT 1 · HEADLINE + TL;DR
-       Rewrite this whole block in your own voice. The only constraint:
-       keep the numbers consistent with the tables below (moderation
-       +10 to +13pp; résumé Gemini +15.6pp vs GPT-5.5 −4.2pp; OpenDyslexic
-       −4 to −6pp, 17 of 21 moved items toward removal).
-
-
-
-
-       
+       ✏️ WILL'S v1 WRITEUP — prose is Will's; tables and demo data are measured
        ════════════════════════════════════════════════════════════════════ -->
   <h1>ThinkingType: how typography influences judgments and decisions</h1>
   <p><strong>Does a VLM &ldquo;read&rdquo; a Comic Sans resume as unprofessional?</strong></p>
-  <p class="disclaimer">Views are my own and not my employer&rsquo;s &middot; v0, last updated July 21st, 2026.</p>
+  <p class="disclaimer">Views are my own and not my employer&rsquo;s &middot; v1, last updated July 20th, 2026.</p>
 
-  <div class="tldr">
-    <p>ThinkingType is a new, lightweight benchmark measuring how changing typography influences qualitative assessments (i.e. trustworthy, professional) and downstream decisions (&ldquo;flag this policy violation,&rdquo; &ldquo;approve this resume&rdquo;). The v0 harness compares using a VLM to analyze an image of text on binary questions versus the same words input directly into LLMs, across 120 synthetic sentences and 330 synthetic artifacts. My main findings:</p>
-    <ul>
-      <li>Averaged across all runs, VLMs generally produce skewed results, with yes/no answers flipping on 8 to 15% of judgments compared to using an LLM &ndash; although some of this could be confounded by my rendering choices (image size, quality, layout) rather than typography itself.</li>
-      <li>This vision-text divergence exists (and differs) across the 3 providers tested and changes with each new generation (GPT-4o 15.2% &rarr; GPT-5.5 7.8% &rarr; GPT-5.6 Sol 10.7%).</li>
-      <li>Fonts influence decisions and judgments for VLMs at the margins.
-        <ul>
-          <li>Times regular is the most stable font in every model I tested; plain serif is the closest thing to &ldquo;reads like text.&rdquo;</li>
-          <li>Comic Sans and OpenDyslexic are the likeliest to flip a judgment, with as much as 21% of judgments flipping (OpenDyslexic on GPT-4o) and Comic Sans at 14% on both GPT-5.5 and GPT-5.6 Sol, roughly double their plain-serif baselines. At the decision boundary, OpenDyslexic only ever drifted harsher: 17 of the 21 items that moved, moved toward removal.</li>
-        </ul>
-      </li>
-    </ul>
+  <p>I built ThinkingType as a new, lightweight benchmark measuring how changing typography influences qualitative assessments (i.e. trustworthy, professional) and downstream decisions (&ldquo;flag this policy violation,&rdquo; &ldquo;approve this resume&rdquo;). The v1 compares using a VLM to analyze an image of text on binary questions versus the same words input directly into LLMs, across 120 synthetic sentences and 330 synthetic artifacts. My main findings:</p>
+  <ol>
+    <li>VLMs generally produce divergent results from text only, with yes/no answers flipping on 8 to 15% of judgments compared to using an LLM.</li>
+    <li>This vision-text divergence exists (and differs) across the 3 providers tested and changes with each new generation.</li>
+    <li>Fonts influence decisions and judgments for VLMs at the margins.
+      <ol>
+        <li>Times regular is the most stable font in every model I tested; plain serif is the closest thing to &ldquo;reads like text.&rdquo;</li>
+        <li>Comic Sans and OpenDyslexic are the likeliest to flip a judgment, with as much as 21% of judgments flipping (OpenDyslexic on GPT-4o) and Comic Sans at 14% on both GPT-5.5 and GPT-5.6 Sol, roughly double their plain-serif baselines.</li>
+        <li>At the decision boundary, OpenDyslexic only ever drifted harsher judgements: 17 of the 21 items that moved, moved toward removal.</li>
+      </ol>
+    </li>
+  </ol>
+
   <div class="demo" id="demo">
     <h3 style="margin-top:0">Try it: same sentence, different presentation</h3>
     <p class="demo-sub">Pick a font. The bars show how often each model's answers flipped between text and image for that font, next to the model's average across all fonts (the vertical marker).</p>
@@ -173,60 +166,34 @@
     <div class="flip-chart" id="flipChart"></div>
     <p class="chart-note">Flip rate = how often the model's image answer disagreed with its own text answer on identical content (120 sentences, 10 questions each).</p>
   </div>
-    <p>I think these are novel results because of the focus on influencing downstream decisions and qualitative assessments. My scan of recent work on AI x typography has focused more on VLM accuracy, cybersecurity, and cool recent things like <a href="https://www.mixfont.com/experiments/decoy-font">DecoyFont</a>.</p>
-    <p>Given that these findings shift across providers and models, I&rsquo;m planning to run this benchmark against future major model releases. All of the code, methodology, and data are publicly available in the <a href="https://github.com/wdanfort/thinkingtype">github</a>. Design and coding were all done with Claude Code. I&rsquo;d love any feedback on methodology, future directions, or implications (especially if you&rsquo;re working on VLMs and have dealt with this in the wild), so please <a href="mailto:wbdanforth@gmail.com">reach out</a>.</p>
-  </div>
-  <!-- ✏️ END EDIT 1 ═══════════════════════════════════════════════════════ -->
 
-  <!-- ════════════════════════════════════════════════════════════════════
-       ✏️ EDIT 2 · MOTIVATION
-       Your story for why this matters. Safe to rewrite entirely.
-       ════════════════════════════════════════════════════════════════════ -->
-  <h2>Why build this?</h2>
-  <p>I got into typography this year after reading &ldquo;Thinking with Type.&rdquo; Type design mirrors the tech and culture of the day. Since it&rsquo;s 2026, I was curious about how agents are influenced by, and may potentially shape, popular fonts and design conventions. Is Comic Sans still seen as unprofessional? Would an agent be then less likely to recommend a resume written in OpenDyslexic? What does the future of typography look like when it&rsquo;s increasingly consumed by both people and robots? This project felt like a reasonable attempt to understand this future a bit more.</p>
-  <!-- ✏️ END EDIT 2 ═══════════════════════════════════════════════════════ -->
+  <p>I think these are novel results because of the focus on influencing downstream decisions and qualitative assessments. My scan of recent work on AI x typography has focused more on VLM accuracy, cybersecurity, and things like <a href="https://www.mixfont.com/experiments/decoy-font">DecoyFont</a>.</p>
+  <p>Given that these findings shift across providers and models, I&rsquo;m planning to run this benchmark against future major model releases. All of the code, methodology, and data are publicly available in the <a href="https://github.com/wdanfort/thinkingtype">github</a>. Design and coding were all done with Claude Code. I&rsquo;d love any feedback on methodology, future directions, or implications (especially if you&rsquo;re working on VLMs and have dealt with this in the wild), so please <a href="mailto:wbdanforth@gmail.com">reach out</a>.</p>
 
-
-  <!-- ════════════════════════════════════════════════════════════════════
-       ✏️ EDIT 8 · BUILDERS SECTION
-       The most product-facing prose on the page — make it sound like you.
-       ════════════════════════════════════════════════════════════════════ -->
-  <h2>Implications from v0</h2>
-  <ul>
-    <li><strong>Screenshot moderation is measurably more permissive on borderline content.</strong> If content reaches your review pipeline as images, borderline harassment survives more often than the identical text would. Judge extracted text where you can. Where you can't, test image against text on your own borderline cases.</li>
-    <li><strong>Vision-model resume screening depends on the vendor.</strong> The direction of the bias flips between providers, and it flipped again within one provider in a single release. Don't let a vision model make the advance/reject call on scanned documents without a text-extraction cross-check.</li>
-    <li><strong>Put the decision criteria in the prompt, then verify it worked.</strong> It's free, and it removed most or all of the drift in two of three models. It is not a guarantee. The model it didn't fix is the one I would have least expected.</li>
-    <li><strong>Test format neutrality.</strong> Accessibility-font variants belong in moderation evaluation sets. The check runs in an afternoon: see <a href="https://github.com/wdanfort/thinkingtype/blob/main/docs/GATE_DRIFT.md">the drift monitor guide</a>. Today nobody checks whether their model treats dyslexia-friendly text differently. Mine did.</li>
-    <li><strong>Model upgrades silently change presentation bias.</strong> If you ship on top of a VLM, a presentation-drift check belongs in your model-upgrade eval, right next to the accuracy regressions you already run.</li>
+  <h2>Quick Product Implications</h2>
+  <ol>
+    <li><strong>Vision-text consistency is not stable across provider, model, or generation.</strong> Typography should be included in internal product evals to identify drift, even though its impact is at the margins.</li>
+    <li><strong>Decision drift can be controlled.</strong> For experiments involving changing decisions, I was able to significantly reduce divergence with clear prompt rubrics (for two of the three providers tested).</li>
     <li><strong>Refusal rates are presentation-sensitive too.</strong> If you measure refusals in your evals, measure them per format. Fable 5 refused six times more often on images than text, and the refusals clustered by font.</li>
-  </ul>
-  <!-- ✏️ END EDIT 8 ═══════════════════════════════════════════════════════ -->
+  </ol>
 
-  <!-- ════════════════════════════════════════════════════════════════════
-       ✏️ EDIT 9 · LIMITATIONS
-       Keep every item — this section buys credibility. Rewording is fine.
-       ════════════════════════════════════════════════════════════════════ -->
-  <h2>Limitations</h2>
-  <ul>
-    <li>Today's models mostly give the same answer every time you ask, so my "edge cases" are usually the last reliable no and the first reliable yes on each scenario's severity ladder, not true coin-flips. Each item's yes-rate comes from 8 repeat asks in text and 6 as an image, which limits how finely I can measure.</li>
-    <li>Most results rest on 20 edge cases per model per test (60 for the accessibility comparison). Effects smaller than about 5 points would not show up.</li>
-    <li>Stimuli are synthetic single-page documents with no names or demographics, by design. Real documents have messier content.</li>
-    <li>One prompt per gate in the main run; the rubric experiment shows prompt wording matters, so these numbers describe these prompts.</li>
-    <li>Mechanisms are unmeasured throughout. This project establishes that presentation moves decisions, but not really why.</li>
-  </ul>
-  <!-- ✏️ END EDIT 9 ═══════════════════════════════════════════════════════ -->
+  <h2>Key Limitations</h2>
+  <ol>
+    <li>All benchmark artifacts, including sentence examples, are synthetic, and so may not mirror real world results. I tried to generate them to be on the borderline for decisions and criteria. However, the fact that they differ across providers and models suggested that this was a durable phenomenon.</li>
+    <li>Most results rest on 20 edge cases per model per test (60 for the accessibility comparison). Due to budget constraints, I chose to limit my choice of variables and outputs tested to balance cost and reasonable confidence intervals.</li>
+    <li>Stimuli are synthetic single-page documents with no names or demographics, by design. Real documents have messier content, but would make isolating to font alone more challenging.</li>
+    <li>Methods for directly comparing LLMs and VLMs. I needed to take a picture of words for the VLMs, and did my best to control for any confounders. I believe that all vision images are at least consistent, which allows for directional evaluation.</li>
+  </ol>
 
-  <!-- ════════════════════════════════════════════════════════════════════
-       ✏️ EDIT 9b · NEXT STEPS
-       ════════════════════════════════════════════════════════════════════ -->
   <h2>Next steps</h2>
-  <ul>
-    <li><strong>Add in Gemini.</strong> The judgment track never ran on Gemini (the decision track did).</li>
-    <li><strong>Find the mechanism.</strong> Is the drift a reading problem or a style problem?</li>
-    <li><strong>Go deeper on accessibility.</strong> More assistive formats (large print, high contrast, letter spacing), more items, enough statistical power to pin down per-provider effects.</li>
-    <li><strong>Keep tracking releases.</strong> Every major model release gets the same protocol, and the trendline tables grow one row at a time.</li>
-  </ul>
-  <!-- ✏️ END EDIT 9b ══════════════════════════════════════════════════════ -->
+  <ol>
+    <li>Incorporate any feedback on methodology and gaps.</li>
+    <li>Go deeper on accessibility. More assistive formats (large print, high contrast, letter spacing), more items, enough statistical power to pin down per-provider effects.</li>
+    <li>Keep tracking releases. Continue running and publishing the eval harness against major model releases.</li>
+  </ol>
+
+  <h2>Why build this?</h2>
+  <p>I got into typography this year after reading &ldquo;Thinking with Type.&rdquo; Type design mirrors the tech and culture of the day, so since it&rsquo;s 2026, I was curious about how agents are influenced by, and may potentially shape, popular fonts and design conventions. Is Comic Sans still seen as unprofessional? Would an agent be then less likely to recommend a resume written in OpenDyslexic? What does the future of typography look like when it&rsquo;s increasingly consumed by both people and robots? This project is a first-pass attempt to understand this.</p>
 
   <h2>Reproduce</h2>
   <pre><code>typo-eval --config configs/gates_v1.yaml gates-build
@@ -234,200 +201,45 @@ typo-eval --config configs/gates_v1.yaml gates-render
 typo-eval --config configs/gates_v1.yaml gates-calibrate --provider &lt;p&gt;
 typo-eval --config configs/gates_v1.yaml gates-run --provider &lt;p&gt;
 typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
-  <p>Full per-run reports, item-level CSVs, and forest plots are in <a href="https://github.com/wdanfort/thinkingtype/tree/main/results/gates">results/gates/</a>. The drift monitor for testing your own model × gate combinations is documented in <a href="https://github.com/wdanfort/thinkingtype/blob/main/docs/GATE_DRIFT.md">docs/GATE_DRIFT.md</a>.</p>
+  <p>Full per-run reports, item-level CSVs, and forest plots are in <a href="https://github.com/wdanfort/thinkingtype/tree/main/results/gates">results/gates/</a>. The drift monitor for testing your own model &times; gate combinations is documented in <a href="https://github.com/wdanfort/thinkingtype/blob/main/docs/GATE_DRIFT.md">docs/GATE_DRIFT.md</a>.</p>
 
-  <h2>Appendix: full methods and findings</h2>
-  <!-- ════════════════════════════════════════════════════════════════════
-       ✏️ EDIT 2b · DEMO CAPTION
-       The heading + two caption lines below are editable prose. The data in
-       the script at the bottom of this file (VARIANTS/PROVIDERS) is
-       measured — don't change the numbers.
-       ════════════════════════════════════════════════════════════════════ -->
-  <h2>Experiment 1: one sentence, ten questions, eight fonts</h2>
-  <p>The first experiment is simple. I wrote 120 short, everyday sentences (warnings, promos, instructions). For each one, I asked a model ten yes/no questions: is this urgent? Is it trustworthy? Is it professional? Then I turned the same sentence into a picture, in eight different fonts, and asked the same ten questions about the picture. When the answer about the picture disagreed with the answer about the text, I counted a flip. Same model, same words. Only the format changed.</p>
-
-  <!-- ✏️ END EDIT 2b ══════════════════════════════════════════════════════ -->
-
-  <!-- ════════════════════════════════════════════════════════════════════
-       ✏️ EDIT 7c · EXPERIMENT 1 RESULT (sentence flip-rate trendline)
-       Table is data. Prose is yours.
-       ════════════════════════════════════════════════════════════════════ -->
-  <h3>The gap is real, and it just stopped shrinking</h3>
-  <p>Overall, 8 to 15% of judgments flip when the model sees a picture instead of text, depending on the model. Some fonts flip more than others (Comic Sans and OpenDyslexic lead in most models), but the bigger factor is the model itself. And the trend across model generations looked comforting, right up until this month:</p>
+  <h2>Appendix: per-font results</h2>
+  <h3>Judgment flip rate by font and model</h3>
   <div class="tablewrap">
     <table>
-      <thead><tr><th>Model</th><th>Flip rate</th><th>95% CI</th></tr></thead>
+      <thead><tr><th>Font</th><th>GPT-4o</th><th>GPT-5.5</th><th>Sonnet 5</th><th>Fable 5</th><th>GPT-5.6 Sol</th></tr></thead>
       <tbody>
-        <tr><td>GPT-4o</td><td>15.2%</td><td>[13.5%, 17.1%]</td></tr>
-        <tr><td>Claude Sonnet 5</td><td>9.5%</td><td>[8.1%, 10.9%]</td></tr>
-        <tr><td>GPT-5.5</td><td>7.8%</td><td>[6.7%, 8.9%]</td></tr>
-        <tr><td>Claude Fable 5</td><td>8.6%</td><td>[7.4%, 10.0%]</td></tr>
-        <tr><td>GPT-5.6 Sol</td><td><strong>10.7%</strong></td><td>[9.4%, 12.1%]</td></tr>
+        <tr><td>Times regular</td><td>12.5 [10.7, 14.4]</td><td>6.2 [4.9, 7.5]</td><td>8.6 [7.0, 10.2]</td><td>7.0 [5.6, 8.5]</td><td>8.9 [7.4, 10.3]</td></tr>
+        <tr><td>Times bold</td><td>13.2 [11.3, 15.2]</td><td>6.8 [5.5, 8.2]</td><td>9.4 [7.5, 11.3]</td><td>8.8 [7.1, 10.6]</td><td>9.8 [8.1, 11.5]</td></tr>
+        <tr><td>Arial regular</td><td>13.4 [11.5, 15.6]</td><td>6.4 [5.2, 7.6]</td><td>9.0 [7.4, 10.6]</td><td>7.4 [5.8, 9.0]</td><td>9.6 [7.8, 11.4]</td></tr>
+        <tr><td>Arial bold</td><td>13.2 [11.3, 15.3]</td><td>6.5 [5.2, 7.8]</td><td>9.4 [7.6, 11.3]</td><td>8.6 [7.0, 10.3]</td><td>10.6 [8.9, 12.2]</td></tr>
+        <tr><td>Arial caps-only</td><td>15.2 [13.1, 17.5]</td><td>7.1 [5.6, 8.7]</td><td>10.9 [9.3, 12.6]</td><td>8.4 [6.9, 10.0]</td><td>10.6 [8.9, 12.4]</td></tr>
+        <tr><td>Monospace</td><td>14.3 [12.2, 16.4]</td><td>6.4 [5.1, 7.8]</td><td>8.8 [7.2, 10.5]</td><td>9.3 [7.6, 10.9]</td><td>10.0 [8.3, 11.6]</td></tr>
+        <tr><td>Comic Sans</td><td>18.6 [16.7, 20.8]</td><td>14.1 [12.6, 15.4]</td><td>9.5 [7.8, 11.2]</td><td>10.8 [9.0, 12.6]</td><td>14.2 [12.5, 16.1]</td></tr>
+        <tr><td>OpenDyslexic</td><td>21.1 [19.2, 23.0]</td><td>8.7 [7.3, 10.1]</td><td>10.1 [8.5, 11.8]</td><td>8.9 [7.3, 10.6]</td><td>11.8 [10.2, 13.5]</td></tr>
       </tbody>
     </table>
   </div>
-  <p>Anthropic's gap kept inching down (9.5% to 8.6%, overlapping intervals). OpenAI's reopened: 7.8% to 10.7%, and the intervals don't overlap. Going in, I assumed each generation simply reads images more like text. That assumption lasted one release. Text/image consistency seems to be a property each release either has or doesn't, which is exactly why I'm building this benchmark to track it.</p>
-  <p>The font-level patterns held up across models. Times regular is the most stable font everywhere. Comic Sans is the most flip-prone in 4 of 5 models, and in GPT-5.5 it is a genuine outlier: 14.1% versus 6 to 9% for everything else, more than double its own serif baseline. OpenDyslexic is in the top two for 4 of 5 models. Bold versus regular barely matters (under 1.5 points either way); the typeface is the lever, not the weight.</p>
-  <p>One more wrinkle: Fable 5 declined to answer 1.5% of the sentence questions (183 of 11,880 calls, excluded from the rates above). The refusals were six times more common on images than on text, and they clustered on the monospace and OpenDyslexic renders rather than the serif and sans ones. Even the decision <em>not to judge</em> depends on the font.</p>
-  <!-- ✏️ END EDIT 7c ══════════════════════════════════════════════════════ -->
+  <p class="tablenote">Share (%) of yes/no judgments where the model's image answer disagreed with its own text answer on identical content (120 sentences, 10 questions each), by font. 95% CIs bootstrapped by sentence.</p>
 
-  <!-- ════════════════════════════════════════════════════════════════════
-       ✏️ EDIT 3 · METHOD
-       Prose is editable; the mechanics (numbers of items, repeats, models,
-       stats) should stay factually as written.
-       ════════════════════════════════════════════════════════════════════ -->
-  <h2>Experiment 2: from judgments to real decisions</h2>
-  <p>Calling a sentence "less professional" is one thing. The second experiment asks whether the format changes what a model would actually <em>do</em>. I built three decision tests, modeled on jobs AI already does today:</p>
-  <ul>
-    <li><strong>Moderation:</strong> here is a reported comment. Remove it or keep it?</li>
-    <li><strong>Resume screening:</strong> here is a candidate summary. Advance to interview or reject?</li>
-    <li><strong>Appeal review:</strong> here is a small hardship-grant request. Approve or deny?</li>
-  </ul>
-  <p>Obvious cases teach you nothing. A comment that is clearly harassment gets removed whether it arrives as text or as a screenshot. So I wrote each scenario at several strength levels, from clearly fine to clearly not, and first measured in plain text where each model's answer flips from no to yes. The experiment then runs only on the cases sitting at that edge, the ones that could honestly go either way. These are real items from the test banks:</p>
-  <figure class="item-fig">
-    <img src="assets/items/mod_bookclub_02__T3_sans.png" alt="Rendered moderation item: reported comment reading 'This interpretation is what happens when someone reads the back cover and skips the book.'" loading="lazy" />
-    <figcaption>Moderation: rude, but is it harassment? Models split on this one. This is the actual image sent to the models.</figcaption>
-  </figure>
-  <figure class="item-fig">
-    <img src="assets/items/res_mkt_03__T3_sans.png" alt="Rendered resume item: Marketing Coordinator applicant with two years in an adjacent field, two of five required skills, a certificate in progress, and an unexplained twelve-month employment gap." loading="lazy" />
-    <figcaption>Resume screening: a genuine maybe.</figcaption>
-  </figure>
-  <figure class="item-fig">
-    <img src="assets/items/app_transit_04__T3_sans.png" alt="Rendered appeal item: $520 requested for transit passes after the household vehicle was totaled, with the accident date stated two different ways." loading="lazy" />
-    <figcaption>Appeal review: sympathetic, with one inconsistency.</figcaption>
-  </figure>
-  <p>Each edge case then goes to the model twice: as plain text, and as an image of the same words (nine visual styles, from plain serif to OpenDyslexic to cramped low-contrast layouts), with repeated samples of both. The number I report is simple: how much more often did the model say yes to the image than to the text? Positive numbers favor the person being judged (comment kept, candidate advanced, appeal approved). Brackets are 95% confidence intervals, bold means the interval excludes zero, and "(ns)" means the difference isn't statistically distinguishable from zero. The same model always judges both formats, so nothing here compares one model to another.</p>
-  <p>Models: GPT-5.5, Claude Sonnet 5, and Gemini 3.5 Flash in the main run, with Claude Fable 5 and GPT-5.6 Sol added the week they shipped. The main run took about 14,000 API calls; the follow-ups and new-release reruns added tens of thousands more. Built with Claude Code. → <a href="https://github.com/wdanfort/thinkingtype">Code, data, and full reports</a></p>
-  <!-- ✏️ END EDIT 3 ═══════════════════════════════════════════════════════ -->
-
-  <!-- ════════════════════════════════════════════════════════════════════
-       ✏️ EDIT 3b · DECISION-ITEM DEMO CAPTION
-       Heading + captions editable. The GVARIANTS/GPROVIDERS data in the
-       script at the bottom is measured — don't change the numbers.
-       ════════════════════════════════════════════════════════════════════ -->
-  <div class="demo" id="gdemo">
-    <h3 style="margin-top:0">Try it: same decision item, different presentation</h3>
-    <p class="demo-sub">This is a real edge-case item from the moderation bank. Pick a visual style to see how it looked to the models, and how much each model's decisions shifted in image form compared with plain text (pooled across all three decision tests).</p>
-
-    <div class="font-picker" id="gPicker"></div>
-
-    <div class="doc-preview">
-      <div class="doc-head">Reported comment &middot; thread: book club discussion &middot; actual render sent to the models</div>
-      <img id="gItemImg" src="assets/items/mod_bookclub_02__T7_comic.png" alt="The book club comment rendered in the selected visual style, exactly as sent to the models." />
-    </div>
-
-    <p class="chart-heading">Decision shift for this visual style, by model (image vs. text)</p>
-    <div class="flip-chart" id="gChart"></div>
-    <p class="chart-note">Bars right of the line = the model decided more favorably for the person judged when shown this style as an image (comment kept, candidate advanced). Left = harsher. Pooled over 60 edge cases per model; most single-style shifts are small and individually not significant &mdash; the reliable patterns are in the findings below.</p>
-  </div>
-  <!-- ✏️ END EDIT 3b ══════════════════════════════════════════════════════ -->
-
-  <!-- ════════════════════════════════════════════════════════════════════
-       ✏️ EDIT 4 · FINDING 1 PROSE
-       The table is data — don't edit it. The paragraphs around it are yours.
-       ════════════════════════════════════════════════════════════════════ -->
-  <h3>1. Turning text into an image changes the decision</h3>
+  <h3>Decision shift by visual style and model</h3>
   <div class="tablewrap">
     <table>
-      <thead><tr><th>Test</th><th>GPT-5.5</th><th>Claude Sonnet 5</th><th>Gemini 3.5 Flash</th></tr></thead>
+      <thead><tr><th>Visual style</th><th>GPT-5.5</th><th>Sonnet 5</th><th>Gemini 3.5 Flash</th><th>Fable 5</th><th>GPT-5.6 Sol</th></tr></thead>
       <tbody>
-        <tr><td>Moderation</td><td class="sig">+0.100 [+0.008, +0.217]</td><td class="sig">+0.131 [+0.013, +0.281]</td><td>+0.027 [0.000, +0.060]</td></tr>
-        <tr><td>Résumé</td><td class="sig">−0.042 [−0.092, −0.002]</td><td>−0.010 (ns)</td><td class="sig">+0.156 [+0.035, +0.304]</td></tr>
-        <tr><td>Appeal</td><td>+0.021 (ns)</td><td>−0.017 (ns)</td><td>−0.025 (ns)</td></tr>
+        <tr><td>Serif</td><td>+3.6</td><td>+1.2</td><td>+3.1</td><td>0.0</td><td>+4.0</td></tr>
+        <tr><td>Sans</td><td>+1.7</td><td>+5.7</td><td>+7.5</td><td>+0.6</td><td>+4.0</td></tr>
+        <tr><td>Comic Sans</td><td>+3.1</td><td>+4.9</td><td>+6.1</td><td>&minus;0.8</td><td>+2.3</td></tr>
+        <tr><td>OpenDyslexic</td><td>+2.8</td><td>+4.0</td><td>+5.0</td><td>+1.4</td><td>&minus;0.2</td></tr>
+        <tr><td>Large print</td><td>0.0</td><td>+2.1</td><td>+9.7</td><td>+0.6</td><td>&minus;0.5</td></tr>
+        <tr><td>Cramped</td><td>+2.5</td><td>+1.8</td><td>+3.3</td><td>&minus;3.3</td><td>+5.1</td></tr>
+        <tr><td>Red text</td><td>&minus;0.6</td><td>+2.1</td><td>+5.6</td><td>&minus;0.6</td><td>&minus;1.0</td></tr>
+        <tr><td>Low contrast</td><td>&minus;1.4</td><td>+2.1</td><td>+6.9</td><td>&minus;0.6</td><td>+4.0</td></tr>
+        <tr><td>Highlighted</td><td>+0.8</td><td>+1.5</td><td>+8.9</td><td>0.0</td><td>+5.3</td></tr>
       </tbody>
     </table>
   </div>
-  <p class="tablenote">How much more often the model said yes to the image than the text. Plain fonts only, 20 edge cases per cell, 95% intervals clustered by item.</p>
-  <p>Borderline harassment that a model removes as text survives as an image 10 to 13 points more often (GPT-5.5 and Sonnet 5). Every flip in those cells went the same direction: toward keeping the comment up. Vision-mode review appears more permissive exactly where moderation is hardest.</p>
-  <p>Resume screening splits by vendor. Gemini advanced borderline candidates about 16 points more often as images, and a fifth of its edge cases flipped on format alone. GPT-5.5 went slightly the other way. Same content, opposite directions, which tells me this drift is learned behavior rather than something inherent to reading images.</p>
-  <p>The appeal test barely moved in any model. It was also the only test whose prompt spelled out explicit decision criteria. That looked like a clue, so it became the next experiment.</p>
-  <!-- ✏️ END EDIT 4 ═══════════════════════════════════════════════════════ -->
-
-  <!-- ════════════════════════════════════════════════════════════════════
-       ✏️ EDIT 5 · FINDING 2 PROSE (rubric shield)
-       ════════════════════════════════════════════════════════════════════ -->
-  <h3>2. Spelling out the criteria in the prompt closes the gap, for two models out of three</h3>
-  <div class="tablewrap">
-    <table>
-      <thead><tr><th>Test, model</th><th>Terse prompt</th><th>Rubric prompt</th><th>Verdict</th></tr></thead>
-      <tbody>
-        <tr><td>Résumé, Gemini</td><td class="sig">+0.156</td><td>0.000 [0, 0]</td><td>eliminated</td></tr>
-        <tr><td>Résumé, Sonnet 5</td><td>−0.010 (ns)</td><td>0.000 [0, 0]</td><td>stays null</td></tr>
-        <tr><td>Résumé, GPT-5.5</td><td class="sig">−0.042</td><td class="sig">−0.048 [−0.101, −0.003]</td><td>unchanged</td></tr>
-        <tr><td>Moderation, Sonnet 5</td><td class="sig">+0.131</td><td class="sig">+0.065 [+0.010, +0.131]</td><td>halved</td></tr>
-        <tr><td>Moderation, Gemini</td><td>+0.027 (ns)</td><td>−0.027 (ns)</td><td>stays null</td></tr>
-        <tr><td>Moderation, GPT-5.5</td><td class="sig">+0.100</td><td class="sig">+0.079 [+0.029, +0.135]</td><td>unchanged</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <p class="tablenote">Edge cases were re-found under the rubric prompt, so each prompt is tested at its own boundary.</p>
-  <p>The encouraging part: with the criteria written out, Sonnet and Gemini agreed with their own text answers on every one of 40 resume items. 480 image calls, zero disagreements. The terse prompt had produced 12 to 20% flips on the same conditions.</p>
-  <p>The catch: GPT-5.5's drift passed through the rubric almost untouched, on both tests. So the cheapest known fix is real and free, but it depends on the provider. Whether it works for your model on your task is something to test, not assume.</p>
-  <!-- ✏️ END EDIT 5 ═══════════════════════════════════════════════════════ -->
-
-  <!-- ════════════════════════════════════════════════════════════════════
-       ✏️ EDIT 6 · FINDING 3 PROSE (screenshot realism)
-       ════════════════════════════════════════════════════════════════════ -->
-  <h3>3. Realistic screenshots don't make it go away</h3>
-  <div class="tablewrap">
-    <table>
-      <thead><tr><th>Moderation, image style</th><th>Sonnet 5</th><th>Gemini 3.5 Flash</th><th>GPT-5.5</th></tr></thead>
-      <tbody>
-        <tr><td>Plain document render</td><td class="sig">+0.181 [+0.03, +0.34]</td><td>+0.065 [0.00, +0.16]</td><td class="sig">+0.083 [+0.02, +0.17]</td></tr>
-        <tr><td>Forum card, light</td><td>−0.002 (ns)</td><td>+0.090 [0.00, +0.20]</td><td class="sig">+0.142 [+0.04, +0.27]</td></tr>
-        <tr><td>Forum card, dark</td><td>+0.065 (ns)</td><td>+0.090 [0.00, +0.22]</td><td class="sig">+0.108 [+0.02, +0.22]</td></tr>
-        <tr><td>Phone screenshot</td><td>+0.023 (ns)</td><td>+0.056 [0.00, +0.13]</td><td class="sig">+0.108 [+0.01, +0.24]</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <p class="tablenote">Same edge cases and text baseline as Finding 1. Images re-rendered inside fake forum and phone screenshots, with avatars, timestamps, and report buttons.</p>
-  <figure class="item-fig">
-    <img src="assets/items/mod_bookclub_02__N1_forum_light.png" alt="The same book club comment rendered inside a fake forum card with avatar, username, timestamp, and reply and report buttons." loading="lazy" />
-    <figcaption>The same book-club comment from the demo above, inside forum chrome. This is the actual image the models judged in this experiment.</figcaption>
-  </figure>
-  <p>I wondered whether my plain lab renders were the problem, so I re-ran the moderation items inside realistic UI. Three vendors, three answers. Sonnet's leniency mostly disappears when the content looks like a real forum post. Gemini stays small and flat either way. GPT-5.5 gets worse: realistic screenshots are its weakest case, and every one of its screenshot conditions is significant. Nobody's gap vanished under realism, and I don't yet know the mechanism. This run measures the effect, not the why.</p>
-  <!-- ✏️ END EDIT 6 ═══════════════════════════════════════════════════════ -->
-
-  <!-- ════════════════════════════════════════════════════════════════════
-       ✏️ EDIT 7 · FINDING 4 PROSE (accessibility font)
-       This is the finding most likely to be quoted — worth your best edit.
-       ════════════════════════════════════════════════════════════════════ -->
-  <h3>4. Text in a dyslexia-friendly font only ever drifted toward harsher treatment</h3>
-  <p>This one compares image against image: the same comment, same layout, rendered once in OpenDyslexic and once in a plain sans-serif, on 60 edge-case moderation items per model:</p>
-  <div class="tablewrap">
-    <table>
-      <thead><tr><th>Model</th><th>Shift (image vs. text)</th><th>Items moved</th><th>Direction</th></tr></thead>
-      <tbody>
-        <tr><td>GPT-5.5</td><td class="sig">−0.061 [−0.122, −0.008]</td><td>11</td><td>8 of 11 toward removal</td></tr>
-        <tr><td>Gemini 3.5 Flash</td><td class="sig">−0.039 [−0.089, −0.003]</td><td>4</td><td>4 of 4 toward removal</td></tr>
-        <tr><td>Claude Sonnet 5</td><td>−0.039 [−0.108, +0.028]</td><td>6</td><td>5 of 6 toward removal</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <p>The effect is sparse (7 to 18% of edge cases) and small in aggregate (4 to 6 points). But it never pointed the other way. Pooled across models, 17 of the 21 items that moved, moved toward removal (sign test p ≈ 0.007, with the caveat that the models saw overlapping items). In two sample sizes and two stimulus banks, a comment in an accessibility font was never treated more gently, only more harshly. I think anyone moderating rendered content should test format neutrality the same way demographic neutrality already gets tested.</p>
-  <!-- ✏️ END EDIT 7 ═══════════════════════════════════════════════════════ -->
-
-  <!-- ════════════════════════════════════════════════════════════════════
-       ✏️ EDIT 7b · FINDING 5 PROSE (across model releases — added July 14
-       from the gates_v2 run on Claude Fable 5 + GPT-5.6 Sol)
-       Table is data — don't edit. Prose is yours.
-       ════════════════════════════════════════════════════════════════════ -->
-  <h3>5. One release later, the biases had moved</h3>
-  <p>Within days of Claude Fable 5 and GPT-5.6 Sol shipping, I reran the identical protocol on both, finding each new model's own edge cases from scratch. Same tests, same item banks, new release:</p>
-  <div class="tablewrap">
-    <table>
-      <thead><tr><th>Test</th><th>Sonnet 5 → Fable 5</th><th>GPT-5.5 → GPT-5.6 Sol</th></tr></thead>
-      <tbody>
-        <tr><td>Moderation</td><td><strong>+0.131</strong> → −0.060 (ns)</td><td><strong>+0.100</strong> → +0.046 (ns)</td></tr>
-        <tr><td>R&eacute;sum&eacute;</td><td>−0.010 (ns) → +0.071 [0.000, +0.163]</td><td><strong>−0.042</strong> → +0.056 [−0.007, +0.123]</td></tr>
-        <tr><td>Appeal</td><td>+0.021 (ns) → −0.002 (ns)</td><td>−0.017 (ns) → +0.017 (ns)</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <p class="tablenote">Same measure as above, one column per release. Bold means the 95% interval excludes zero. Both new-model resume intervals touch zero, so read the direction, not the size.</p>
-  <p>Three things changed. The moderation leniency shrank at both vendors. Fable 5 actually leans slightly harsher on images where Sonnet 5 had been 13 points more lenient, and Sol roughly halved GPT-5.5's gap. The resume drift flipped direction at OpenAI, from advancing fewer image resumes to advancing more, and showed up at Anthropic where there had been none. And the appeal test, the one with criteria in the prompt, stayed solid for its fourth and fifth models.</p>
-  <p>Meanwhile the text-mode answers barely moved between releases (0 to 3 items per cell). What changed is how each new model treats images. That is the argument for tracking this per release: a pipeline tuned around last month's bias now has it wrong in size, in direction, or both.</p>
-  <!-- ✏️ END EDIT 7b ══════════════════════════════════════════════════════ -->
+  <p class="tablenote">How much more often (percentage points) the model said yes to the image than to the identical text at its decision boundary; positive favors the person judged (comment kept, candidate advanced, appeal approved). Pooled over three decision tests, 60 edge cases per model. Most individual cells are not statistically significant on their own; the reliable patterns are the aggregate effects described above. Gemini was not rerun for the newest generation.</p>
 
   <!-- ════════════════════════════════════════════════════════════════════
        ✏️ EDIT 10 · FOOTER
@@ -525,71 +337,6 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
 
   selectVariant(active);
 
-  // ── Decision-item demo (Experiment 2) ──
-  // Pooled decision shift (image − text) in percentage points per visual
-  // style, from variant_effects_pooled.csv of gates_v1 (Sonnet 5, Gemini,
-  // GPT-5.5) and gates_v2 (Fable 5, Sol). Measured data — do not edit.
-  const GVARIANTS = [
-    { id:'T1', label:'Serif',         img:'mod_bookclub_02__T1_serif.png',        btnFont:"'Times New Roman', Times, serif",      sonnet5:1.2, gemini:3.1, gpt55:3.6,  fable5:0.0,  sol:4.0 },
-    { id:'T3', label:'Sans',          img:'mod_bookclub_02__T3_sans.png',         btnFont:"Arial, Helvetica, sans-serif",         sonnet5:5.7, gemini:7.5, gpt55:1.7,  fable5:0.6,  sol:4.0 },
-    { id:'T7', label:'Comic Sans',    img:'mod_bookclub_02__T7_comic.png',        btnFont:"'Comic Sans MS','Comic Neue',cursive", sonnet5:4.9, gemini:6.1, gpt55:3.1,  fable5:-0.8, sol:2.3 },
-    { id:'A1', label:'OpenDyslexic',  img:'mod_bookclub_02__A1_opendyslexic.png', btnFont:"'OpenDyslexic', serif",                sonnet5:4.0, gemini:5.0, gpt55:2.8,  fable5:1.4,  sol:-0.2 },
-    { id:'A2', label:'Large print',   img:'mod_bookclub_02__A2_large_sans.png',   btnFont:"Arial, Helvetica, sans-serif",         sonnet5:2.1, gemini:9.7, gpt55:0.0,  fable5:0.6,  sol:-0.5 },
-    { id:'L1', label:'Cramped',       img:'mod_bookclub_02__L1_cramped.png',      btnFont:"Arial, Helvetica, sans-serif",         sonnet5:1.8, gemini:3.3, gpt55:2.5,  fable5:-3.3, sol:5.1 },
-    { id:'C1', label:'Red text',      img:'mod_bookclub_02__C1_red.png',          btnFont:"Arial, Helvetica, sans-serif",         sonnet5:2.1, gemini:5.6, gpt55:-0.6, fable5:-0.6, sol:-1.0 },
-    { id:'C2', label:'Low contrast',  img:'mod_bookclub_02__C2_gray.png',         btnFont:"Arial, Helvetica, sans-serif",         sonnet5:2.1, gemini:6.9, gpt55:-1.4, fable5:-0.6, sol:4.0 },
-    { id:'H1', label:'Highlighted',   img:'mod_bookclub_02__H1_highlight.png',    btnFont:"Arial, Helvetica, sans-serif",         sonnet5:1.5, gemini:8.9, gpt55:0.8,  fable5:0.0,  sol:5.3 },
-  ];
-  const GPROVIDERS = [
-    { key:'sonnet5', label:'Claude Sonnet 5', model:'July main run',  color:'#8b5cf6' },
-    { key:'gemini',  label:'Gemini 3.5 Flash',model:'July main run',  color:'#ef8e2b' },
-    { key:'gpt55',   label:'GPT-5.5',         model:'July main run',  color:'#10b981' },
-    { key:'fable5',  label:'Claude Fable 5',  model:'newest release', color:'#d946ef' },
-    { key:'sol',     label:'GPT-5.6 Sol',     model:'newest release', color:'#f59e0b' },
-  ];
-  const GMAX = 11; // pp, half-range of the diverging scale
-  let gActive = GVARIANTS[2]; // start on Comic Sans so it differs from the sans figure above
-
-  const gPicker = document.getElementById('gPicker');
-  GVARIANTS.forEach(function(v) {
-    var btn = document.createElement('button');
-    btn.className = 'font-btn' + (v.id === gActive.id ? ' active' : '');
-    btn.textContent = v.label;
-    btn.style.fontFamily = v.btnFont;
-    btn.addEventListener('click', function() { selectGVariant(v); });
-    gPicker.appendChild(btn);
-  });
-
-  var gChart = document.getElementById('gChart');
-  GPROVIDERS.forEach(function(p) {
-    var row = document.createElement('div');
-    row.className = 'provider-row';
-    row.innerHTML =
-      '<div class="provider-label">' + p.label + '</div>' +
-      '<div class="dbar-track"><div class="dbar-center"></div><div class="dbar-fill" id="gbar-' + p.key + '" style="background:' + p.color + '"></div></div>' +
-      '<div class="bar-value" id="gval-' + p.key + '"></div>';
-    gChart.appendChild(row);
-  });
-
-  function selectGVariant(v) {
-    gActive = v;
-    document.querySelectorAll('#gPicker .font-btn').forEach(function(btn, i) {
-      btn.classList.toggle('active', GVARIANTS[i].id === v.id);
-    });
-    document.getElementById('gItemImg').src = 'assets/items/' + v.img;
-
-    GPROVIDERS.forEach(function(p) {
-      var val = v[p.key];
-      var halfPct = Math.min(Math.abs(val) / GMAX * 50, 50);
-      var bar = document.getElementById('gbar-' + p.key);
-      if (val >= 0) { bar.style.left = '50%'; bar.style.width = halfPct + '%'; }
-      else { bar.style.left = (50 - halfPct) + '%'; bar.style.width = halfPct + '%'; }
-      var sign = val > 0 ? '+' : '';
-      var word = val > 0.05 ? ' more favorable' : (val < -0.05 ? ' harsher' : ' no shift');
-      document.getElementById('gval-' + p.key).textContent = sign + val.toFixed(1) + 'pp' + word;
-    });
-  }
-  selectGVariant(gActive);
 </script>
 </body>
 </html>
