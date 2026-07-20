@@ -158,7 +158,7 @@
       <tbody id="heatBaseBody"></tbody>
     </table>
   </div>
-  <p class="tablenote">Each cell: % of 120 answers that flip when the model reads an image of plain Times instead of text; <span style="color:#0b57d0;font-weight:700">blue</span> = flips toward yes, <span style="color:#b3261e;font-weight:700">red</span> = toward no, bold = direction statistically significant (BH-corrected); hover for exact splits.</p>
+  <p class="tablenote">Each cell: % of 120 answers that flip when the model reads an image of plain Times instead of text; <span style="color:#0b57d0;font-weight:700">blue</span> = flips toward yes, <span style="color:#b3261e;font-weight:700">red</span> = toward no, * = direction statistically significant (BH-corrected); hover for exact splits.</p>
 
 
   <div class="demo" id="demo">
@@ -193,14 +193,14 @@
     <li><strong>Refusals.</strong> Rates differ between image and text presentation of the same content in Fable 5, so a single pooled refusal number will hide it.</li>
   </ol>
 
-  <h3>Do fonts change the decision? The one that does</h3>
+  <h3>OpenDyslexic at the decision boundary</h3>
   <div class="tablewrap">
     <table>
-      <thead><tr><th>Model</th><th>Shift, OpenDyslexic vs. plain sans (pp)</th><th>Items that moved</th></tr></thead>
-      <tbody><tr><td>GPT-5.5</td><td style="background:rgba(179,38,30,0.38);color:var(--fg);font-weight:700;text-align:right">-6.1 [&minus;12.2, &minus;0.8]</td><td>8 of 11 toward removal</td></tr><tr><td>Gemini 3.5 Flash</td><td style="background:rgba(179,38,30,0.24);color:var(--fg);font-weight:700;text-align:right">-3.9 [&minus;8.9, &minus;0.3]</td><td>4 of 4 toward removal</td></tr><tr><td>Claude Sonnet 5</td><td style="background:rgba(179,38,30,0.24);color:var(--fg);text-align:right">-3.9 [&minus;10.8, +2.8]</td><td>5 of 6 toward removal</td></tr></tbody>
+      <thead><tr><th>Model</th><th>Shift vs. plain sans (pp)</th><th>95% CI</th><th>Test</th></tr></thead>
+      <tbody><tr><td>GPT-5.5</td><td style="background:rgba(179,38,30,0.38);color:var(--fg);text-align:right">-6.1*</td><td>[&minus;12.2, &minus;0.8]</td><td>moderation, scaled</td></tr><tr><td>GPT-5.6 Sol</td><td style="background:rgba(179,38,30,0.26);color:var(--fg);text-align:right">-4.2*</td><td>[&minus;8.3, &minus;0.6]</td><td>all three tests, pooled</td></tr><tr><td>Claude Sonnet 5</td><td style="background:rgba(179,38,30,0.24);color:var(--fg);text-align:right">-3.9</td><td>[&minus;10.8, +2.8]</td><td>moderation, scaled</td></tr><tr><td>Claude Fable 5</td><td style="background:rgba(120,120,120,0.05);color:var(--fg);text-align:right">+0.8</td><td>[&minus;3.6, +5.3]</td><td>all three tests, pooled</td></tr><tr><td>Gemini 3.5 Flash</td><td style="background:rgba(179,38,30,0.24);color:var(--fg);text-align:right">-3.9*</td><td>[&minus;8.9, &minus;0.3]</td><td>moderation, scaled</td></tr></tbody>
     </table>
   </div>
-  <p class="tablenote">Identical moderation images except the font; negative = the OpenDyslexic version was removed more often; bold = 95% CI excludes zero (60 items per model; pooled, 17 of the 21 items that moved, moved toward removal).</p>
+  <p class="tablenote">Identical images except the font; negative = the OpenDyslexic version treated more harshly; * = 95% CI excludes zero; 60 items per model, and in the scaled test 17 of the 21 items that moved, moved toward removal.</p>
 
   <h2>Key Limitations</h2>
   <ol>
@@ -267,10 +267,10 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
   <div class="tablewrap">
     <table>
       <thead><tr><th>Decision test</th><th>GPT-5.5</th><th>GPT-5.6 Sol</th><th>Sonnet 5</th><th>Fable 5</th><th>Gemini 3.5 Flash</th></tr></thead>
-      <tbody><tr><td>Moderation: remove this comment?</td><td style="background:rgba(11,87,208,0.62);color:#ffffff;font-weight:700;text-align:right">+10.0</td><td style="background:rgba(11,87,208,0.29);color:var(--fg);text-align:right">+4.6</td><td style="background:rgba(11,87,208,0.82);color:#ffffff;font-weight:700;text-align:right">+13.1</td><td style="background:rgba(179,38,30,0.38);color:var(--fg);text-align:right">-6.0</td><td style="background:rgba(11,87,208,0.17);color:var(--fg);text-align:right">+2.7</td></tr><tr><td>Resume screening: advance to interview?</td><td style="background:rgba(179,38,30,0.26);color:var(--fg);font-weight:700;text-align:right">-4.2</td><td style="background:rgba(11,87,208,0.35);color:var(--fg);text-align:right">+5.6</td><td style="background:rgba(179,38,30,0.06);color:var(--fg);text-align:right">-1.0</td><td style="background:rgba(11,87,208,0.44);color:var(--fg);text-align:right">+7.1</td><td style="background:rgba(11,87,208,0.97);color:#ffffff;font-weight:700;text-align:right">+15.6</td></tr><tr><td>Appeal review: approve the grant?</td><td style="background:rgba(11,87,208,0.13);color:var(--fg);text-align:right">+2.1</td><td style="background:rgba(11,87,208,0.11);color:var(--fg);text-align:right">+1.7</td><td style="background:rgba(179,38,30,0.11);color:var(--fg);text-align:right">-1.7</td><td style="background:rgba(120,120,120,0.01);color:var(--fg);text-align:right">-0.2</td><td style="background:rgba(179,38,30,0.16);color:var(--fg);text-align:right">-2.5</td></tr></tbody>
+      <tbody><tr><td>Moderation: remove this comment?</td><td style="background:rgba(11,87,208,0.62);color:#ffffff;text-align:right">+10.0*</td><td style="background:rgba(11,87,208,0.29);color:var(--fg);text-align:right">+4.6</td><td style="background:rgba(11,87,208,0.82);color:#ffffff;text-align:right">+13.1*</td><td style="background:rgba(179,38,30,0.38);color:var(--fg);text-align:right">-6.0</td><td style="background:rgba(11,87,208,0.17);color:var(--fg);text-align:right">+2.7</td></tr><tr><td>Resume screening: advance to interview?</td><td style="background:rgba(179,38,30,0.26);color:var(--fg);text-align:right">-4.2*</td><td style="background:rgba(11,87,208,0.35);color:var(--fg);text-align:right">+5.6</td><td style="background:rgba(179,38,30,0.06);color:var(--fg);text-align:right">-1.0</td><td style="background:rgba(11,87,208,0.44);color:var(--fg);text-align:right">+7.1</td><td style="background:rgba(11,87,208,0.97);color:#ffffff;text-align:right">+15.6*</td></tr><tr><td>Appeal review: approve the grant?</td><td style="background:rgba(11,87,208,0.13);color:var(--fg);text-align:right">+2.1</td><td style="background:rgba(11,87,208,0.11);color:var(--fg);text-align:right">+1.7</td><td style="background:rgba(179,38,30,0.11);color:var(--fg);text-align:right">-1.7</td><td style="background:rgba(120,120,120,0.01);color:var(--fg);text-align:right">-0.2</td><td style="background:rgba(179,38,30,0.16);color:var(--fg);text-align:right">-2.5</td></tr></tbody>
     </table>
   </div>
-  <p class="tablenote">Items pre-calibrated to sit at each model&rsquo;s own decision boundary, then shown as images of the same words; <span style="color:#0b57d0;font-weight:700">blue</span> = more favorable to the person judged as an image, <span style="color:#b3261e;font-weight:700">red</span> = harsher, bold = 95% CI excludes zero (20 edge cases per cell).</p>
+  <p class="tablenote">Items pre-calibrated to sit at each model&rsquo;s own decision boundary, then shown as images of the same words; <span style="color:#0b57d0;font-weight:700">blue</span> = more favorable to the person judged as an image, <span style="color:#b3261e;font-weight:700">red</span> = harsher, * = 95% CI excludes zero (20 edge cases per cell).</p>
 
 
 
@@ -335,7 +335,7 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
     var o = document.createElement('option');
     o.value = i;
     var t = sn.text.length > 58 ? sn.text.slice(0, 58) + '\u2026' : sn.text;
-    o.textContent = '\u201C' + t + '\u201D \u00B7 ' + sn.overall.toFixed(0) + '% of judgments flip';
+    o.textContent = '\u201C' + t + '\u201D';
     sentSel.appendChild(o);
   });
   sentSel.addEventListener('change', function() {
@@ -399,8 +399,8 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
     var txt = a > 0.55 ? '#ffffff' : 'var(--fg)';
     var lean = c.net > 10 ? 'toward yes' : (c.net < -10 ? 'toward no' : 'no clear lean');
     var tip = c.f.toFixed(1) + '% of answers flip; net ' + (c.net >= 0 ? '+' : '') + c.net.toFixed(0) + '% ' + lean;
-    var bold = SIG_T1.some(function(x){ return x[0]===mk && x[1]===d; }) ? 'font-weight:700;' : '';
-    return '<td style="background:rgba(' + hue + ',' + a.toFixed(2) + ');color:' + txt + ';' + bold + 'text-align:right"><span title="' + tip + '">' + c.f.toFixed(1) + '%</span></td>';
+    var star = SIG_T1.some(function(x){ return x[0]===mk && x[1]===d; }) ? '*' : '';
+    return '<td style="background:rgba(' + hue + ',' + a.toFixed(2) + ');color:' + txt + ';text-align:right"><span title="' + tip + '">' + c.f.toFixed(1) + '%' + star + '</span></td>';
   }
   (function renderBase() {
     var data = HEAT_DIR['T1'];
