@@ -1,50 +1,50 @@
 # Typography Evaluation Analysis Summary
 
-**Run ID:** v0c_release
+**Run ID:** v0c_release_sol
 **Provider:** openai
 **Model:** gpt-5.6-sol
 
 ## Dimension Analysis
 
-- **Overall Flip Rate:** 10.7% (95% CI: [9.4%, 12.1%])
+- **Overall Flip Rate:** 13.6% (95% CI: [12.2%, 14.9%])
 - **Total Comparisons:** 9600
-- **Top Flipping Dimension:** confident (31.7%)
-- **Top Flipping Variant:** T7_comic (14.2%)
+- **Top Flipping Dimension:** confident (51.6%)
+- **Top Flipping Variant:** T7_comic (17.0%)
 
 ### Top Dimensions by Flip Rate
 
 | Dimension | Flip Rate | 95% CI | Total |
 |-----------|-----------|--------|-------|
-| confident | 31.7% | [24.9%, 38.2%] | 960 |
-| trustworthy | 20.1% | [14.8%, 26.1%] | 960 |
-| formal | 16.6% | [13.2%, 20.4%] | 960 |
-| persuasive | 11.4% | [7.0%, 15.9%] | 960 |
-| high_risk | 11.0% | [6.5%, 16.1%] | 960 |
+| confident | 51.6% | [43.7%, 58.8%] | 960 |
+| trustworthy | 18.2% | [12.8%, 24.2%] | 960 |
+| formal | 17.6% | [14.4%, 21.1%] | 960 |
+| persuasive | 16.6% | [11.1%, 22.1%] | 960 |
+| high_risk | 12.2% | [7.7%, 17.3%] | 960 |
 
 ### Direction Bias (Top Dimensions)
 
 | Dimension | Total Flips | NO→YES | YES→NO | Net Bias |
 |-----------|-------------|---------|---------|----------|
-| confident | 304 | 97% | 3% | +95% |
-| trustworthy | 193 | 41% | 59% | -17% |
-| formal | 159 | 16% | 84% | -67% |
-| persuasive | 109 | 73% | 27% | +47% |
-| high_risk | 106 | 33% | 67% | -34% |
+| confident | 495 | 98% | 2% | +97% |
+| trustworthy | 175 | 39% | 61% | -21% |
+| formal | 169 | 25% | 75% | -49% |
+| persuasive | 159 | 74% | 26% | +47% |
+| high_risk | 117 | 39% | 61% | -21% |
 
 ## Decision Analysis
 
-- **Decision Flip Rate:** 1.2% (95% CI: [0.3%, 2.4%])
+- **Decision Flip Rate:** 2.7% (95% CI: [0.9%, 5.0%])
 - **Total Decisions:** 960
-- **Direction Net Bias:** +33.3%
+- **Direction Net Bias:** +38.5%
 - **Interpretation:** Mixed
 
 ### Key Dimension-Decision Correlations
 
 | Dimension | Lift |
 |-----------|------|
-| emotional | 87.18x |
-| urgent | 10.93x |
-| immediate_action | 9.30x |
+| emotional | 0.00x |
+| formal | 0.85x |
+| trustworthy | 0.82x |
 
 ## Output Files
 

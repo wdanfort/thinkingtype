@@ -4,6 +4,16 @@ Everything below is verified against the analysis CSVs in this repo as of July 1
 Numbers in "points" are percentage points. Positive decision shifts favor the person
 being judged (comment kept up, candidate advanced, appeal approved).
 
+## Correction log
+
+- July 19, 2026: GPT-5.6 Sol Track 1 numbers corrected. The original Sol
+  analysis ran on a mixed-provider response log (OpenAI records alongside
+  partial Anthropic records) and mispaired some comparisons. Clean single-
+  provider reanalysis (results/runs/v0c_release_sol) revised Sol's overall
+  flip rate from 10.7% to 13.6% [12.2, 14.9] and all Sol per-font and
+  per-question values. All other models' runs were single-provider and are
+  unaffected.
+
 ## The one-paragraph story
 
 Given the same words, frontier AI models answer differently depending on whether they
@@ -84,18 +94,20 @@ built to track this over time.
 | Claude Sonnet 5 | 9.5% | [8.1, 10.9] |
 | GPT-5.5 | 7.8% | [6.7, 8.9] |
 | Claude Fable 5 | 8.6% | [7.4, 10.0] |
-| GPT-5.6 Sol | 10.7% | [9.4, 12.1] |
+| GPT-5.6 Sol | 13.6% | [12.2, 14.9] |
 
 - Headline: the generation-over-generation closing trend REVERSED at OpenAI
-  (7.8% -> 10.7%, CIs disjoint). Anthropic kept inching down (9.5% -> 8.6%, ns).
-- Highest-flipping dimensions (Sol): confident 31.7%, trustworthy 20.1%, formal 16.6%.
+  (7.8% -> 13.6%, CIs disjoint; nearly back to GPT-4o levels). Anthropic kept
+  inching down (9.5% -> 8.6%, ns).
+- Highest-flipping dimensions (Sol): confident 51.6%, trustworthy 18.2%, formal 17.6%.
   Lowest: emotional 0.1%. Same ordering pattern held for Fable (confident 19.2%,
   trustworthy 16.4%).
-- Highest-flipping fonts: Comic Sans tops most models (Sol 14.2%, Fable 10.8%);
-  OpenDyslexic second for Sol (11.8%). Plain Times lowest (Sol 8.9%, Fable 7.0%).
+- Highest-flipping fonts: Comic Sans tops most models (Sol 17.0%, Fable 10.8%);
+  OpenDyslexic second for Sol (14.4%). Plain serif/sans lowest (Sol: Arial
+  regular 12.4%; Fable: Times regular 7.0%).
 - v0b finding (main run): "formal" and "professional" flipped consistently toward
   less-favorable-as-image across all three models tested.
-- Escalation decision flips (v0c): Sol 1.2%, Fable 2.7% (small).
+- Escalation decision flips (v0c): Sol 2.7% [0.9, 5.0], Fable 2.7% (small).
 - Fable 5 refusals: refused 1.5% of sentence calls (183 of 11,880; excluded from flip
   rates). Refusals were ~6x more common on images than text (157 vs 26) and clustered
   by font: monospace 44, OpenDyslexic 39, vs. serif 7, Arial regular 2. Zero refusals
@@ -104,14 +116,14 @@ built to track this over time.
 ### Track 1: per-font flip rates (all five models, % with 95% CI)
 | Font | GPT-4o | GPT-5.5 | Sonnet 5 | Fable 5 | Sol |
 |---|---|---|---|---|---|
-| Times regular | 12.5 [10.7,14.4] | 6.2 [4.9,7.5] | 8.6 [7.0,10.2] | 7.0 [5.6,8.5] | 8.9 [7.4,10.3] |
-| Times bold | 13.2 [11.3,15.2] | 6.8 [5.5,8.2] | 9.4 [7.5,11.3] | 8.8 [7.1,10.6] | 9.8 [8.1,11.5] |
-| Arial regular | 13.4 [11.5,15.6] | 6.4 [5.2,7.6] | 9.0 [7.4,10.6] | 7.4 [5.8,9.0] | 9.6 [7.8,11.4] |
-| Arial bold | 13.2 [11.3,15.3] | 6.5 [5.2,7.8] | 9.4 [7.6,11.3] | 8.6 [7.0,10.3] | 10.6 [8.9,12.2] |
-| Arial caps-only | 15.2 [13.1,17.5] | 7.1 [5.6,8.7] | 10.9 [9.3,12.6] | 8.4 [6.9,10.0] | 10.6 [8.9,12.4] |
-| Monospace | 14.3 [12.2,16.4] | 6.4 [5.1,7.8] | 8.8 [7.2,10.5] | 9.3 [7.6,10.9] | 10.0 [8.3,11.6] |
-| Comic Sans | 18.6 [16.7,20.8] | 14.1 [12.6,15.4] | 9.5 [7.8,11.2] | 10.8 [9.0,12.6] | 14.2 [12.5,16.1] |
-| OpenDyslexic | 21.1 [19.2,23.0] | 8.7 [7.3,10.1] | 10.1 [8.5,11.8] | 8.9 [7.3,10.6] | 11.8 [10.2,13.5] |
+| Times regular | 12.5 [10.7,14.4] | 6.2 [4.9,7.5] | 8.6 [7.0,10.2] | 7.0 [5.6,8.5] | 12.9 [11.4,14.6] |
+| Times bold | 13.2 [11.3,15.2] | 6.8 [5.5,8.2] | 9.4 [7.5,11.3] | 8.8 [7.1,10.6] | 12.7 [11.1,14.3] |
+| Arial regular | 13.4 [11.5,15.6] | 6.4 [5.2,7.6] | 9.0 [7.4,10.6] | 7.4 [5.8,9.0] | 12.4 [10.8,14.1] |
+| Arial bold | 13.2 [11.3,15.3] | 6.5 [5.2,7.8] | 9.4 [7.6,11.3] | 8.6 [7.0,10.3] | 12.9 [11.3,14.5] |
+| Arial caps-only | 15.2 [13.1,17.5] | 7.1 [5.6,8.7] | 10.9 [9.3,12.6] | 8.4 [6.9,10.0] | 13.7 [12.1,15.3] |
+| Monospace | 14.3 [12.2,16.4] | 6.4 [5.1,7.8] | 8.8 [7.2,10.5] | 9.3 [7.6,10.9] | 12.5 [10.8,14.1] |
+| Comic Sans | 18.6 [16.7,20.8] | 14.1 [12.6,15.4] | 9.5 [7.8,11.2] | 10.8 [9.0,12.6] | 17.0 [15.2,18.8] |
+| OpenDyslexic | 21.1 [19.2,23.0] | 8.7 [7.3,10.1] | 10.1 [8.5,11.8] | 8.9 [7.3,10.6] | 14.4 [12.5,16.3] |
 
 Font-level observations (Track 1):
 - Times regular is the most stable font in every model tested. Plain serif is the

@@ -1,33 +1,33 @@
 {
-  "run_id": "v0c_release",
+  "run_id": "v0c_release_sol",
   "provider": "openai",
   "model": "gpt-5.6-sol",
-  "timestamp": "2026-07-15T12:10:42.821751",
+  "timestamp": "2026-07-19T21:10:34.615136",
   "dimension_analysis": {
-    "overall_flip_rate": 0.106875,
+    "overall_flip_rate": 0.135625,
     "overall_ci": [
-      0.09353645833333332,
-      0.120625
+      0.12239322916666666,
+      0.1491692708333333
     ],
     "n_comparisons": 9600,
     "top_flipping_dimension": "confident",
-    "top_flipping_dimension_rate": 0.31666666666666665,
+    "top_flipping_dimension_rate": 0.515625,
     "top_flipping_variant": "T7_comic",
-    "top_flipping_variant_rate": 0.1425
+    "top_flipping_variant_rate": 0.17
   },
   "decision_analysis": {
-    "flip_rate": 0.0125,
+    "flip_rate": 0.027083333333333334,
     "flip_ci": [
-      0.003125,
-      0.023958333333333335
+      0.009375,
+      0.05
     ],
     "n_decisions": 960,
-    "direction_net_bias": 0.3333333333333333,
+    "direction_net_bias": 0.38461538461538464,
     "direction_interpretation": "Mixed"
   },
   "key_correlations": {
-    "emotional_decision_lift": 87.18181818181819,
-    "urgent_decision_lift": 10.928571428571427,
-    "immediate_action_decision_lift": 9.295918367346937
+    "emotional_decision_lift": 0.0,
+    "formal_decision_lift": 0.8509951586874663,
+    "trustworthy_decision_lift": 0.8155844155844155
   }
 }
