@@ -230,15 +230,15 @@
     <p class="chart-note">Flip rate = how often the model's image answer disagreed with its own text answer on identical content. The pp delta compares the current view against that model's all-font, all-sentence average (the vertical marker). For a single sentence, the bar is the share of its ten questions that flipped in that font &mdash; each cell is only 10 comparisons, so values move in coarse 10-point steps.</p>
   </div>
 
-  <p>I haven&rsquo;t found prior work focused on downstream decisions and qualitative assessments. The recent work I&rsquo;ve found on AI &times; typography focuses more on VLM accuracy, cybersecurity, and things like <a href="https://www.mixfont.com/experiments/decoy-font">DecoyFont</a>.</p>
+  <p>I haven&rsquo;t found prior work focused on downstream decisions and qualitative assessments. The recent work I&rsquo;ve found on AI &times; typography focuses more on VLM accuracy, cybersecurity, and things like <a href="https://www.mixfont.com/experiments/decoy-font">DecoyFont</a>. The closest work I&rsquo;ve seen is <a href="https://arxiv.org/abs/2603.09095">Reading, Not Thinking</a> on how rendering text as pixels dulls model reasoning, and <a href="https://arxiv.org/abs/2602.15278">Visual Persuasion</a> on how image styling sways VLM choices &mdash; neither looks at fonts driving judgments or decisions.</p>
   <p>Given that these findings shift across providers and models, I&rsquo;m planning to run this benchmark against future major model releases. All of the code, methodology, and data are publicly available on <a href="https://github.com/wdanfort/thinkingtype">GitHub</a>. Design and coding were done with Claude Code. I want feedback on methodology and gaps &mdash; especially from anyone running VLMs on real documents in production &mdash; so please <a href="mailto:wbdanforth@gmail.com">reach out</a>.</p>
 
   <h2>Quick Product Implications</h2>
   <ol>
-    <li><strong>Vision-text consistency is not stable across provider, model, or generation.</strong> Typography should be included in internal product evals to identify drift &mdash; <a href="https://arxiv.org/abs/2603.09095">Reading, Not Thinking (2026)</a> found font choice alone can swing accuracy by up to 47 points on reasoning tasks.</li>
-    <li><strong>Accessible fonts like OpenDyslexic fared much worse than traditional ones</strong>, so extra caution should be taken when building out evals to ensure fairness and equity. Relatedly, fonts like Times had the least text-vision divergence, so people might try to game AI systems by selecting &ldquo;better&rdquo; fonts &mdash; <a href="https://arxiv.org/abs/2602.15278">Visual Persuasion (2026)</a> shows optimized image styling already sways VLM choices.</li>
+    <li><strong>Vision-text consistency is not stable across provider, model, or generation.</strong> Typography should be included in internal product evals to identify drift.</li>
+    <li><strong>Accessible fonts like OpenDyslexic fared much worse than traditional ones</strong>, so extra caution should be taken when building out evals to ensure fairness and equity. Relatedly, fonts like Times had the least text-vision divergence, so people might try to game AI systems by selecting &ldquo;better&rdquo; fonts.</li>
     <li><strong>Decision drift can be controlled.</strong> Clear prompt rubrics eliminated divergence for one of the three providers tested and cut it in half for a second.</li>
-    <li><strong>Measure refusals per format.</strong> Refusal rates differ between image and text presentation of the same content in <a href="https://www.anthropic.com/news/claude-fable-5-mythos-5">Fable 5</a> (finding 4), so a single pooled refusal number will hide it.</li>
+    <li><strong>Measure refusals per format.</strong> Refusal rates differ between image and text presentation of the same content in Fable 5 (finding 4), so a single pooled refusal number will hide it.</li>
   </ol>
 
   <h2>Key Limitations</h2>
