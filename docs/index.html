@@ -151,6 +151,15 @@
     <li>Fable 5 refused six times more often on images than on identical text, and the refusals clustered by font.</li>
   </ol>
 
+  <h3>The vision effect: flips in the plainest font (Times regular)</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Question</th><th>GPT-4o</th><th>GPT-5.5</th><th>GPT-5.6 Sol</th><th>Sonnet 5</th><th>Fable 5</th></tr></thead>
+      <tbody id="heatBaseBody"></tbody>
+    </table>
+  </div>
+  <p class="tablenote">Each cell: % of 120 answers that flip when the model reads an image of plain Times instead of text; <span style="color:#0b57d0;font-weight:700">blue</span> = flips toward yes, <span style="color:#b3261e;font-weight:700">red</span> = toward no, bold = direction statistically significant (BH-corrected); hover for exact splits.</p>
+
 
   <div class="demo" id="demo">
     <h3 style="margin-top:0">Try it: same sentence, different presentation</h3>
@@ -170,7 +179,7 @@
 
     <p class="chart-heading">Text-vs-image flip rate on the same content, by model</p>
     <div class="flip-chart" id="flipChart"></div>
-    <p class="chart-note">Flip rate = how often the model's image answer disagreed with its own text answer on identical content. The pp delta compares the current view against that model's all-font, all-sentence average (the vertical marker). For a single sentence, the bar is the share of its ten questions that flipped in that font. Each cell is only 10 comparisons, so values move in coarse 10-point steps.</p>
+    <p class="chart-note">A flip = the model's image answer disagreed with its own text answer on identical content; single-sentence bars rest on just 10 comparisons.</p>
   </div>
 
   <p>I haven&rsquo;t found prior work focused on downstream decisions and qualitative assessments. The recent work I&rsquo;ve found on AI &times; typography focuses more on VLM accuracy, cybersecurity, and things like <a href="https://www.mixfont.com/experiments/decoy-font">DecoyFont</a>. The closest work I&rsquo;ve seen is <a href="https://arxiv.org/abs/2603.09095">Reading, Not Thinking</a> on how rendering text as pixels dulls model reasoning, and <a href="https://arxiv.org/abs/2602.15278">Visual Persuasion</a> on how image styling sways VLM choices; neither looks at fonts driving judgments or decisions.</p>
@@ -183,6 +192,15 @@
     <li><strong>Mitigations.</strong> I found prompt rubrics for decisions significantly eliminated divergence between text and image presentations.</li>
     <li><strong>Refusals.</strong> Rates differ between image and text presentation of the same content in Fable 5, so a single pooled refusal number will hide it.</li>
   </ol>
+
+  <h3>Do fonts change the decision? The one that does</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Model</th><th>Shift, OpenDyslexic vs. plain sans (pp)</th><th>Items that moved</th></tr></thead>
+      <tbody><tr><td>GPT-5.5</td><td style="background:rgba(179,38,30,0.38);color:var(--fg);font-weight:700;text-align:right">-6.1 [&minus;12.2, &minus;0.8]</td><td>8 of 11 toward removal</td></tr><tr><td>Gemini 3.5 Flash</td><td style="background:rgba(179,38,30,0.24);color:var(--fg);font-weight:700;text-align:right">-3.9 [&minus;8.9, &minus;0.3]</td><td>4 of 4 toward removal</td></tr><tr><td>Claude Sonnet 5</td><td style="background:rgba(179,38,30,0.24);color:var(--fg);text-align:right">-3.9 [&minus;10.8, +2.8]</td><td>5 of 6 toward removal</td></tr></tbody>
+    </table>
+  </div>
+  <p class="tablenote">Identical moderation images except the font; negative = the OpenDyslexic version was removed more often; bold = 95% CI excludes zero (60 items per model; pooled, 17 of the 21 items that moved, moved toward removal).</p>
 
   <h2>Key Limitations</h2>
   <ol>
@@ -228,19 +246,11 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
       </tbody>
     </table>
   </div>
-  <p class="tablenote">Share (%) of yes/no judgments where the model's image answer disagreed with its own text answer on identical content (120 sentences, 10 questions each), by font. 95% CIs bootstrapped by sentence.</p>
+  <p class="tablenote">% of judgments that flipped per font across all 120 sentences, with 95% CIs.</p>
 
   
-  <h3>Panel 1 &middot; The vision effect: flips in the plainest font (Times regular)</h3>
-  <div class="tablewrap">
-    <table>
-      <thead><tr><th>Question</th><th>GPT-4o</th><th>GPT-5.5</th><th>GPT-5.6 Sol</th><th>Sonnet 5</th><th>Fable 5</th></tr></thead>
-      <tbody id="heatBaseBody"></tbody>
-    </table>
-  </div>
-  <p class="tablenote">Each cell is the percentage of answers that flip when the model reads an image of plain Times regular instead of text (120 comparisons per cell). Times is the most text-like font in every model tested, so this is the closest available measure of what merely being an image does, before any font styling. A flip means the model&rsquo;s image answer disagreed with its own text answer, not that it answered yes. Color shows which way flips lean: <span style="color:#0b57d0;font-weight:700">blue</span> = the image answer moves toward yes, <span style="color:#b3261e;font-weight:700">red</span> = toward no; deeper color = more flips. Direction here means the overall yes-rate shifts; questions with lopsided base rates will mostly flip from the majority answer. The escalation row has few flips (1 to 4% of sentences) because these everyday sentences rarely sit near the escalation boundary; Panel 3 below measures decisions properly. Hover any cell for the exact split.</p>
 
-  <h3>Panel 2 &middot; Extra flips caused by the font (versus Times regular)</h3>
+  <h3>Extra flips caused by the font (versus Times regular)</h3>
   <div style="margin:0 0 0.9rem;">
     <label for="heatFontSel" style="font-size:0.8rem;color:var(--muted);display:block;margin-bottom:0.3rem;">Font &middot; each cell is this font&rsquo;s flip rate minus the Times regular baseline above</label>
     <select id="heatFontSel" style="max-width:100%;font:inherit;font-size:0.85rem;padding:0.35rem 0.5rem;background:var(--bg);color:var(--fg);border:1px solid var(--rule);border-radius:6px;"></select>
@@ -251,25 +261,17 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
       <tbody id="heatDeltaBody"></tbody>
     </table>
   </div>
-  <p class="tablenote"><span style="color:#7c3aed;font-weight:700">Purple</span> = this font flips more answers than plain Times for that question; <span style="color:#0f766e;font-weight:700">green</span> = fewer. Values are percentage points versus Panel 1. A gray row (like professional) means the flipping is a vision effect, not a font effect. Each cell rests on 120 comparisons, so deltas smaller than about 5 points are within noise and shown without color. Hover for the font&rsquo;s absolute rate and flip direction.</p>
+  <p class="tablenote"><span style="color:#7c3aed;font-weight:700">Purple</span> = more flips than plain Times, <span style="color:#0f766e;font-weight:700">green</span> = fewer, in percentage points; deltas under 5pp are within noise and uncolored.</p>
 
-  <h3>Panel 3 &middot; The biggest presentation choice: rendering text as an image at all (Experiment 2)</h3>
+  <h3>The biggest presentation choice: rendering text as an image at all (Experiment 2)</h3>
   <div class="tablewrap">
     <table>
       <thead><tr><th>Decision test</th><th>GPT-5.5</th><th>GPT-5.6 Sol</th><th>Sonnet 5</th><th>Fable 5</th><th>Gemini 3.5 Flash</th></tr></thead>
       <tbody><tr><td>Moderation: remove this comment?</td><td style="background:rgba(11,87,208,0.62);color:#ffffff;font-weight:700;text-align:right">+10.0</td><td style="background:rgba(11,87,208,0.29);color:var(--fg);text-align:right">+4.6</td><td style="background:rgba(11,87,208,0.82);color:#ffffff;font-weight:700;text-align:right">+13.1</td><td style="background:rgba(179,38,30,0.38);color:var(--fg);text-align:right">-6.0</td><td style="background:rgba(11,87,208,0.17);color:var(--fg);text-align:right">+2.7</td></tr><tr><td>Resume screening: advance to interview?</td><td style="background:rgba(179,38,30,0.26);color:var(--fg);font-weight:700;text-align:right">-4.2</td><td style="background:rgba(11,87,208,0.35);color:var(--fg);text-align:right">+5.6</td><td style="background:rgba(179,38,30,0.06);color:var(--fg);text-align:right">-1.0</td><td style="background:rgba(11,87,208,0.44);color:var(--fg);text-align:right">+7.1</td><td style="background:rgba(11,87,208,0.97);color:#ffffff;font-weight:700;text-align:right">+15.6</td></tr><tr><td>Appeal review: approve the grant?</td><td style="background:rgba(11,87,208,0.13);color:var(--fg);text-align:right">+2.1</td><td style="background:rgba(11,87,208,0.11);color:var(--fg);text-align:right">+1.7</td><td style="background:rgba(179,38,30,0.11);color:var(--fg);text-align:right">-1.7</td><td style="background:rgba(120,120,120,0.01);color:var(--fg);text-align:right">-0.2</td><td style="background:rgba(179,38,30,0.16);color:var(--fg);text-align:right">-2.5</td></tr></tbody>
     </table>
   </div>
-  <p class="tablenote">This is the second experiment&rsquo;s decision data, with a deliberately clean baseline: every item was first calibrated in plain text to sit at that model&rsquo;s own decision boundary (cases that could honestly go either way), then shown as an image of the same words in plain fonts. Each cell is how many percentage points more often the model said yes to the image than to the identical text; <span style="color:#0b57d0;font-weight:700">blue</span> = more favorable to the person being judged as an image (comment kept up, candidate advanced, appeal approved), <span style="color:#b3261e;font-weight:700">red</span> = harsher. Bold = 95% interval excludes zero. 20 edge cases per cell. Unlike Panel 1&rsquo;s escalation row, these items were built to be movable, which is why the effects are visible here.</p>
+  <p class="tablenote">Items pre-calibrated to sit at each model&rsquo;s own decision boundary, then shown as images of the same words; <span style="color:#0b57d0;font-weight:700">blue</span> = more favorable to the person judged as an image, <span style="color:#b3261e;font-weight:700">red</span> = harsher, bold = 95% CI excludes zero (20 edge cases per cell).</p>
 
-  <h3>Panel 4 &middot; Do fonts change the decision? The one that does (Experiment 2)</h3>
-  <div class="tablewrap">
-    <table>
-      <thead><tr><th>Model</th><th>Shift, OpenDyslexic vs. plain sans (pp)</th><th>Items that moved</th></tr></thead>
-      <tbody><tr><td>GPT-5.5</td><td style="background:rgba(179,38,30,0.38);color:var(--fg);font-weight:700;text-align:right">-6.1 [&minus;12.2, &minus;0.8]</td><td>8 of 11 toward removal</td></tr><tr><td>Gemini 3.5 Flash</td><td style="background:rgba(179,38,30,0.24);color:var(--fg);font-weight:700;text-align:right">-3.9 [&minus;8.9, &minus;0.3]</td><td>4 of 4 toward removal</td></tr><tr><td>Claude Sonnet 5</td><td style="background:rgba(179,38,30,0.24);color:var(--fg);text-align:right">-3.9 [&minus;10.8, +2.8]</td><td>5 of 6 toward removal</td></tr></tbody>
-    </table>
-  </div>
-  <p class="tablenote">The cleanest font isolation in the project: identical moderation content rendered twice as images, once in OpenDyslexic (the dyslexia-accessibility font) and once in plain sans, so the modality is held constant and only the font differs. Negative = the OpenDyslexic version was removed more often. Bold = 95% interval excludes zero; 60 edge cases per model. Pooled across models, 17 of the 21 items that moved, moved toward removal (the models saw overlapping items, so the pooled count overstates independence). Every other font showed no detectable decision-level effect at this sample size, and this contrast was not rerun on Fable 5 or Sol. Fonts rarely flip decisions; this is the exception, and it only ever points one way.</p>
 
 
   <!-- ════════════════════════════════════════════════════════════════════
@@ -389,25 +391,27 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
   const HEAT_MODELS = ["gpt4o","gpt55","sol","sonnet5","fable5"];
   const ALL_DIMS = HEAT_DIMS.concat(['decision']);
 
-  function baseCell(c) {
+  const SIG_T1 = [["fable5","confident"],["fable5","high_risk"],["fable5","persuasive"],["gpt4o","confident"],["gpt4o","persuasive"],["gpt4o","professional"],["gpt4o","trustworthy"],["gpt55","confident"],["gpt55","professional"],["sol","confident"],["sol","formal"],["sol","professional"],["sonnet5","trustworthy"]];
+  function baseCell(c, mk, d) {
     if (!c) return '<td style="text-align:right;color:var(--muted)">&ndash;</td>';
     var a = Math.min(c.f / 52, 1);
     var hue = c.net > 10 ? '11,87,208' : (c.net < -10 ? '179,38,30' : '120,120,120');
     var txt = a > 0.55 ? '#ffffff' : 'var(--fg)';
     var lean = c.net > 10 ? 'toward yes' : (c.net < -10 ? 'toward no' : 'no clear lean');
     var tip = c.f.toFixed(1) + '% of answers flip; net ' + (c.net >= 0 ? '+' : '') + c.net.toFixed(0) + '% ' + lean;
-    return '<td style="background:rgba(' + hue + ',' + a.toFixed(2) + ');color:' + txt + ';text-align:right"><span title="' + tip + '">' + c.f.toFixed(1) + '%</span></td>';
+    var bold = SIG_T1.some(function(x){ return x[0]===mk && x[1]===d; }) ? 'font-weight:700;' : '';
+    return '<td style="background:rgba(' + hue + ',' + a.toFixed(2) + ');color:' + txt + ';' + bold + 'text-align:right"><span title="' + tip + '">' + c.f.toFixed(1) + '%</span></td>';
   }
   (function renderBase() {
     var data = HEAT_DIR['T1'];
     var html = '';
     HEAT_DIMS.forEach(function(d) {
       html += '<tr><td>' + HEAT_LABELS[d] + '</td>';
-      HEAT_MODELS.forEach(function(mk) { html += baseCell(data[mk][d]); });
+      HEAT_MODELS.forEach(function(mk) { html += baseCell(data[mk][d], mk, d); });
       html += '</tr>';
     });
     html += '<tr style="border-top:2px solid var(--fg)"><td><strong>escalation decision</strong></td>';
-    HEAT_MODELS.forEach(function(mk) { html += baseCell(data[mk]['decision']); });
+    HEAT_MODELS.forEach(function(mk) { html += baseCell(data[mk]['decision'], mk, 'decision'); });
     html += '</tr>';
     document.getElementById('heatBaseBody').innerHTML = html;
   })();
