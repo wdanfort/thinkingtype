@@ -138,20 +138,79 @@
   <p><strong>Does a VLM &ldquo;read&rdquo; a Comic Sans resume as unprofessional?</strong></p>
   <p class="disclaimer">Will Danforth &middot; Views are my own and not my employer&rsquo;s &middot; v1, last updated July 20th, 2026.</p>
 
-  <p>I built ThinkingType as a new, lightweight benchmark measuring how typography influences qualitative assessments (e.g. trustworthy, professional) and downstream decisions (&ldquo;flag this policy violation,&rdquo; &ldquo;approve this resume&rdquo;). v1 asks the same binary questions two ways &mdash; as a rendered image and as plain text to the same model &mdash; across 120 synthetic sentences and 330 synthetic artifacts. My main findings:</p>
+  <p>I built ThinkingType as a new, lightweight benchmark measuring how typography influences qualitative assessments (e.g. trustworthy, professional) and downstream decisions (&ldquo;flag this policy violation,&rdquo; &ldquo;approve this resume&rdquo;). My main findings:</p>
   <ol>
     <li>Reading text as an image changes answers. Depending on model, 8 to 15% of yes/no judgments flip when the same model answers from an image instead of plain text.</li>
-    <li>This vision-text divergence exists (and differs) across the 3 providers tested and changes with each new generation.</li>
+    <li>This vision-text divergence exists (and differs) across Claude and OpenAI (Google coming) and changes with each new generation.</li>
     <li>Fonts influence decisions and judgments for VLMs at the margins.
       <ol>
         <li>Times regular is the most stable font in every model I tested; plain serif is the closest thing to &ldquo;reads like text.&rdquo;</li>
-        <li>Comic Neue (an open-source Comic Sans analogue, labeled &ldquo;Comic Sans&rdquo; in charts and tables below) and OpenDyslexic are the likeliest to flip a judgment, with as much as 21% of judgments flipping (OpenDyslexic on GPT-4o) and Comic Neue at 14% on both GPT-5.5 and GPT-5.6 Sol, roughly double their plain-serif baselines.</li>
-        <li>In the accessibility comparison, OpenDyslexic skewed consistently harsher at the decision boundary: 17 of the 21 items that moved, moved toward removal. (This is a separate, larger test than the pooled decision shifts in the appendix.)</li>
+        <li>Comic Neue (open source Comic Sans) and OpenDyslexic are the likeliest to flip a judgment (up to 14% and 21% respectively).</li>
       </ol>
     </li>
     <li>Refusals are presentation-sensitive. Fable 5 refused six times more often on images than on identical text, and the refusals clustered by font.</li>
   </ol>
 
+
+  <div class="demo" id="demo">
+    <h3 style="margin-top:0">Try it: same sentence, different presentation</h3>
+    <p class="demo-sub">Pick a sentence and a font. The bars show how often each model's answers flipped between text and image for that view, next to the model's average across all fonts and sentences (the vertical marker).</p>
+
+    <div style="margin:0 0 0.9rem;">
+      <label for="sentencePicker" style="font-size:0.8rem;color:var(--muted);display:block;margin-bottom:0.3rem;">Sentence &middot; the ten with the most divergent results across models, or the full-set average</label>
+      <select id="sentencePicker" style="max-width:100%;font:inherit;font-size:0.85rem;padding:0.35rem 0.5rem;background:var(--bg);color:var(--fg);border:1px solid var(--rule);border-radius:6px;"></select>
+    </div>
+
+    <div class="font-picker" id="fontPicker"></div>
+
+    <div class="sentence-preview">
+      <div class="preview-label">Selected sentence in the selected font</div>
+      <div id="sentenceDisplay">Failure to complete this step may affect access</div>
+    </div>
+
+    <p class="chart-heading">Text-vs-image flip rate on the same content, by model</p>
+    <div class="flip-chart" id="flipChart"></div>
+    <p class="chart-note">Flip rate = how often the model's image answer disagreed with its own text answer on identical content. The pp delta compares the current view against that model's all-font, all-sentence average (the vertical marker). For a single sentence, the bar is the share of its ten questions that flipped in that font. Each cell is only 10 comparisons, so values move in coarse 10-point steps.</p>
+  </div>
+
+  <p>I haven&rsquo;t found prior work focused on downstream decisions and qualitative assessments. The recent work I&rsquo;ve found on AI &times; typography focuses more on VLM accuracy, cybersecurity, and things like <a href="https://www.mixfont.com/experiments/decoy-font">DecoyFont</a>. The closest work I&rsquo;ve seen is <a href="https://arxiv.org/abs/2603.09095">Reading, Not Thinking</a> on how rendering text as pixels dulls model reasoning, and <a href="https://arxiv.org/abs/2602.15278">Visual Persuasion</a> on how image styling sways VLM choices; neither looks at fonts driving judgments or decisions.</p>
+  <p>Given that these findings shift across providers and models, I&rsquo;m planning to run this benchmark against future major model releases. All of the code, methodology, and data are publicly available on <a href="https://github.com/wdanfort/thinkingtype">GitHub</a>. Design and coding were done with Claude Code. I want feedback on methodology and gaps, especially from anyone running VLMs on real documents in production, so please <a href="mailto:wbdanforth@gmail.com">reach out</a>.</p>
+
+  <h2>Quick Product Implications</h2>
+  <ol>
+    <li><strong>Vision-text consistency is not stable across provider, model, or generation.</strong> Typography should be included in internal product evals to identify drift.</li>
+    <li><strong>Accessible fonts like OpenDyslexic fared much worse than traditional ones</strong>, so extra caution should be taken when building out evals to ensure fairness and equity. Relatedly, fonts like Times had the least text-vision divergence, so people might try to game AI systems by selecting &ldquo;better&rdquo; fonts.</li>
+    <li><strong>Decision drift can be controlled.</strong> Clear prompt rubrics eliminated divergence for one of the three providers tested and cut it in half for a second.</li>
+    <li><strong>Measure refusals per format.</strong> Refusal rates differ between image and text presentation of the same content in Fable 5 (finding 4), so a single pooled refusal number will hide it.</li>
+  </ol>
+
+  <h2>Key Limitations</h2>
+  <ol>
+    <li>All benchmark artifacts, including sentence examples, are synthetic, and so may not mirror real world results. I tried to generate them to be on the borderline for decisions and criteria. However, the effect appearing in every provider tested suggests it is not an artifact of a single model family, though real-world magnitudes remain untested.</li>
+    <li>Most results rest on 20 edge cases per model per test (60 for the accessibility comparison). Due to budget constraints, I chose to limit my choice of variables and outputs tested to balance cost and reasonable confidence intervals.</li>
+    <li>Stimuli are synthetic single-page documents with no names or demographics, by design. Real documents have messier content, but would make isolating to font alone more challenging.</li>
+    <li>Directly comparing text and vision requires rendering words to an image, which introduces confounders beyond font. The rendering pipeline is identical across fonts, so font-to-font comparisons are apples-to-apples; the absolute image-vs-text gap should be read directionally.</li>
+  </ol>
+
+  <h2>Next steps</h2>
+  <ol>
+    <li>Incorporate any feedback on methodology and gaps.</li>
+    <li>Go deeper on accessibility. More assistive formats (large print, high contrast, letter spacing), more items, enough statistical power to pin down per-provider effects.</li>
+    <li>Keep tracking releases. Continue running and publishing the eval harness against major model releases.</li>
+  </ol>
+
+  <h2>Why build this?</h2>
+  <p>I got into typography this year after reading &ldquo;Thinking with Type.&rdquo; Type design mirrors the tech and culture of the day, so since it&rsquo;s 2026, I was curious about how agents are influenced by, and may potentially shape, popular fonts and design conventions. Is Comic Sans still seen as unprofessional? Would an agent then be less likely to recommend a resume written in OpenDyslexic? What does the future of typography look like when it&rsquo;s increasingly consumed by both people and robots? This project is a first-pass attempt to understand this.</p>
+
+  <h2>Reproduce</h2>
+  <pre><code>typo-eval --config configs/gates_v1.yaml gates-build
+typo-eval --config configs/gates_v1.yaml gates-render
+typo-eval --config configs/gates_v1.yaml gates-calibrate --provider &lt;p&gt;
+typo-eval --config configs/gates_v1.yaml gates-run --provider &lt;p&gt;
+typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
+  <p>Full per-run reports, item-level CSVs, and forest plots are in <a href="https://github.com/wdanfort/thinkingtype/tree/main/results/gates">results/gates/</a>. The drift monitor for testing your own model &times; gate combinations is documented in <a href="https://github.com/wdanfort/thinkingtype/blob/main/docs/GATE_DRIFT.md">docs/GATE_DRIFT.md</a>.</p>
+
+  <h2>Appendix: detailed results</h2>
   <figure class="item-fig" role="img" aria-label="Line chart of text-vision flip rate across model generations. OpenAI: GPT-4o 15.2%, GPT-5.5 7.8%, GPT-5.6 Sol 10.7%. Anthropic: Claude Sonnet 5 9.5%, Claude Fable 5 8.6%.">
     <p class="chart-heading" style="margin-bottom:0.25rem">Flip rate across model generations</p>
     <div style="display:flex; gap:1.25rem; font-size:0.78rem; color:var(--muted); margin-bottom:0.35rem;">
@@ -208,66 +267,6 @@
     </svg>
     <figcaption>Share of yes/no judgments that flip between text and image, per model; whiskers are 95% CIs.</figcaption>
   </figure>
-
-  <div class="demo" id="demo">
-    <h3 style="margin-top:0">Try it: same sentence, different presentation</h3>
-    <p class="demo-sub">Pick a sentence and a font. The bars show how often each model's answers flipped between text and image for that view, next to the model's average across all fonts and sentences (the vertical marker).</p>
-
-    <div style="margin:0 0 0.9rem;">
-      <label for="sentencePicker" style="font-size:0.8rem;color:var(--muted);display:block;margin-bottom:0.3rem;">Sentence &middot; the ten with the most divergent results across models, or the full-set average</label>
-      <select id="sentencePicker" style="max-width:100%;font:inherit;font-size:0.85rem;padding:0.35rem 0.5rem;background:var(--bg);color:var(--fg);border:1px solid var(--rule);border-radius:6px;"></select>
-    </div>
-
-    <div class="font-picker" id="fontPicker"></div>
-
-    <div class="sentence-preview">
-      <div class="preview-label">Selected sentence in the selected font</div>
-      <div id="sentenceDisplay">Failure to complete this step may affect access</div>
-    </div>
-
-    <p class="chart-heading">Text-vs-image flip rate on the same content, by model</p>
-    <div class="flip-chart" id="flipChart"></div>
-    <p class="chart-note">Flip rate = how often the model's image answer disagreed with its own text answer on identical content. The pp delta compares the current view against that model's all-font, all-sentence average (the vertical marker). For a single sentence, the bar is the share of its ten questions that flipped in that font &mdash; each cell is only 10 comparisons, so values move in coarse 10-point steps.</p>
-  </div>
-
-  <p>I haven&rsquo;t found prior work focused on downstream decisions and qualitative assessments. The recent work I&rsquo;ve found on AI &times; typography focuses more on VLM accuracy, cybersecurity, and things like <a href="https://www.mixfont.com/experiments/decoy-font">DecoyFont</a>. The closest work I&rsquo;ve seen is <a href="https://arxiv.org/abs/2603.09095">Reading, Not Thinking</a> on how rendering text as pixels dulls model reasoning, and <a href="https://arxiv.org/abs/2602.15278">Visual Persuasion</a> on how image styling sways VLM choices &mdash; neither looks at fonts driving judgments or decisions.</p>
-  <p>Given that these findings shift across providers and models, I&rsquo;m planning to run this benchmark against future major model releases. All of the code, methodology, and data are publicly available on <a href="https://github.com/wdanfort/thinkingtype">GitHub</a>. Design and coding were done with Claude Code. I want feedback on methodology and gaps &mdash; especially from anyone running VLMs on real documents in production &mdash; so please <a href="mailto:wbdanforth@gmail.com">reach out</a>.</p>
-
-  <h2>Quick Product Implications</h2>
-  <ol>
-    <li><strong>Vision-text consistency is not stable across provider, model, or generation.</strong> Typography should be included in internal product evals to identify drift.</li>
-    <li><strong>Accessible fonts like OpenDyslexic fared much worse than traditional ones</strong>, so extra caution should be taken when building out evals to ensure fairness and equity. Relatedly, fonts like Times had the least text-vision divergence, so people might try to game AI systems by selecting &ldquo;better&rdquo; fonts.</li>
-    <li><strong>Decision drift can be controlled.</strong> Clear prompt rubrics eliminated divergence for one of the three providers tested and cut it in half for a second.</li>
-    <li><strong>Measure refusals per format.</strong> Refusal rates differ between image and text presentation of the same content in Fable 5 (finding 4), so a single pooled refusal number will hide it.</li>
-  </ol>
-
-  <h2>Key Limitations</h2>
-  <ol>
-    <li>All benchmark artifacts, including sentence examples, are synthetic, and so may not mirror real world results. I tried to generate them to be on the borderline for decisions and criteria. However, the effect appearing in every provider tested suggests it is not an artifact of a single model family &mdash; though real-world magnitudes remain untested.</li>
-    <li>Most results rest on 20 edge cases per model per test (60 for the accessibility comparison). Due to budget constraints, I chose to limit my choice of variables and outputs tested to balance cost and reasonable confidence intervals.</li>
-    <li>Stimuli are synthetic single-page documents with no names or demographics, by design. Real documents have messier content, but would make isolating to font alone more challenging.</li>
-    <li>Directly comparing text and vision requires rendering words to an image, which introduces confounders beyond font. The rendering pipeline is identical across fonts, so font-to-font comparisons are apples-to-apples; the absolute image-vs-text gap should be read directionally.</li>
-  </ol>
-
-  <h2>Next steps</h2>
-  <ol>
-    <li>Incorporate any feedback on methodology and gaps.</li>
-    <li>Go deeper on accessibility. More assistive formats (large print, high contrast, letter spacing), more items, enough statistical power to pin down per-provider effects.</li>
-    <li>Keep tracking releases. Continue running and publishing the eval harness against major model releases.</li>
-  </ol>
-
-  <h2>Why build this?</h2>
-  <p>I got into typography this year after reading &ldquo;Thinking with Type.&rdquo; Type design mirrors the tech and culture of the day, so since it&rsquo;s 2026, I was curious about how agents are influenced by, and may potentially shape, popular fonts and design conventions. Is Comic Sans still seen as unprofessional? Would an agent then be less likely to recommend a resume written in OpenDyslexic? What does the future of typography look like when it&rsquo;s increasingly consumed by both people and robots? This project is a first-pass attempt to understand this.</p>
-
-  <h2>Reproduce</h2>
-  <pre><code>typo-eval --config configs/gates_v1.yaml gates-build
-typo-eval --config configs/gates_v1.yaml gates-render
-typo-eval --config configs/gates_v1.yaml gates-calibrate --provider &lt;p&gt;
-typo-eval --config configs/gates_v1.yaml gates-run --provider &lt;p&gt;
-typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
-  <p>Full per-run reports, item-level CSVs, and forest plots are in <a href="https://github.com/wdanfort/thinkingtype/tree/main/results/gates">results/gates/</a>. The drift monitor for testing your own model &times; gate combinations is documented in <a href="https://github.com/wdanfort/thinkingtype/blob/main/docs/GATE_DRIFT.md">docs/GATE_DRIFT.md</a>.</p>
-
-  <h2>Appendix: detailed results</h2>
   <h3>Judgment flip rate by font and model</h3>
   <div class="tablewrap">
     <table>
