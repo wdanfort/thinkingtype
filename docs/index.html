@@ -231,18 +231,18 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
   <p class="tablenote">Share (%) of yes/no judgments where the model's image answer disagreed with its own text answer on identical content (120 sentences, 10 questions each), by font. 95% CIs bootstrapped by sentence.</p>
 
   
-  <h3>Panel 1 &middot; What vision alone does (all fonts averaged)</h3>
+  <h3>Panel 1 &middot; The vision effect: flips in the plainest font (Times regular)</h3>
   <div class="tablewrap">
     <table>
       <thead><tr><th>Question</th><th>GPT-4o</th><th>GPT-5.5</th><th>GPT-5.6 Sol</th><th>Sonnet 5</th><th>Fable 5</th></tr></thead>
       <tbody id="heatBaseBody"></tbody>
     </table>
   </div>
-  <p class="tablenote">Each cell is the percentage of answers that flip when the model reads an image instead of text, pooled over all 120 sentences and 8 fonts (960 comparisons per cell). A flip means the model&rsquo;s image answer disagreed with its own text answer, not that it answered yes. Color shows which way flips lean: <span style="color:#0b57d0;font-weight:700">blue</span> = the image answer moves toward yes, <span style="color:#b3261e;font-weight:700">red</span> = toward no; deeper color = more flips. On the bottom escalation row, red means the image version flips toward <em>not</em> escalating (more permissive: GPT-4o, GPT-5.5, Fable 5) and blue toward escalating (more cautious: Sonnet 5, Sol). Hover any cell for the exact split.</p>
+  <p class="tablenote">Each cell is the percentage of answers that flip when the model reads an image of plain Times regular instead of text (120 comparisons per cell). Times is the most text-like font in every model tested, so this is the closest available measure of what merely being an image does, before any font styling. A flip means the model&rsquo;s image answer disagreed with its own text answer, not that it answered yes. Color shows which way flips lean: <span style="color:#0b57d0;font-weight:700">blue</span> = the image answer moves toward yes, <span style="color:#b3261e;font-weight:700">red</span> = toward no; deeper color = more flips. Direction here means the overall yes-rate shifts; questions with lopsided base rates will mostly flip from the majority answer. The escalation row has few flips (1 to 4% of sentences) because these everyday sentences rarely sit near the escalation boundary; Panel 3 below measures decisions properly. Hover any cell for the exact split.</p>
 
-  <h3>Panel 2 &middot; What each font adds on top of that baseline</h3>
+  <h3>Panel 2 &middot; Extra flips caused by the font (versus Times regular)</h3>
   <div style="margin:0 0 0.9rem;">
-    <label for="heatFontSel" style="font-size:0.8rem;color:var(--muted);display:block;margin-bottom:0.3rem;">Font &middot; each cell is this font&rsquo;s flip rate minus the all-font baseline above</label>
+    <label for="heatFontSel" style="font-size:0.8rem;color:var(--muted);display:block;margin-bottom:0.3rem;">Font &middot; each cell is this font&rsquo;s flip rate minus the Times regular baseline above</label>
     <select id="heatFontSel" style="max-width:100%;font:inherit;font-size:0.85rem;padding:0.35rem 0.5rem;background:var(--bg);color:var(--fg);border:1px solid var(--rule);border-radius:6px;"></select>
   </div>
   <div class="tablewrap">
@@ -251,7 +251,16 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
       <tbody id="heatDeltaBody"></tbody>
     </table>
   </div>
-  <p class="tablenote"><span style="color:#7c3aed;font-weight:700">Purple</span> = this font flips more answers than the all-font baseline for that question; <span style="color:#0f766e;font-weight:700">green</span> = fewer. Values are percentage points versus Panel 1. Each cell rests on 120 comparisons, so deltas smaller than about 5 points are within noise and shown without color. Hover for the font&rsquo;s absolute rate and flip direction.</p>
+  <p class="tablenote"><span style="color:#7c3aed;font-weight:700">Purple</span> = this font flips more answers than plain Times for that question; <span style="color:#0f766e;font-weight:700">green</span> = fewer. Values are percentage points versus Panel 1. A gray row (like professional) means the flipping is a vision effect, not a font effect. Each cell rests on 120 comparisons, so deltas smaller than about 5 points are within noise and shown without color. Hover for the font&rsquo;s absolute rate and flip direction.</p>
+
+  <h3>Panel 3 &middot; Real decisions at the boundary (Experiment 2)</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Decision test</th><th>GPT-5.5</th><th>GPT-5.6 Sol</th><th>Sonnet 5</th><th>Fable 5</th><th>Gemini 3.5 Flash</th></tr></thead>
+      <tbody><tr><td>Moderation: remove this comment?</td><td style="background:rgba(11,87,208,0.62);color:#ffffff;font-weight:700;text-align:right">+10.0</td><td style="background:rgba(11,87,208,0.29);color:var(--fg);text-align:right">+4.6</td><td style="background:rgba(11,87,208,0.82);color:#ffffff;font-weight:700;text-align:right">+13.1</td><td style="background:rgba(179,38,30,0.38);color:var(--fg);text-align:right">-6.0</td><td style="background:rgba(11,87,208,0.17);color:var(--fg);text-align:right">+2.7</td></tr><tr><td>Resume screening: advance to interview?</td><td style="background:rgba(179,38,30,0.26);color:var(--fg);font-weight:700;text-align:right">-4.2</td><td style="background:rgba(11,87,208,0.35);color:var(--fg);text-align:right">+5.6</td><td style="background:rgba(179,38,30,0.06);color:var(--fg);text-align:right">-1.0</td><td style="background:rgba(11,87,208,0.44);color:var(--fg);text-align:right">+7.1</td><td style="background:rgba(11,87,208,0.97);color:#ffffff;font-weight:700;text-align:right">+15.6</td></tr><tr><td>Appeal review: approve the grant?</td><td style="background:rgba(11,87,208,0.13);color:var(--fg);text-align:right">+2.1</td><td style="background:rgba(11,87,208,0.11);color:var(--fg);text-align:right">+1.7</td><td style="background:rgba(179,38,30,0.11);color:var(--fg);text-align:right">-1.7</td><td style="background:rgba(120,120,120,0.01);color:var(--fg);text-align:right">-0.2</td><td style="background:rgba(179,38,30,0.16);color:var(--fg);text-align:right">-2.5</td></tr></tbody>
+    </table>
+  </div>
+  <p class="tablenote">This is the second experiment&rsquo;s decision data, with a deliberately clean baseline: every item was first calibrated in plain text to sit at that model&rsquo;s own decision boundary (cases that could honestly go either way), then shown as an image of the same words in plain fonts. Each cell is how many percentage points more often the model said yes to the image than to the identical text; <span style="color:#0b57d0;font-weight:700">blue</span> = more favorable to the person being judged as an image (comment kept up, candidate advanced, appeal approved), <span style="color:#b3261e;font-weight:700">red</span> = harsher. Bold = 95% interval excludes zero. 20 edge cases per cell. Unlike Panel 1&rsquo;s escalation row, these items were built to be movable, which is why the effects are visible here.</p>
 
 
   <!-- ════════════════════════════════════════════════════════════════════
@@ -381,7 +390,7 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
     return '<td style="background:rgba(' + hue + ',' + a.toFixed(2) + ');color:' + txt + ';text-align:right"><span title="' + tip + '">' + c.f.toFixed(1) + '%</span></td>';
   }
   (function renderBase() {
-    var data = HEAT_DIR['all'];
+    var data = HEAT_DIR['T1'];
     var html = '';
     HEAT_DIMS.forEach(function(d) {
       html += '<tr><td>' + HEAT_LABELS[d] + '</td>';
@@ -395,7 +404,7 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
   })();
 
   const heat2Sel = document.getElementById('heatFontSel');
-  [['T7','Comic Sans'],['A1','OpenDyslexic'],['T5b','Arial Caps'],['T1','Times Regular'],['T2','Times Bold'],['T3','Arial Regular'],['T4','Arial Bold'],['T6','Monospace']].forEach(function(fv) {
+  [['T7','Comic Sans'],['A1','OpenDyslexic'],['T5b','Arial Caps'],['T2','Times Bold'],['T3','Arial Regular'],['T4','Arial Bold'],['T6','Monospace']].forEach(function(fv) {
     var o = document.createElement('option');
     o.value = fv[0]; o.textContent = fv[1];
     heat2Sel.appendChild(o);
@@ -415,7 +424,7 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
   }
   function renderDelta() {
     var data = HEAT_DIR[heat2Sel.value];
-    var base = HEAT_DIR['all'];
+    var base = HEAT_DIR['T1'];
     var html = '';
     HEAT_DIMS.forEach(function(d) {
       html += '<tr><td>' + HEAT_LABELS[d] + '</td>';
