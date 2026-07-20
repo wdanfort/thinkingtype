@@ -206,7 +206,7 @@
       <!-- x axis note -->
       <text x="330" y="278" text-anchor="middle" fill="var(--muted)" font-size="12">release lineage &rarr; (each vendor&rsquo;s successive flagship, left to right)</text>
     </svg>
-    <figcaption>Share of yes/no judgments that flip between text and image, per model; whiskers are 95% CIs. The gap was closing generation over generation until GPT-5.6 Sol reopened it.</figcaption>
+    <figcaption>Share of yes/no judgments that flip between text and image, per model; whiskers are 95% CIs.</figcaption>
   </figure>
 
   <div class="demo" id="demo">
@@ -221,7 +221,7 @@
     <div class="font-picker" id="fontPicker"></div>
 
     <div class="sentence-preview">
-      <div class="preview-label">Sample sentence in the selected font</div>
+      <div class="preview-label">Selected sentence in the selected font</div>
       <div id="sentenceDisplay">Failure to complete this step may affect access</div>
     </div>
 
@@ -235,9 +235,10 @@
 
   <h2>Quick Product Implications</h2>
   <ol>
-    <li><strong>Vision-text consistency is not stable across provider, model, or generation.</strong> Typography should be included in internal product evals to identify drift.</li>
+    <li><strong>Vision-text consistency is not stable across provider, model, or generation.</strong> Typography should be included in internal product evals to identify drift &mdash; <a href="https://arxiv.org/abs/2603.09095">Reading, Not Thinking (2026)</a> found font choice alone can swing accuracy by up to 47 points on reasoning tasks.</li>
+    <li><strong>Accessible fonts like OpenDyslexic fared much worse than traditional ones</strong>, so extra caution should be taken when building out evals to ensure fairness and equity. Relatedly, fonts like Times had the least text-vision divergence, so people might try to game AI systems by selecting &ldquo;better&rdquo; fonts &mdash; <a href="https://arxiv.org/abs/2602.15278">Visual Persuasion (2026)</a> shows optimized image styling already sways VLM choices.</li>
     <li><strong>Decision drift can be controlled.</strong> Clear prompt rubrics eliminated divergence for one of the three providers tested and cut it in half for a second.</li>
-    <li><strong>Measure refusals per format.</strong> Refusal rates differ between image and text presentation of the same content (finding 4), so a single pooled refusal number will hide it.</li>
+    <li><strong>Measure refusals per format.</strong> Refusal rates differ between image and text presentation of the same content in <a href="https://www.anthropic.com/news/claude-fable-5-mythos-5">Fable 5</a> (finding 4), so a single pooled refusal number will hide it.</li>
   </ol>
 
   <h2>Key Limitations</h2>
@@ -266,7 +267,7 @@ typo-eval --config configs/gates_v1.yaml gates-run --provider &lt;p&gt;
 typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
   <p>Full per-run reports, item-level CSVs, and forest plots are in <a href="https://github.com/wdanfort/thinkingtype/tree/main/results/gates">results/gates/</a>. The drift monitor for testing your own model &times; gate combinations is documented in <a href="https://github.com/wdanfort/thinkingtype/blob/main/docs/GATE_DRIFT.md">docs/GATE_DRIFT.md</a>.</p>
 
-  <h2>Appendix: per-font results</h2>
+  <h2>Appendix: detailed results</h2>
   <h3>Judgment flip rate by font and model</h3>
   <div class="tablewrap">
     <table>
@@ -284,6 +285,28 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
     </table>
   </div>
   <p class="tablenote">Share (%) of yes/no judgments where the model's image answer disagreed with its own text answer on identical content (120 sentences, 10 questions each), by font. 95% CIs bootstrapped by sentence.</p>
+
+  
+  <h3>Flip rate by question and model (heatmap)</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Question</th><th>GPT-4o</th><th>GPT-5.5</th><th>Sonnet 5</th><th>Fable 5</th><th>GPT-5.6 Sol</th></tr></thead>
+      <tbody>
+        <tr><td>confident</td><td style="background:rgba(11,87,208,0.99);color:#ffffff;text-align:right">35.5</td><td style="background:rgba(11,87,208,0.48);color:var(--fg);text-align:right">17.3</td><td style="background:rgba(11,87,208,0.44);color:var(--fg);text-align:right">15.8</td><td style="background:rgba(11,87,208,0.53);color:var(--fg);text-align:right">19.2</td><td style="background:rgba(11,87,208,0.88);color:#ffffff;text-align:right">31.7</td></tr>
+        <tr><td>trustworthy</td><td style="background:rgba(11,87,208,0.75);color:#ffffff;text-align:right">27.0</td><td style="background:rgba(11,87,208,0.28);color:var(--fg);text-align:right">9.9</td><td style="background:rgba(11,87,208,0.54);color:var(--fg);text-align:right">19.3</td><td style="background:rgba(11,87,208,0.46);color:var(--fg);text-align:right">16.4</td><td style="background:rgba(11,87,208,0.56);color:#ffffff;text-align:right">20.1</td></tr>
+        <tr><td>formal</td><td style="background:rgba(11,87,208,0.67);color:#ffffff;text-align:right">24.1</td><td style="background:rgba(11,87,208,0.47);color:var(--fg);text-align:right">16.9</td><td style="background:rgba(11,87,208,0.19);color:var(--fg);text-align:right">6.7</td><td style="background:rgba(11,87,208,0.27);color:var(--fg);text-align:right">9.7</td><td style="background:rgba(11,87,208,0.46);color:var(--fg);text-align:right">16.6</td></tr>
+        <tr><td>persuasive</td><td style="background:rgba(11,87,208,0.44);color:var(--fg);text-align:right">15.7</td><td style="background:rgba(11,87,208,0.14);color:var(--fg);text-align:right">5.1</td><td style="background:rgba(11,87,208,0.60);color:#ffffff;text-align:right">21.5</td><td style="background:rgba(11,87,208,0.29);color:var(--fg);text-align:right">10.4</td><td style="background:rgba(11,87,208,0.32);color:var(--fg);text-align:right">11.4</td></tr>
+        <tr><td>high risk</td><td style="background:rgba(11,87,208,0.36);color:var(--fg);text-align:right">13.1</td><td style="background:rgba(11,87,208,0.23);color:var(--fg);text-align:right">8.2</td><td style="background:rgba(11,87,208,0.15);color:var(--fg);text-align:right">5.3</td><td style="background:rgba(11,87,208,0.30);color:var(--fg);text-align:right">10.8</td><td style="background:rgba(11,87,208,0.31);color:var(--fg);text-align:right">11.0</td></tr>
+        <tr><td>professional</td><td style="background:rgba(11,87,208,0.32);color:var(--fg);text-align:right">11.7</td><td style="background:rgba(11,87,208,0.34);color:var(--fg);text-align:right">12.2</td><td style="background:rgba(11,87,208,0.25);color:var(--fg);text-align:right">9.0</td><td style="background:rgba(11,87,208,0.15);color:var(--fg);text-align:right">5.3</td><td style="background:rgba(11,87,208,0.16);color:var(--fg);text-align:right">5.8</td></tr>
+        <tr><td>immediate action</td><td style="background:rgba(11,87,208,0.41);color:var(--fg);text-align:right">14.9</td><td style="background:rgba(11,87,208,0.12);color:var(--fg);text-align:right">4.4</td><td style="background:rgba(11,87,208,0.30);color:var(--fg);text-align:right">10.9</td><td style="background:rgba(11,87,208,0.16);color:var(--fg);text-align:right">5.9</td><td style="background:rgba(11,87,208,0.14);color:var(--fg);text-align:right">5.1</td></tr>
+        <tr><td>urgent</td><td style="background:rgba(11,87,208,0.22);color:var(--fg);text-align:right">8.0</td><td style="background:rgba(11,87,208,0.07);color:var(--fg);text-align:right">2.6</td><td style="background:rgba(11,87,208,0.15);color:var(--fg);text-align:right">5.3</td><td style="background:rgba(11,87,208,0.17);color:var(--fg);text-align:right">6.3</td><td style="background:rgba(11,87,208,0.12);color:var(--fg);text-align:right">4.4</td></tr>
+        <tr><td>form dependent</td><td style="background:rgba(11,87,208,0.01);color:var(--fg);text-align:right">0.2</td><td style="background:rgba(11,87,208,0.02);color:var(--fg);text-align:right">0.8</td><td style="background:rgba(11,87,208,0.02);color:var(--fg);text-align:right">0.8</td><td style="background:rgba(11,87,208,0.05);color:var(--fg);text-align:right">1.9</td><td style="background:rgba(11,87,208,0.02);color:var(--fg);text-align:right">0.7</td></tr>
+        <tr><td>emotional</td><td style="background:rgba(11,87,208,0.05);color:var(--fg);text-align:right">1.9</td><td style="background:rgba(11,87,208,0.01);color:var(--fg);text-align:right">0.3</td><td style="background:rgba(11,87,208,0.00);color:var(--fg);text-align:right">0.1</td><td style="background:rgba(11,87,208,0.02);color:var(--fg);text-align:right">0.6</td><td style="background:rgba(11,87,208,0.00);color:var(--fg);text-align:right">0.1</td></tr>
+        <tr style="border-top:2px solid var(--fg)"><td><strong>escalation decision</strong></td><td style="background:rgba(11,87,208,0.12);color:var(--fg);text-align:right">4.5</td><td style="background:rgba(11,87,208,0.02);color:var(--fg);text-align:right">0.8</td><td style="background:rgba(11,87,208,0.05);color:var(--fg);text-align:right">1.8</td><td style="background:rgba(11,87,208,0.08);color:var(--fg);text-align:right">2.7</td><td style="background:rgba(11,87,208,0.03);color:var(--fg);text-align:right">1.2</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tablenote">Share (%) of answers that flip between text and image for each of the ten qualitative questions, pooled over all 120 sentences and 8 fonts; deeper blue = more flips. The bottom row is the actual escalation decision (&ldquo;should this be escalated to a human reviewer?&rdquo;) rather than a qualitative judgment: decisions flip far less than judgments in every model.</p>
 
   <h3>Decision shift by visual style and model</h3>
   <div class="tablewrap">
@@ -391,11 +414,12 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
     document.querySelectorAll('#fontPicker .font-btn').forEach(function(btn, i) {
       btn.classList.toggle('active', VARIANTS[i].id === active.id);
     });
+    document.querySelector('#demo .sentence-preview').style.display = activeSent === 'all' ? 'none' : '';
     var disp = document.getElementById('sentenceDisplay');
     disp.style.fontFamily = active.family;
     disp.style.fontWeight = active.weight;
     disp.style.textTransform = active.xform;
-    disp.textContent = activeSent === 'all' ? DEMO_SENTENCE : SENTENCES[activeSent].text;
+    disp.textContent = activeSent === 'all' ? '' : SENTENCES[activeSent].text;
     var max = activeSent === 'all' ? MAX_ALL : MAX_ONE;
     PROVIDERS.forEach(function(p) {
       var val = activeSent === 'all' ? active[p.key] : SENTENCES[activeSent][p.key][active.id];
