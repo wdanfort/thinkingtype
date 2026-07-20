@@ -118,12 +118,6 @@ providers:
     api_key_env: ANTHROPIC_API_KEY
     model_text: claude-fable-5
     model_vision: claude-fable-5
-  google:
-    api_key_env: GOOGLE_API_KEY
-    model_text: models/gemini-3.5-flash
-    model_vision: models/gemini-3.5-flash
-    # Thinking disabled, matching v0b pilot decision (agreement checked there)
-    thinking_budget: 0
 
 inference:
   mode: both
