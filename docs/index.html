@@ -144,14 +144,15 @@
     <ol> 
   <li>Presentation modality alone changes answers: showing a model an image of the same words (plain Times) instead of raw text <a href="#vision-effect">flips ~10% of yes/no judgments</a>.</li>
   <li>Modality effect differs significantly across Claude and GPT and changed with each new generation.</li>
+  <li>Fable 5&rsquo;s <a href="#fable-refusals">refusals clustered the most around Monospace and OpenDyslexic</a>. No other model tested, including GPT-5.6 Sol, had any refusals. </li>  
   <li>On top of these effect, fonts do indeed move decisions: </li>
       <ol>
         <li>Comic Neue (open source Comic Sans) and OpenDyslexic are the <a href="#font-flip-table">likeliest to flip a judgment</a> (up to 19% and 21% respectively).</li>
         <li><a href="#font-flip-table">Times regular is the most stable font</a> in every model I tested, with similar judgements as the corresponding LLM running on plain text. </li>
       </ol>
     </ol>
-  <li>Fable 5&rsquo;s <a href="#fable-refusals">refusals clustered the most around Monospace and OpenDyslexic</a>. Images of Times Regular/Arial Regular had significantly fewer refusals for the same text than plaintext versions.  </li>  
-<p>I think these findings generalize beyond just how I set up the image-to-text comparison and matter for production systems. Given that both the VLM vs. LLM and typography impacts shift across providers and models I&rsquo;m planning to track and publish new results against future major model releases. </p>
+  
+<p>My sense is these findings generalize beyond just my specific toy examples and translate to production systems. Given that both the VLM vs. LLM and typography impacts shift across providers and models I&rsquo;m planning to track and publish new results against future major model releases. </p>
 
   <h3 id="vision-effect">VLM vs. LLM effect using Times as a baseline</h3>
   <div class="tablewrap">
@@ -164,7 +165,7 @@
 
 
   <div class="demo" id="demo">
-    <h3 style="margin-top:0">Explore the work! Top sentence flips with fonts per model</h3>
+    <h3 style="margin-top:0">Explore the results</h3>
     <p class="demo-sub">Pick a sentence and a font. The bars show how often each model's answers flipped between text and image for that view, next to the model's average across all fonts and sentences (the vertical marker).</p>
 
     <div style="margin:0 0 0.9rem;">
@@ -222,7 +223,7 @@
   </ol>
 
   <h2 id="why-build-this">Why build this?</h2>
-  <p>I got into typography this year after reading &ldquo;Thinking with Type.&rdquo; Type design mirrors the tech and culture of the day, so since it&rsquo;s 2026, I was curious about how agents are influenced by, and may potentially shape, popular fonts and design conventions. Is Comic Sans still seen as unprofessional? Would an agent then be less likely to recommend a resume written in OpenDyslexic? What does the future of typography look like when it&rsquo;s increasingly consumed by both people and robots? ThinkingType is a sideproject to understand this a bit better from my day job as a product manager working in large-scale recommendations (and with a few hundred dollar token budget).</p>
+  <p>I got into typography this year after reading &ldquo;Thinking with Type.&rdquo; Type design mirrors the tech and culture of the day, so since it&rsquo;s 2026, I was curious about how agents are influenced by, and may potentially shape, popular fonts and design conventions. Is Comic Sans still seen as unprofessional? Would an agent then be less likely to recommend a resume written in OpenDyslexic? What does the future of typography look like when it&rsquo;s increasingly consumed by both people and robots? ThinkingType is a sideproject to understand this a bit better from my day job as a product manager working in large-scale recommendations (and with a limited token budget).</p>
 
   <h2 id="reproduce">Reproduce</h2>
   <pre><code>typo-eval --config configs/gates_v1.yaml gates-build
