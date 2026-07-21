@@ -141,7 +141,7 @@
   <p><strong>Does a VLM &ldquo;read&rdquo; a Comic Sans resume as unprofessional?</strong></p>
   <p class="disclaimer"><a href="https://github.com/wdanfort">Will Danforth</a> &middot; Views are my own and not my employer&rsquo;s &middot; v1, last updated July 21st, 2026.</p>
 
-  <p>Short answer: it scores at least as more informal. Comic Neue (open source Comic Sans) flips &ldquo;is this formal?&rdquo; by <a href="#font-deltas">up to +83pp</a> versus plain Times, with some evidence this font leads to stricter content moderation in my toy examples.For decisions, the far bigger influence is whether the model reads words as text or an image.</p> 
+  <p>Short answer: it scores at least as more informal. Comic Neue (open source Comic Sans) flips &ldquo;is this formal?&rdquo; by <a href="#font-deltas">up to +83pp</a> versus plain Times. For decisions, the far bigger influence is whether the model reads words as text or an image.</p> 
   <p>I built ThinkingType as a lightweight benchmark to measure how typography influences qualitative assessments (e.g. trustworthy, professional) and downstream decisions (&ldquo;flag this policy violation,&rdquo; &ldquo;approve this resume&rdquo;). My main findings:</p>
     <ol> 
   <li>Presentation modality alone changes answers: showing a model an image of the same words (plain Times) instead of raw text <a href="#vision-effect">flips ~10% of yes/no judgments</a>.</li>
