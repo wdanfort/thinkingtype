@@ -273,7 +273,7 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
   </div>
   <p class="tablenote">Items pre-calibrated to sit at each model&rsquo;s own decision boundary, then shown as images of the same words; <span style="color:#0b57d0;font-weight:700">blue</span> = more favorable to the person judged as an image, <span style="color:#b3261e;font-weight:700">red</span> = harsher, * = 95% CI excludes zero (20 edge cases per cell).</p>
 
-  <h3>Where Fable 5&rsquo;s refusals clustered</h3>
+  <h3>Fable 5&rsquo;s refusals clustered</h3>
   <div class="tablewrap">
     <table>
       <thead><tr><th>Presentation</th><th>Refusals</th><th>Rate</th></tr></thead>
@@ -284,13 +284,13 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
         <tr><td>Plain text (no image)</td><td>26 / 1,320</td><td style="background:rgba(11,87,208,0.38);color:var(--fg);text-align:right">1.97%</td></tr>
         <tr><td>Times Bold</td><td>16 / 1,320</td><td style="background:rgba(11,87,208,0.23);color:var(--fg);text-align:right">1.21%</td></tr>
         <tr><td>Arial Caps</td><td>16 / 1,320</td><td style="background:rgba(11,87,208,0.23);color:var(--fg);text-align:right">1.21%</td></tr>
-        <tr><td>Arial Bold</td><td>6 / 1,320</td><td style="background:rgba(11,87,208,0.09);color:var(--fg);text-align:right">0.45%</td></tr>
-        <tr><td>Times Regular</td><td>7 / 1,320</td><td style="background:rgba(11,87,208,0.10);color:var(--fg);text-align:right">0.53%</td></tr>
-        <tr><td>Arial Regular</td><td>2 / 1,320</td><td style="background:rgba(11,87,208,0.03);color:var(--fg);text-align:right">0.15%</td></tr>
+        <tr><td>Arial Bold</td><td>6 / 1,320</td><td style="background:rgba(11,87,208,0.09);color:var(--fg);text-align:right">0.45%*</td></tr>
+        <tr><td>Times Regular</td><td>7 / 1,320</td><td style="background:rgba(11,87,208,0.10);color:var(--fg);text-align:right">0.53%*</td></tr>
+        <tr><td>Arial Regular</td><td>2 / 1,320</td><td style="background:rgba(11,87,208,0.03);color:var(--fg);text-align:right">0.15%*</td></tr>
       </tbody>
     </table>
   </div>
-  <p class="tablenote">Every judgment and decision question Fable 5 was asked, grouped by what it was looking at; plain text is included as the baseline (n = 1,320 per row). Monospace and OpenDyslexic refuse 6&ndash;7&times; more than the calmest fonts (Arial Regular, Times Regular); Comic Sans is a distant third. GPT-4o, GPT-5.5, GPT-5.6 Sol, and Sonnet 5 had zero refusals on this track; Gemini was not run on it. Fable 5 is the only model this table covers.</p>
+  <p class="tablenote">n = 1,320 per row; plain text is the baseline. * = significantly fewer refusals than plain text (Fisher&rsquo;s exact, BH-corrected). Only the calmest fonts clear that bar; monospace and OpenDyslexic aren&rsquo;t statistically distinct from text, but are 6&ndash;7&times; the rate of the significant fonts. Other four models tested: zero refusals; Gemini wasn&rsquo;t run on this track.</p>
 
   <!-- ════════════════════════════════════════════════════════════════════
        ✏️ EDIT 10 · FOOTER
