@@ -134,24 +134,22 @@
   <!-- ════════════════════════════════════════════════════════════════════
        ✏️ WILL'S v1 WRITEUP — prose is Will's; tables and demo data are measured
        ════════════════════════════════════════════════════════════════════ -->
-  <h1>ThinkingType: how typography influences judgments and decisions</h1>
+  <h1>ThinkingType: how typography influences AI judgments and decisions</h1>
   <p><strong>Does a VLM &ldquo;read&rdquo; a Comic Sans resume as unprofessional?</strong></p>
   <p class="disclaimer">Will Danforth &middot; Views are my own and not my employer&rsquo;s &middot; v1, last updated July 21st, 2026.</p>
 
-  <p>I built ThinkingType as a new, lightweight benchmark to measure how typography influences qualitative assessments (e.g. trustworthy, professional) and downstream decisions (&ldquo;flag this policy violation,&rdquo; &ldquo;approve this resume&rdquo;). My main findings:</p>
-  <ol>
-    <li>Running my examples through as text vs as image changes answers. I was worried this was a modality effect, but it does differ significantly (~10% yes/no judgments flip).</li>
-    <li>This effect exists (and differs) across Claude and GPT, changing significantly with each new generation.</li>
-    <li>On the margins, Fonts do appear to influence decisions and judgments for VLMs. 
+  <p>Short answer: modestly. Comic Neue and OpenDyslexic flip up to ~20% of borderline judgments versus just plain Times, but the far larger influence appears to be switching from an LLM to a VLM.</p> 
+  <p>I built ThinkingType as a lightweight benchmark to measure how typography influences qualitative assessments (e.g. trustworthy, professional) and downstream decisions (&ldquo;flag this policy violation,&rdquo; &ldquo;approve this resume&rdquo;). My main findings:</p>
+    <ol> 
+  <li>Presentation modality alone changes answers: showing a model an image of the same words (plain Times) instead of raw text flips ~10% of yes/no judgments.</li>
+  <li>Modality effect differs significantly across Claude and GPT and changed with each new generation.</li>
+  <li>On top of these effect, fonts do indeed move decisions: </li>
       <ol>
-        <li>Times regular is the most stable font in every model I tested; plain serif is the closest thing to &ldquo;reads like text.&rdquo;</li>
         <li>Comic Neue (open source Comic Sans) and OpenDyslexic are the likeliest to flip a judgment (up to 19% and 21% respectively).</li>
+        <li>Times regular is the most stable font in every model I tested, with similar judgements as the corresponding LLM running on plain text. </li>
       </ol>
-    </li>
-    <li>Fable 5 refused six times more often on images than on identical text, and the refusals clustered by font.</li>
-  </ol>
-
-  <p>Given that both VLM vs. LLM and typography impacts shift across providers and models, and that there are real world implications (see below), I&rsquo;m planning to track and publish new results against future major model releases.</p>
+    </ol>
+<p>I think these findings generalize beyond just how I set up the image-to-text comparison and matter for production systems. Given that both the VLM vs. LLM and typography impacts shift across providers and models I&rsquo;m planning to track and publish new results against future major model releases. </p>
 
   <h3>VLM vs. LLM effect using Times as a baseline</h3>
   <div class="tablewrap">
@@ -164,7 +162,7 @@
 
 
   <div class="demo" id="demo">
-    <h3 style="margin-top:0">Explore the benchmark: top sentence flips with fonts per model</h3>
+    <h3 style="margin-top:0">Explore the work! Top sentence flips with fonts per model</h3>
     <p class="demo-sub">Pick a sentence and a font. The bars show how often each model's answers flipped between text and image for that view, next to the model's average across all fonts and sentences (the vertical marker).</p>
 
     <div style="margin:0 0 0.9rem;">
@@ -185,13 +183,16 @@
   </div>
 
   <p>I haven&rsquo;t found prior work focused on downstream decisions and qualitative assessments. The recent work I&rsquo;ve found on AI &times; typography focuses more on VLM accuracy, cybersecurity, and things like <a href="https://www.mixfont.com/experiments/decoy-font">DecoyFont</a>. The closest work I&rsquo;ve seen is <a href="https://arxiv.org/abs/2603.09095">Reading, Not Thinking</a> on how rendering text as pixels dulls model reasoning, and <a href="https://arxiv.org/abs/2602.15278">Visual Persuasion</a> on how image styling sways VLM choices, but neither looks at fonts driving judgments or decisions.</p>
-  All of the code, methodology, and data are publicly available on <a href="https://github.com/wdanfort/thinkingtype">GitHub</a>. Design and coding were done with Claude Code. I want feedback on methodology and gaps, especially from anyone running VLMs on real documents in production, so please <a href="mailto:wbdanforth@gmail.com">reach out</a>.</p>
+  All of the code, methodology, and data are publicly available on <a href="https://github.com/wdanfort/thinkingtype">GitHub</a>. I built the eval harness and some writing support with Claude Code. I want feedback on methodology and gaps, especially from anyone running VLMs on real documents in production, so please <a href="mailto:wbdanforth@gmail.com">reach out</a>.</p>
 
   <h2>Quick Product Implications</h2>
   <ol>
     <li><strong>Vision-text consistency.</strong> This property is not stable across provider, model, or generation. Typography should be included in internal product evals to identify drift.</li>
-    <li><strong>Equity.</strong> Fonts like OpenDyslexic fared much worse than traditional ones, so extra caution should be taken when building out evals to ensure fairness and equity. Relatedly, fonts like Times had the least text-vision divergence, so this strikes me as an opening to game AI systems by selecting &ldquo;better&rdquo; fonts.</li>
+    <li><strong>Equity.</strong> Fonts like OpenDyslexic fared much worse than traditional ones, so extra caution should be taken when building out evals to ensure fairness and equity. </li>
+    <li><strong>Influence</strong> Some fonts perform better than others. This is a limited set, but my hypothesis is that there are fonts that uniquely influence VLMs towards more positive outcomes such as viewing an author more favorably.</li>
     <li><strong>Mitigations.</strong> I found prompt rubrics for decisions significantly eliminated divergence between text and image presentations.</li>
+    <li><strong>Fable 5.</strong> Interestingly, Anthropic's latest model refused six times more often on images than on identical text, with refusals clustered by font. I didn't dig into this, but it's possible that the safety filter might be sensitive to certain kinds of fonts</li>
+
   </ol>
 
   <h3>OpenDyslexic at the decision boundary</h3>
@@ -205,7 +206,7 @@
 
   <h2>Key Limitations</h2>
   <ol>
-    <li>All benchmark artifacts, including sentence examples, are synthetic, and so may not mirror real world results. I tried to generate them to be on the borderline for decisions and criteria. However, the effect appearing in every provider tested suggests it is not an artifact of a single model family, though real-world magnitudes remain untested.</li>
+    <li>All benchmark artifacts, including sentence examples, are synthetic, and so may not mirror real world results. I tried to generate them to be on the borderline for decisions and criteria. However, the effect appearing in every provider tested suggests it is not an artifact of a single model family. Real-world magnitudes are untested, but an area I'd love to explore for v2.</li>
     <li>Most results rest on 20 edge cases per model per test (60 for the accessibility comparison). Due to budget constraints, I chose to limit my choice of variables and outputs tested to balance cost and reasonable confidence intervals.</li>
     <li>Directly comparing text and vision requires rendering words to an image, which introduces confounders beyond font. The rendering pipeline is identical across fonts, so font-to-font comparisons are apples-to-apples; the absolute image-vs-text gap should be read directionally.</li>
   </ol>
@@ -219,7 +220,7 @@
   </ol>
 
   <h2>Why build this?</h2>
-  <p>I got into typography this year after reading &ldquo;Thinking with Type.&rdquo; Type design mirrors the tech and culture of the day, so since it&rsquo;s 2026, I was curious about how agents are influenced by, and may potentially shape, popular fonts and design conventions. Is Comic Sans still seen as unprofessional? Would an agent then be less likely to recommend a resume written in OpenDyslexic? What does the future of typography look like when it&rsquo;s increasingly consumed by both people and robots? ThinkingType is a sideproject to understand this a bit better.</p>
+  <p>I got into typography this year after reading &ldquo;Thinking with Type.&rdquo; Type design mirrors the tech and culture of the day, so since it&rsquo;s 2026, I was curious about how agents are influenced by, and may potentially shape, popular fonts and design conventions. Is Comic Sans still seen as unprofessional? Would an agent then be less likely to recommend a resume written in OpenDyslexic? What does the future of typography look like when it&rsquo;s increasingly consumed by both people and robots? ThinkingType is a sideproject to understand this a bit better from my day job as a product manager working in large-scale recommendations.</p>
 
   <h2>Reproduce</h2>
   <pre><code>typo-eval --config configs/gates_v1.yaml gates-build
@@ -272,7 +273,24 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
   </div>
   <p class="tablenote">Items pre-calibrated to sit at each model&rsquo;s own decision boundary, then shown as images of the same words; <span style="color:#0b57d0;font-weight:700">blue</span> = more favorable to the person judged as an image, <span style="color:#b3261e;font-weight:700">red</span> = harsher, * = 95% CI excludes zero (20 edge cases per cell).</p>
 
-
+  <h3>Where Fable 5&rsquo;s refusals clustered</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Presentation</th><th>Refusals</th><th>Rate</th></tr></thead>
+      <tbody>
+        <tr><td>Monospace</td><td>44 / 1,320</td><td style="background:rgba(11,87,208,0.64);color:#ffffff;text-align:right">3.33%</td></tr>
+        <tr><td>OpenDyslexic</td><td>39 / 1,320</td><td style="background:rgba(11,87,208,0.57);color:#ffffff;text-align:right">2.95%</td></tr>
+        <tr><td>Comic Sans</td><td>27 / 1,320</td><td style="background:rgba(11,87,208,0.40);color:var(--fg);text-align:right">2.05%</td></tr>
+        <tr><td>Plain text (no image)</td><td>26 / 1,320</td><td style="background:rgba(11,87,208,0.38);color:var(--fg);text-align:right">1.97%</td></tr>
+        <tr><td>Times Bold</td><td>16 / 1,320</td><td style="background:rgba(11,87,208,0.23);color:var(--fg);text-align:right">1.21%</td></tr>
+        <tr><td>Arial Caps</td><td>16 / 1,320</td><td style="background:rgba(11,87,208,0.23);color:var(--fg);text-align:right">1.21%</td></tr>
+        <tr><td>Arial Bold</td><td>6 / 1,320</td><td style="background:rgba(11,87,208,0.09);color:var(--fg);text-align:right">0.45%</td></tr>
+        <tr><td>Times Regular</td><td>7 / 1,320</td><td style="background:rgba(11,87,208,0.10);color:var(--fg);text-align:right">0.53%</td></tr>
+        <tr><td>Arial Regular</td><td>2 / 1,320</td><td style="background:rgba(11,87,208,0.03);color:var(--fg);text-align:right">0.15%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tablenote">Every judgment and decision question Fable 5 was asked, grouped by what it was looking at; plain text is included as the baseline (n = 1,320 per row). Monospace and OpenDyslexic refuse 6&ndash;7&times; more than the calmest fonts (Arial Regular, Times Regular); Comic Sans is a distant third. GPT-4o, GPT-5.5, GPT-5.6 Sol, and Sonnet 5 had zero refusals on this track; Gemini was not run on it. Fable 5 is the only model this table covers.</p>
 
   <!-- ════════════════════════════════════════════════════════════════════
        ✏️ EDIT 10 · FOOTER
