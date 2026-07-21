@@ -59,6 +59,7 @@
     h1 { font-size: 1.9rem; line-height: 1.25; margin: 0 0 0.5rem; }
     h2 { font-size: 1.35rem; margin: 2.75rem 0 0.75rem; }
     h3 { font-size: 1.05rem; margin: 2rem 0 0.5rem; }
+    h2, h3 { scroll-margin-top: 1rem; }
     p, li { max-width: 44rem; }
     a { color: var(--accent); }
     .kicker {
@@ -141,17 +142,18 @@
   <p>Short answer: modestly. Comic Neue and OpenDyslexic flip up to ~20% of borderline judgments versus just plain Times, but the far larger influence appears to be switching from an LLM to a VLM.</p> 
   <p>I built ThinkingType as a lightweight benchmark to measure how typography influences qualitative assessments (e.g. trustworthy, professional) and downstream decisions (&ldquo;flag this policy violation,&rdquo; &ldquo;approve this resume&rdquo;). My main findings:</p>
     <ol> 
-  <li>Presentation modality alone changes answers: showing a model an image of the same words (plain Times) instead of raw text flips ~10% of yes/no judgments.</li>
+  <li>Presentation modality alone changes answers: showing a model an image of the same words (plain Times) instead of raw text <a href="#vision-effect">flips ~10% of yes/no judgments</a>.</li>
   <li>Modality effect differs significantly across Claude and GPT and changed with each new generation.</li>
   <li>On top of these effect, fonts do indeed move decisions: </li>
       <ol>
-        <li>Comic Neue (open source Comic Sans) and OpenDyslexic are the likeliest to flip a judgment (up to 19% and 21% respectively).</li>
-        <li>Times regular is the most stable font in every model I tested, with similar judgements as the corresponding LLM running on plain text. </li>
+        <li>Comic Neue (open source Comic Sans) and OpenDyslexic are the <a href="#font-flip-table">likeliest to flip a judgment</a> (up to 19% and 21% respectively).</li>
+        <li><a href="#font-flip-table">Times regular is the most stable font</a> in every model I tested, with similar judgements as the corresponding LLM running on plain text. </li>
       </ol>
     </ol>
+  <li>Fable 5&rsquo;s <a href="#fable-refusals">refusals clustered the most around Monospace and OpenDyslexic</a>. Images of Times Regular/Arial Regular had significantly fewer refusals for the same text than plaintext versions.  </li>  
 <p>I think these findings generalize beyond just how I set up the image-to-text comparison and matter for production systems. Given that both the VLM vs. LLM and typography impacts shift across providers and models I&rsquo;m planning to track and publish new results against future major model releases. </p>
 
-  <h3>VLM vs. LLM effect using Times as a baseline</h3>
+  <h3 id="vision-effect">VLM vs. LLM effect using Times as a baseline</h3>
   <div class="tablewrap">
     <table>
       <thead><tr><th>Question</th><th>GPT-4o</th><th>GPT-5.5</th><th>GPT-5.6 Sol</th><th>Sonnet 5</th><th>Fable 5</th></tr></thead>
@@ -185,17 +187,17 @@
   <p>I haven&rsquo;t found prior work focused on downstream decisions and qualitative assessments. The recent work I&rsquo;ve found on AI &times; typography focuses more on VLM accuracy, cybersecurity, and things like <a href="https://www.mixfont.com/experiments/decoy-font">DecoyFont</a>. The closest work I&rsquo;ve seen is <a href="https://arxiv.org/abs/2603.09095">Reading, Not Thinking</a> on how rendering text as pixels dulls model reasoning, and <a href="https://arxiv.org/abs/2602.15278">Visual Persuasion</a> on how image styling sways VLM choices, but neither looks at fonts driving judgments or decisions.</p>
   All of the code, methodology, and data are publicly available on <a href="https://github.com/wdanfort/thinkingtype">GitHub</a>. I built the eval harness and some writing support with Claude Code. I want feedback on methodology and gaps, especially from anyone running VLMs on real documents in production, so please <a href="mailto:wbdanforth@gmail.com">reach out</a>.</p>
 
-  <h2>Quick Product Implications</h2>
+  <h2 id="implications">Quick Product Implications</h2>
   <ol>
     <li><strong>Vision-text consistency.</strong> This property is not stable across provider, model, or generation. Typography should be included in internal product evals to identify drift.</li>
-    <li><strong>Equity.</strong> Fonts like OpenDyslexic fared much worse than traditional ones, so extra caution should be taken when building out evals to ensure fairness and equity. </li>
+    <li><strong>Equity.</strong> Fonts like OpenDyslexic <a href="#opendyslexic-decision">fared much worse</a> than traditional ones, so extra caution should be taken when building out evals to ensure fairness and equity. </li>
     <li><strong>Influence</strong> Some fonts perform better than others. This is a limited set, but my hypothesis is that there are fonts that uniquely influence VLMs towards more positive outcomes such as viewing an author more favorably.</li>
     <li><strong>Mitigations.</strong> I found prompt rubrics for decisions significantly eliminated divergence between text and image presentations.</li>
-    <li><strong>Fable 5.</strong> Interestingly, Anthropic's latest model refused six times more often on images than on identical text, with refusals clustered by font. I didn't dig into this, but it's possible that the safety filter might be sensitive to certain kinds of fonts</li>
+    <li><strong>Fable 5.</strong> <a href="#fable-refusals">Refusals clustered around Monospace and OpenDyslexic</a> at around 3%. These rates are significant enough that they would appear frequently in production, which might have further accessibility implications. GPT 5.6 Sol did not have a single refusal for the entire corpus. </li>
 
   </ol>
 
-  <h3>OpenDyslexic at the decision boundary</h3>
+  <h3 id="opendyslexic-decision">OpenDyslexic at the decision boundary</h3>
   <div class="tablewrap">
     <table>
       <thead><tr><th>Model</th><th>Shift vs. plain sans (pp)</th><th>95% CI</th><th>Test</th></tr></thead>
@@ -204,25 +206,25 @@
   </div>
   <p class="tablenote">Identical images except the font; negative = the OpenDyslexic version treated more harshly; * = 95% CI excludes zero; 60 items per model, and in the scaled test 17 of the 21 items that moved, moved toward removal.</p>
 
-  <h2>Key Limitations</h2>
+  <h2 id="limitations">Key Limitations</h2>
   <ol>
-    <li>All benchmark artifacts, including sentence examples, are synthetic, and so may not mirror real world results. I tried to generate them to be on the borderline for decisions and criteria. However, the effect appearing in every provider tested suggests it is not an artifact of a single model family. Real-world magnitudes are untested, but an area I'd love to explore for v2.</li>
+    <li>All benchmark artifacts, including sentence examples, are synthetic, and so may not mirror real world results. I tried to generate them to be on the borderline for decisions and criteria. I'm looking for ways to use realistic artifacts and measure actual real world impacts. </li>
     <li>Most results rest on 20 edge cases per model per test (60 for the accessibility comparison). Due to budget constraints, I chose to limit my choice of variables and outputs tested to balance cost and reasonable confidence intervals.</li>
-    <li>Directly comparing text and vision requires rendering words to an image, which introduces confounders beyond font. The rendering pipeline is identical across fonts, so font-to-font comparisons are apples-to-apples; the absolute image-vs-text gap should be read directionally.</li>
+    <li>Directly comparing text and vision requires rendering words to an image, which introduces confounders beyond font. The rendering pipeline is identical across fonts, so font-to-font comparisons are apples-to-apples. Because the effect appears in every test (and is fairly different), I think this is a per-model characteristic.</li>
   </ol>
 
-  <h2>Next steps</h2>
+  <h2 id="next-steps">Next steps</h2>
   <ol>
     <li>Incorporate any feedback on methodology and gaps.</li>
     <li>Accessibility fonts. More assistive formats (large print, high contrast, letter spacing), more items, enough statistical power to pin down per-provider effects.</li>
     <li>Identify fonts that are unusually persuasive or more reliably flip decisions</li>   
-    <li>Keep tracking releases. Continue running and publishing the eval harness against major model releases.</li>
+    <li>Run and publish the harness against major model releases.</li>
   </ol>
 
-  <h2>Why build this?</h2>
-  <p>I got into typography this year after reading &ldquo;Thinking with Type.&rdquo; Type design mirrors the tech and culture of the day, so since it&rsquo;s 2026, I was curious about how agents are influenced by, and may potentially shape, popular fonts and design conventions. Is Comic Sans still seen as unprofessional? Would an agent then be less likely to recommend a resume written in OpenDyslexic? What does the future of typography look like when it&rsquo;s increasingly consumed by both people and robots? ThinkingType is a sideproject to understand this a bit better from my day job as a product manager working in large-scale recommendations.</p>
+  <h2 id="why-build-this">Why build this?</h2>
+  <p>I got into typography this year after reading &ldquo;Thinking with Type.&rdquo; Type design mirrors the tech and culture of the day, so since it&rsquo;s 2026, I was curious about how agents are influenced by, and may potentially shape, popular fonts and design conventions. Is Comic Sans still seen as unprofessional? Would an agent then be less likely to recommend a resume written in OpenDyslexic? What does the future of typography look like when it&rsquo;s increasingly consumed by both people and robots? ThinkingType is a sideproject to understand this a bit better from my day job as a product manager working in large-scale recommendations (and with a few hundred dollar token budget).</p>
 
-  <h2>Reproduce</h2>
+  <h2 id="reproduce">Reproduce</h2>
   <pre><code>typo-eval --config configs/gates_v1.yaml gates-build
 typo-eval --config configs/gates_v1.yaml gates-render
 typo-eval --config configs/gates_v1.yaml gates-calibrate --provider &lt;p&gt;
@@ -230,8 +232,9 @@ typo-eval --config configs/gates_v1.yaml gates-run --provider &lt;p&gt;
 typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
   <p>Full per-run reports, item-level CSVs, and forest plots are in <a href="https://github.com/wdanfort/thinkingtype/tree/main/results/gates">results/gates/</a>. The drift monitor for testing your own model &times; gate combinations is documented in <a href="https://github.com/wdanfort/thinkingtype/blob/main/docs/GATE_DRIFT.md">docs/GATE_DRIFT.md</a>.</p>
 
-  <h2>Appendix: detailed results</h2>
-  <h3>Judgment flip rate by font and model</h3>
+  <h2 id="appendix">Appendix: detailed results</h2>
+  <p style="font-size:0.85rem;color:var(--muted);margin-top:-0.5rem;">Jump to: <a href="#font-flip-table">flip rate by font</a> &middot; <a href="#font-deltas">font deltas vs. Times</a> &middot; <a href="#render-step">image vs. text decisions</a> &middot; <a href="#fable-refusals">Fable 5 refusals</a></p>
+  <h3 id="font-flip-table">Judgment flip rate by font and model</h3>
   <div class="tablewrap">
     <table>
       <thead><tr><th>Font</th><th>GPT-4o</th><th>GPT-5.5</th><th>GPT-5.6 Sol</th><th>Sonnet 5</th><th>Fable 5</th></tr></thead>
@@ -251,7 +254,7 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
 
   
 
-  <h3>Extra flips caused by the font (versus Times regular)</h3>
+  <h3 id="font-deltas">Extra flips caused by the font (versus Times regular)</h3>
   <div style="margin:0 0 0.9rem;">
     <label for="heatFontSel" style="font-size:0.8rem;color:var(--muted);display:block;margin-bottom:0.3rem;">Font &middot; each cell is this font&rsquo;s flip rate minus the Times regular baseline above</label>
     <select id="heatFontSel" style="max-width:100%;font:inherit;font-size:0.85rem;padding:0.35rem 0.5rem;background:var(--bg);color:var(--fg);border:1px solid var(--rule);border-radius:6px;"></select>
@@ -264,7 +267,7 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
   </div>
   <p class="tablenote"><span style="color:#7c3aed;font-weight:700">Purple</span> = more flips than plain Times, <span style="color:#0f766e;font-weight:700">green</span> = fewer, in percentage points; deltas under 5pp are within noise and uncolored.</p>
 
-  <h3>The biggest presentation choice: rendering text as an image at all (Experiment 2)</h3>
+  <h3 id="render-step">The biggest presentation choice: rendering text as an image at all (Experiment 2)</h3>
   <div class="tablewrap">
     <table>
       <thead><tr><th>Decision test</th><th>GPT-5.5</th><th>GPT-5.6 Sol</th><th>Sonnet 5</th><th>Fable 5</th><th>Gemini 3.5 Flash</th></tr></thead>
@@ -273,7 +276,7 @@ typo-eval --config configs/gates_v1.yaml gates-analyze</code></pre>
   </div>
   <p class="tablenote">Items pre-calibrated to sit at each model&rsquo;s own decision boundary, then shown as images of the same words; <span style="color:#0b57d0;font-weight:700">blue</span> = more favorable to the person judged as an image, <span style="color:#b3261e;font-weight:700">red</span> = harsher, * = 95% CI excludes zero (20 edge cases per cell).</p>
 
-  <h3>Fable 5&rsquo;s refusals clustered</h3>
+  <h3 id="fable-refusals">Fable 5&rsquo;s refusals clustered</h3>
   <div class="tablewrap">
     <table>
       <thead><tr><th>Presentation</th><th>Refusals</th><th>Rate</th></tr></thead>
