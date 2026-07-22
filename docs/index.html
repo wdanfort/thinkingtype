@@ -152,7 +152,7 @@
         <li><a href="#font-flip-table">Times regular is the most stable font</a> in every model I tested, with similar judgements as the corresponding LLM running on plain text. </li>
       </ol>
     </ol>
-  <p>On a side note: Fable 5&rsquo;s <a href="#fable-refusals">refusal rate varied about 20&times; by font</a>. Monospace and OpenDyslexic refused at 6 to 7 times the rate of the base Times/Ariel fonts. No other model I tested, including GPT 5.6-Sol, had refusals correlated with font choice or modality.</p>
+  <p>On a side note: Fable 5&rsquo;s <a href="#fable-refusals">refusal rate varied about 20&times; by font</a>. Monospace and OpenDyslexic refused at 6 to 7 times the rate of the base Times/Arial fonts. No other model I tested, including GPT 5.6-Sol, had refusals correlated with font choice or modality.</p>
 <p>While I used synthetic toy examples, I suspect these findings generalize in the wild because the effects exist across providers/models. See <a href="#limitations">limitations</a> and the repo for methodology.</p>
 <p>Given these results, I&rsquo;m planning to track and publish new results against future major model releases as a ThinkingType benchmark.</p>
 
@@ -192,7 +192,7 @@
 
   <h2 id="implications">Quick Product Implications</h2>
   <ol>
-    <li><strong>Vision-text consistency.</strong> This property is not stable across provider, model, or generation. I&rsquo;m hoping this project serves as a useful benchmark for understanding and surfacing this drift over time to compliment internal product evals.</li>
+    <li><strong>Vision-text consistency.</strong> This property is not stable across provider, model, or generation. I&rsquo;m hoping this project serves as a useful benchmark for understanding and surfacing this drift over time to complement internal product evals.</li>
     <li><strong>Equity.</strong> Fonts like OpenDyslexic <a href="#opendyslexic-decision">fared much worse</a> than traditional ones, so extra caution should be taken when building out VLM pipelines to ensure results are not being biased. </li>
     <li><strong>Influence.</strong> Some fonts perform &ldquo;better&rdquo; than others. This is a limited set, but my hypothesis is that there are fonts that can push VLMs towards more positive outcomes. I&rsquo;m not sure if we should all be changing our resumes to Serif fonts just yet, but I see this as a future project direction,</li>
     <li><strong>Mitigations.</strong> I found prompt rubrics for decisions largely eliminated divergence between text and image presentations.</li>
