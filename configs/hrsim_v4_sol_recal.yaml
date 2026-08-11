@@ -1,0 +1,40 @@
+# hrsim4 -- GPT-5.6 Sol re-run at ITS OWN calibrated boundary.
+#
+# The main config runs every leg on the Sonnet-calibrated item set, which puts
+# Sol at 73.9% accept. This leg uses Sol's own calibration (results/hrsim/
+# hrsim_v4/cal_sol/calibrated_ranks.csv) so both models are measured at ~50%.
+# Reporting both is the point: they are confounded in different directions.
+#
+#   Sol calibrated ranks: ENG 56, FIN 136, HC 40, IT 64, SALES 400, TEACHER 72
+#   measured accept:      53.1  57.6      51.6   52.1  53.8       44.6
+#
+# Four arms, not nine: text is the modality baseline, sans the conventional
+# reference, and Comic + OpenDyslexic are the two that cleared zero on the
+# Sonnet-calibrated set. That is the claim under test.
+
+run_tag: hrsim_v4_sol_recal
+seed: 42
+repeats: 1
+
+image_arms:
+  - T3_sans
+  - T7_comic
+  - A1_opendyslexic
+include_text_arm: true
+items: all
+
+corpus_dir: data/inputs/hrsim4
+calibration_dir: results/hrsim/hrsim_v4
+ranks_path: results/hrsim/hrsim_v4/cal_sol/calibrated_ranks.csv
+
+legs:
+  - name: sol_recal
+    provider: openai
+    model: gpt-5.6-sol
+
+inference:
+  temperature: null
+  max_retries: 5
+  rate_limit_sleep: 1.5
+  concurrency: 6
+  openai_service_tier: default

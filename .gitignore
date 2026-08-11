@@ -64,3 +64,19 @@ results/comparisons/*
 
 # macOS
 .DS_Store
+
+# hrsim corpora: page renders and embedding caches are large and regenerable.
+#   renders      -> scripts/hrsim4_corpus_loop.py  (local, no API)
+#   embeddings   -> hrsim4_calibrate_loop.py --candidates --refresh-embeddings
+#   candidates   -> hrsim4_calibrate_loop.py --candidates   (reuses embeddings)
+data/inputs/hrsim*/rendered/
+data/inputs/hrsim*/embeddings.npz
+data/inputs/hrsim*/candidates.csv
+
+# Upstream corpora (Kaggle / Dataverse downloads -- fetch, don't vendor)
+data/inputs/resumes_raw/
+data/inputs/jds_raw/
+assets/dataverse_files.zip
+
+# Local model weights
+models/

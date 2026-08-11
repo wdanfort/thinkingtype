@@ -516,6 +516,357 @@ def cmd_gates_drift(args: argparse.Namespace, logger: logging.Logger) -> None:
     logger.info(f"Drift report: {report}")
 
 
+def _hrsim_paths(hc) -> dict:
+    """Standard paths for an hrsim run."""
+    repo_root = get_repo_root()
+    inputs_dir = repo_root / "data" / "inputs" / "hrsim"
+    return {
+        "repo_root": repo_root,
+        "inputs_dir": inputs_dir,
+        "items_path": inputs_dir / f"items_{hc.run_tag}.csv",
+        "rendered_dir": repo_root / "data" / "rendered" / hc.run_tag,
+        "manifest_path": inputs_dir / f"render_manifest_{hc.run_tag}.csv",
+        "run_dir": repo_root / "results" / "hrsim" / hc.run_tag,
+    }
+
+
+def cmd_hrsim_build(args: argparse.Namespace, logger: logging.Logger) -> None:
+    """Sample real resumes, pseudonymize, and pair with junior/senior JDs."""
+    from typo_eval.hrsim.build import build_items, write_items_csv
+    from typo_eval.hrsim.config import load_hrsim_config
+
+    hc = load_hrsim_config(args.config)
+    paths = _hrsim_paths(hc)
+    resumes_csv = paths["repo_root"] / "data" / "inputs" / "resumes_raw" / "Resume.csv"
+    if not resumes_csv.exists():
+        logger.error(f"Resume corpus not found: {resumes_csv}")
+        sys.exit(1)
+
+    df = build_items(hc, resumes_csv)
+    write_items_csv(df, paths["items_path"])
+    logger.info(f"Wrote {len(df)} hrsim items to {paths['items_path']}")
+    for (category, jd_level), n in df.groupby(["category", "jd_level"]).size().items():
+        logger.info(f"  {category} / {jd_level}: {n} items")
+
+
+def cmd_hrsim_render(args: argparse.Namespace, logger: logging.Logger) -> None:
+    """Render every sampled resume under every font variant."""
+    import pandas as pd
+    from typo_eval.hrsim.config import load_hrsim_config
+    from typo_eval.hrsim.render import render_hrsim_resumes
+
+    hc = load_hrsim_config(args.config)
+    paths = _hrsim_paths(hc)
+    if not paths["items_path"].exists():
+        logger.error(f"No items at {paths['items_path']}; run hrsim-build first")
+        sys.exit(1)
+    items_df = pd.read_csv(paths["items_path"])
+    resumes_df = items_df[["resume_id", "resume_text"]].drop_duplicates(subset=["resume_id"])
+
+    manifest = render_hrsim_resumes(
+        hc, resumes_df, paths["rendered_dir"], paths["repo_root"],
+        limit=getattr(args, "limit", None),
+    )
+    manifest.to_csv(paths["manifest_path"], index=False)
+    logger.info(
+        f"Rendered {len(manifest)} images ({manifest['resume_id'].nunique()} resumes); "
+        f"manifest at {paths['manifest_path']}"
+    )
+    over = manifest[manifest["image_height"] > hc.render.max_image_height]
+    if not over.empty:
+        logger.warning(f"{len(over)} renders still exceed max_image_height after retries")
+    logger.info(
+        f"Image height range: [{manifest['image_height'].min()}, "
+        f"{manifest['image_height'].max()}]"
+    )
+
+
+def cmd_hrsim_run(args: argparse.Namespace, logger: logging.Logger) -> None:
+    """Run one model leg (text arm + image arm x all variants)."""
+    import pandas as pd
+    from typo_eval.hrsim.config import load_hrsim_config
+    from typo_eval.hrsim.engine import run_leg
+
+    hc = load_hrsim_config(args.config)
+    paths = _hrsim_paths(hc)
+    run_dir = paths["run_dir"]
+    logger = _setup_logger(run_dir)
+
+    if not paths["items_path"].exists():
+        logger.error(f"No items at {paths['items_path']}; run hrsim-build first")
+        sys.exit(1)
+    if not paths["manifest_path"].exists():
+        logger.error(f"No render manifest at {paths['manifest_path']}; run hrsim-render first")
+        sys.exit(1)
+
+    items_df = pd.read_csv(paths["items_path"])
+    manifest_df = pd.read_csv(paths["manifest_path"])
+    run_leg(
+        hc, args.leg, items_df, manifest_df, run_dir,
+        limit_items=getattr(args, "limit_items", None),
+        limit=getattr(args, "limit", None),
+        dry_run=getattr(args, "dry_run", False),
+    )
+
+
+def cmd_hrsim_analyze(args: argparse.Namespace, logger: logging.Logger) -> None:
+    """Analyze an hrsim run: accept rates, deltas, flips, reasoning mentions."""
+    from typo_eval.hrsim.analyze import analyze_hrsim_run
+    from typo_eval.hrsim.config import load_hrsim_config
+
+    hc = load_hrsim_config(args.config)
+    paths = _hrsim_paths(hc)
+    analysis_dir = analyze_hrsim_run(paths["run_dir"])
+    logger.info(f"Analysis complete: {analysis_dir}")
+
+
+def _hrsim2_paths(hc) -> dict:
+    """Standard paths for an hrsim2 run. Parallels _hrsim_paths but under
+    its own fixed input dirname (hrsim2, not hrsim) and its own rendered/
+    results locations -- v1's are never touched."""
+    repo_root = get_repo_root()
+    inputs_dir = repo_root / "data" / "inputs" / "hrsim2"
+    return {
+        "repo_root": repo_root,
+        "inputs_dir": inputs_dir,
+        "resumes_csv": repo_root / "data" / "inputs" / "resumes_raw" / "Resume.csv",
+        "jd_csv": repo_root / "data" / "inputs" / "jds_raw" / "JD_data.csv",
+        "crosswalk_audit_path": inputs_dir / "crosswalk_audit.md",
+        "items_path": inputs_dir / f"items_{hc.run_tag}.csv",
+        "interaction_items_path": inputs_dir / f"items_interaction_{hc.run_tag}.csv",
+        "rendered_dir": repo_root / "data" / "rendered" / hc.run_tag,
+        "interaction_rendered_dir": repo_root / "data" / "rendered" / "hrsim2_interaction",
+        "manifest_path": inputs_dir / f"render_manifest_{hc.run_tag}.csv",
+        "interaction_manifest_path": inputs_dir / f"render_manifest_interaction_{hc.run_tag}.csv",
+        "run_dir": repo_root / "results" / "hrsim" / hc.run_tag,
+    }
+
+
+def cmd_hrsim2_build(args: argparse.Namespace, logger: logging.Logger) -> None:
+    """Validate the JD crosswalk against the real corpus, sample resumes,
+    and pair each with 2 seeded-sampled real JDs (+ pick 1 for the
+    interaction sub-study)."""
+    from typo_eval.hrsim2 import crosswalk
+    from typo_eval.hrsim2.build import build_items, write_items_csv
+    from typo_eval.hrsim2.config import load_hrsim_v2_config
+    from typo_eval.hrsim.build import _EMAIL_RE, _PHONE_RE, _URL_RE
+
+    hc = load_hrsim_v2_config(args.config)
+    paths = _hrsim2_paths(hc)
+    if not paths["resumes_csv"].exists():
+        logger.error(f"Resume corpus not found: {paths['resumes_csv']}")
+        sys.exit(1)
+
+    jd_csv = crosswalk.ensure_jd_corpus_copied(paths["repo_root"])
+    jd_df = crosswalk.load_jd_raw(jd_csv)
+    pools = crosswalk.build_all_pools(jd_df)
+    try:
+        crosswalk.validate_pools(pools)
+    except ValueError as e:
+        logger.error(str(e))
+        sys.exit(1)
+
+    report = crosswalk.write_crosswalk_audit(jd_df, pools, paths["crosswalk_audit_path"])
+    print(report)
+    logger.info(f"Crosswalk audit written to {paths['crosswalk_audit_path']}")
+
+    items_df, interaction_df = build_items(hc, paths["resumes_csv"], pools, paths["repo_root"])
+    write_items_csv(items_df, paths["items_path"])
+    write_items_csv(interaction_df, paths["interaction_items_path"])
+    logger.info(f"Wrote {len(items_df)} hrsim2 items to {paths['items_path']}")
+    logger.info(
+        f"Wrote {len(interaction_df)} interaction items to {paths['interaction_items_path']}"
+    )
+
+    n_occ = items_df["category"].nunique()
+    n_resumes = items_df["resume_id"].nunique()
+    expected = n_occ * hc.sampling.per_category * hc.jds_per_resume
+    logger.info(
+        f"{len(items_df)} items = {n_occ} occupations x {n_resumes} resumes x "
+        f"{hc.jds_per_resume} draws (expected {expected})"
+    )
+    if len(items_df) != expected:
+        logger.error(f"Item count mismatch: got {len(items_df)}, expected {expected}")
+        sys.exit(1)
+
+    residual = 0
+    for name, pattern in [("email", _EMAIL_RE), ("url", _URL_RE), ("phone", _PHONE_RE)]:
+        n = int(items_df["resume_text"].str.contains(pattern).sum())
+        logger.info(f"Residual {name} matches: {n}")
+        residual += n
+    if residual:
+        logger.error(f"{residual} residual PII matches survived the scrub")
+        sys.exit(1)
+
+    sample = items_df.iloc[0]
+    logger.info(
+        f"Sample item: occ={sample['category']} jd_job={sample['jd_job']!r} "
+        f"resume_text[:200]={sample['resume_text'][:200]!r}"
+    )
+
+
+def cmd_hrsim2_render(args: argparse.Namespace, logger: logging.Logger) -> None:
+    """Render every sampled resume under every font variant (main run) plus
+    the name x font interaction sub-study's renders (different header)."""
+    import pandas as pd
+    from typo_eval.hrsim2.config import load_hrsim_v2_config
+    from typo_eval.hrsim2.render import render_interaction, render_main
+
+    hc = load_hrsim_v2_config(args.config)
+    paths = _hrsim2_paths(hc)
+    if not paths["items_path"].exists():
+        logger.error(f"No items at {paths['items_path']}; run hrsim2-build first")
+        sys.exit(1)
+    if not paths["interaction_items_path"].exists():
+        logger.error(
+            f"No interaction items at {paths['interaction_items_path']}; run hrsim2-build first"
+        )
+        sys.exit(1)
+
+    items_df = pd.read_csv(paths["items_path"])
+    manifest = render_main(
+        hc, items_df, paths["rendered_dir"], paths["repo_root"],
+        limit=getattr(args, "limit", None),
+    )
+    manifest.to_csv(paths["manifest_path"], index=False)
+    logger.info(
+        f"Rendered {len(manifest)} main images ({manifest['resume_id'].nunique()} resumes); "
+        f"manifest at {paths['manifest_path']}"
+    )
+    over = manifest[manifest["image_height"] > hc.render.max_image_height]
+    if not over.empty:
+        logger.warning(f"{len(over)} main renders still exceed max_image_height after retries")
+    logger.info(
+        f"Main image height range: [{manifest['image_height'].min()}, "
+        f"{manifest['image_height'].max()}]"
+    )
+
+    interaction_df = pd.read_csv(paths["interaction_items_path"])
+    inter_manifest = render_interaction(
+        hc, interaction_df, paths["interaction_rendered_dir"], paths["repo_root"],
+        limit=getattr(args, "limit", None),
+    )
+    inter_manifest.to_csv(paths["interaction_manifest_path"], index=False)
+    logger.info(
+        f"Rendered {len(inter_manifest)} interaction images "
+        f"({inter_manifest['resume_id'].nunique()} resumes); "
+        f"manifest at {paths['interaction_manifest_path']}"
+    )
+    over_i = inter_manifest[inter_manifest["image_height"] > hc.render.max_image_height]
+    if not over_i.empty:
+        logger.warning(f"{len(over_i)} interaction renders still exceed max_image_height after retries")
+    if not inter_manifest.empty:
+        logger.info(
+            f"Interaction image height range: [{inter_manifest['image_height'].min()}, "
+            f"{inter_manifest['image_height'].max()}]"
+        )
+
+
+def cmd_hrsim4_run(args: argparse.Namespace, logger: logging.Logger) -> None:
+    """Run one hrsim4 leg over the boundary-calibrated item set."""
+    from typo_eval.hrsim4 import prompts
+    from typo_eval.hrsim4.config import load_hrsim_v4_config
+    from typo_eval.hrsim4.engine import build_items, run_leg
+
+    repo = Path(__file__).resolve().parents[2]
+    hc = load_hrsim_v4_config(args.config)
+
+    # The 40-60% accept band and the boundary-sensitivity gate were measured
+    # under the calibration script's exact wording. Refuse to run if it drifted.
+    prompts.assert_matches_calibration(repo)
+
+    run_dir = repo / hc.calibration_dir
+    logger = _setup_logger(run_dir)
+
+    legs = {leg.name: leg for leg in hc.legs}
+    if args.leg not in legs:
+        logger.error(f"Unknown leg {args.leg!r}; config has {sorted(legs)}")
+        sys.exit(1)
+
+    items = build_items(hc, repo)
+    if getattr(args, "limit_items", None):
+        renders = items.attrs["renders"]
+        items = items.head(args.limit_items).copy()
+        items.attrs["renders"] = renders
+
+    cells = len(items) * len(hc.arms()) * hc.repeats
+    logger.info(
+        f"hrsim4 {args.leg}: {len(items)} items x {len(hc.arms())} arms x "
+        f"{hc.repeats} repeats = {cells} cells "
+        f"({int(items.boundary_sensitive.sum())} items boundary-sensitive)"
+    )
+    if getattr(args, "dry_run", False):
+        logger.info("dry run -- nothing executed")
+        return
+
+    df = run_leg(hc, legs[args.leg], items, run_dir)
+    ok = int(df.parsed_decision.notna().sum()) if len(df) else 0
+    logger.info(f"leg complete: {ok}/{len(df)} records with a parsed decision")
+
+
+def cmd_hrsim4_analyze(args: argparse.Namespace, logger: logging.Logger) -> None:
+    """Analyze an hrsim4 run: modality, typeface, and ink-ladder axes."""
+    from typo_eval.hrsim4.analyze import analyze_run
+    from typo_eval.hrsim4.config import load_hrsim_v4_config
+
+    repo = Path(__file__).resolve().parents[2]
+    hc = load_hrsim_v4_config(args.config)
+    run_dir = repo / hc.calibration_dir
+    tables = analyze_run(run_dir, repo / hc.corpus_dir, run_dir / "analysis")
+    for name in ("completeness", "accept_rates", "modality_effects",
+                 "typeface_effects", "ink_slope", "sensitivity_check",
+                 "typography_mentions"):
+        t = tables.get(name)
+        if t is not None and len(t):
+            print(f"\n=== {name} ===")
+            print(t.to_string(index=False))
+
+
+def cmd_hrsim2_run(args: argparse.Namespace, logger: logging.Logger) -> None:
+    """Run one model leg: main phase (name_race="_ambiguous_", 6 arms) and/or
+    the interaction phase (name_race in {white, black}, 3 arms)."""
+    import pandas as pd
+    from typo_eval.hrsim2.config import load_hrsim_v2_config
+    from typo_eval.hrsim2.engine import run_leg
+
+    hc = load_hrsim_v2_config(args.config)
+    paths = _hrsim2_paths(hc)
+    run_dir = paths["run_dir"]
+    logger = _setup_logger(run_dir)
+
+    required = ["items_path", "manifest_path", "interaction_items_path", "interaction_manifest_path"]
+    for key in required:
+        if not paths[key].exists():
+            logger.error(f"Missing {paths[key]}; run hrsim2-build and hrsim2-render first")
+            sys.exit(1)
+
+    items_df = pd.read_csv(paths["items_path"])
+    manifest_df = pd.read_csv(paths["manifest_path"])
+    interaction_df = pd.read_csv(paths["interaction_items_path"])
+    interaction_manifest_df = pd.read_csv(paths["interaction_manifest_path"])
+
+    run_leg(
+        hc, args.leg, items_df, manifest_df, interaction_df, interaction_manifest_df, run_dir,
+        phase=getattr(args, "phase", "both"),
+        limit_items=getattr(args, "limit_items", None),
+        limit=getattr(args, "limit", None),
+        dry_run=getattr(args, "dry_run", False),
+    )
+
+
+def cmd_hrsim2_analyze(args: argparse.Namespace, logger: logging.Logger) -> None:
+    """Analyze an hrsim2 run: main-phase accept rates/deltas, seniority
+    moderation, the name x font interaction contrasts, flips, and mention
+    scans."""
+    from typo_eval.hrsim2.analyze import analyze_hrsim2_run
+    from typo_eval.hrsim2.config import load_hrsim_v2_config
+
+    hc = load_hrsim_v2_config(args.config)
+    paths = _hrsim2_paths(hc)
+    analysis_dir = analyze_hrsim2_run(paths["run_dir"])
+    logger.info(f"Analysis complete: {analysis_dir}")
+
+
 def cmd_all(args: argparse.Namespace, config: TypoEvalConfig, logger: logging.Logger) -> None:
     """Run full pipeline: generate -> render -> ocr -> run -> analyze."""
     logger.info("Running full pipeline...")
@@ -612,6 +963,69 @@ def main() -> None:
         help="Restrict comparison to one provider",
     )
 
+    # hrsim commands (resume x typography HR-simulation experiment; use an
+    # hrsim config YAML, e.g. configs/hrsim_v1.yaml)
+    subparsers.add_parser("hrsim-build", help="Sample resumes, pseudonymize, pair with JDs")
+    hrsim_render_parser = subparsers.add_parser(
+        "hrsim-render", help="Render sampled resumes under all font variants"
+    )
+    hrsim_render_parser.add_argument(
+        "--limit", type=int, help="Render only the first N distinct resumes"
+    )
+    hrsim_run_parser = subparsers.add_parser(
+        "hrsim-run", help="Run one model leg (text arm + image arm x variants)"
+    )
+    hrsim_run_parser.add_argument("--leg", required=True, help="Leg name from the config's legs list")
+    hrsim_run_parser.add_argument("--dry-run", action="store_true", help="Print planned calls without executing")
+    hrsim_run_parser.add_argument("--limit", type=int, help="Cap the raw number of API calls")
+    hrsim_run_parser.add_argument(
+        "--limit-items", type=int,
+        help="Restrict to the first N distinct item_ids (all arms still run for those items)",
+    )
+    subparsers.add_parser("hrsim-analyze", help="Analyze an hrsim run")
+
+    # hrsim2 commands (v2: real JDs via a curated crosswalk + a name x font
+    # interaction sub-study; use configs/hrsim_v2.yaml). Parallel, separate
+    # pipeline from hrsim -- does not touch hrsim/ or results/hrsim/hrsim_v1.
+    subparsers.add_parser(
+        "hrsim2-build", help="Validate JD crosswalk, sample resumes, pair with real JDs"
+    )
+    hrsim2_render_parser = subparsers.add_parser(
+        "hrsim2-render", help="Render main + name x font interaction resumes"
+    )
+    hrsim2_render_parser.add_argument(
+        "--limit", type=int,
+        help="Render only the first N distinct resumes (applies to both main and interaction)",
+    )
+    hrsim2_run_parser = subparsers.add_parser(
+        "hrsim2-run", help="Run one model leg (main phase + interaction phase)"
+    )
+    hrsim2_run_parser.add_argument("--leg", required=True, help="Leg name from the config's legs list")
+    hrsim2_run_parser.add_argument(
+        "--phase", choices=["main", "interaction", "both"], default="both",
+        help="Which run phase(s) to execute",
+    )
+    hrsim2_run_parser.add_argument("--dry-run", action="store_true", help="Print planned calls without executing")
+    hrsim2_run_parser.add_argument("--limit", type=int, help="Cap the raw number of API calls")
+    hrsim2_run_parser.add_argument(
+        "--limit-items", type=int,
+        help="Restrict to the first N distinct item_ids per phase (all arms/name_races still run)",
+    )
+    subparsers.add_parser("hrsim2-analyze", help="Analyze an hrsim2 run")
+
+    # hrsim4: corpus and JD calibration are built by the loop scripts, so the
+    # CLI only runs and analyzes.
+    hrsim4_run_parser = subparsers.add_parser(
+        "hrsim4-run", help="Run one hrsim4 model leg over the calibrated item set"
+    )
+    hrsim4_run_parser.add_argument("--leg", required=True, help="Leg name from the config's legs list")
+    hrsim4_run_parser.add_argument(
+        "--limit-items", type=int,
+        help="Restrict to the first N items (all arms still run) -- for smoke tests",
+    )
+    hrsim4_run_parser.add_argument("--dry-run", action="store_true", help="Plan and cost without executing")
+    subparsers.add_parser("hrsim4-analyze", help="Analyze an hrsim4 run")
+
     # all command
     all_parser = subparsers.add_parser("all", help="Run full pipeline")
     all_parser.add_argument("--dry-run", action="store_true", help="Print planned calls without executing")
@@ -643,6 +1057,32 @@ def main() -> None:
     }
     if args.command in gates_commands:
         gates_commands[args.command](args, logger)
+        return
+
+    # hrsim commands use their own config schema too; dispatch before
+    # loading the v0 config.
+    hrsim_commands = {
+        "hrsim-build": cmd_hrsim_build,
+        "hrsim-render": cmd_hrsim_render,
+        "hrsim-run": cmd_hrsim_run,
+        "hrsim-analyze": cmd_hrsim_analyze,
+    }
+    if args.command in hrsim_commands:
+        hrsim_commands[args.command](args, logger)
+        return
+
+    # hrsim2 commands use their own config schema too; dispatch before
+    # loading the v0 config.
+    hrsim2_commands = {
+        "hrsim2-build": cmd_hrsim2_build,
+        "hrsim2-render": cmd_hrsim2_render,
+        "hrsim2-run": cmd_hrsim2_run,
+        "hrsim2-analyze": cmd_hrsim2_analyze,
+        "hrsim4-run": cmd_hrsim4_run,
+        "hrsim4-analyze": cmd_hrsim4_analyze,
+    }
+    if args.command in hrsim2_commands:
+        hrsim2_commands[args.command](args, logger)
         return
 
     # Load config

@@ -1,0 +1,5 @@
+leg,group,n_items,items_where_arms_disagree,share
+sol,sensitive,139,27,0.19424460431654678
+sol,locked,95,10,0.10526315789473684
+sonnet5,sensitive,139,38,0.2733812949640288
+sonnet5,locked,95,17,0.17894736842105263

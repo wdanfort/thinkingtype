@@ -1,0 +1,142 @@
+[
+ {
+  "iter": 1,
+  "ranks": {
+   "ENGINEERING": 12,
+   "FINANCE": 12,
+   "HEALTHCARE": 12,
+   "INFORMATION-TECHNOLOGY": 12,
+   "SALES": 12,
+   "TEACHER": 12
+  },
+  "rates": {
+   "ENGINEERING": 0.436,
+   "FINANCE": 0.564,
+   "HEALTHCARE": 0.41,
+   "INFORMATION-TECHNOLOGY": 0.513,
+   "SALES": 0.718,
+   "TEACHER": 0.667
+  },
+  "steps": {
+   "ENGINEERING": 8,
+   "FINANCE": 8,
+   "HEALTHCARE": 8,
+   "INFORMATION-TECHNOLOGY": 8,
+   "SALES": 8,
+   "TEACHER": 8
+  },
+  "calls": 234
+ },
+ {
+  "iter": 2,
+  "ranks": {
+   "ENGINEERING": 12,
+   "FINANCE": 12,
+   "HEALTHCARE": 12,
+   "INFORMATION-TECHNOLOGY": 12,
+   "SALES": 20,
+   "TEACHER": 20
+  },
+  "rates": {
+   "ENGINEERING": 0.41,
+   "FINANCE": 0.615,
+   "HEALTHCARE": 0.436,
+   "INFORMATION-TECHNOLOGY": 0.487,
+   "SALES": 0.692,
+   "TEACHER": 0.692
+  },
+  "steps": {
+   "ENGINEERING": 8,
+   "FINANCE": 8,
+   "HEALTHCARE": 8,
+   "INFORMATION-TECHNOLOGY": 8,
+   "SALES": 8,
+   "TEACHER": 8
+  },
+  "calls": 468
+ },
+ {
+  "iter": 3,
+  "ranks": {
+   "ENGINEERING": 12,
+   "FINANCE": 20,
+   "HEALTHCARE": 12,
+   "INFORMATION-TECHNOLOGY": 12,
+   "SALES": 28,
+   "TEACHER": 28
+  },
+  "rates": {
+   "ENGINEERING": 0.436,
+   "FINANCE": 0.59,
+   "HEALTHCARE": 0.385,
+   "INFORMATION-TECHNOLOGY": 0.538,
+   "SALES": 0.564,
+   "TEACHER": 0.487
+  },
+  "steps": {
+   "ENGINEERING": 8,
+   "FINANCE": 8,
+   "HEALTHCARE": 8,
+   "INFORMATION-TECHNOLOGY": 8,
+   "SALES": 8,
+   "TEACHER": 8
+  },
+  "calls": 702
+ },
+ {
+  "iter": 4,
+  "ranks": {
+   "ENGINEERING": 12,
+   "FINANCE": 20,
+   "HEALTHCARE": 4,
+   "INFORMATION-TECHNOLOGY": 12,
+   "SALES": 28,
+   "TEACHER": 28
+  },
+  "rates": {
+   "ENGINEERING": 0.436,
+   "FINANCE": 0.615,
+   "HEALTHCARE": 0.513,
+   "INFORMATION-TECHNOLOGY": 0.538,
+   "SALES": 0.564,
+   "TEACHER": 0.462
+  },
+  "steps": {
+   "ENGINEERING": 8,
+   "FINANCE": 8,
+   "HEALTHCARE": 8,
+   "INFORMATION-TECHNOLOGY": 8,
+   "SALES": 8,
+   "TEACHER": 8
+  },
+  "calls": 936
+ },
+ {
+  "iter": 5,
+  "ranks": {
+   "ENGINEERING": 12,
+   "FINANCE": 28,
+   "HEALTHCARE": 4,
+   "INFORMATION-TECHNOLOGY": 12,
+   "SALES": 28,
+   "TEACHER": 28
+  },
+  "rates": {
+   "ENGINEERING": 0.436,
+   "FINANCE": 0.436,
+   "HEALTHCARE": 0.487,
+   "INFORMATION-TECHNOLOGY": 0.564,
+   "SALES": 0.564,
+   "TEACHER": 0.513
+  },
+  "steps": {
+   "ENGINEERING": 8,
+   "FINANCE": 8,
+   "HEALTHCARE": 8,
+   "INFORMATION-TECHNOLOGY": 8,
+   "SALES": 8,
+   "TEACHER": 8
+  },
+  "calls": 1170
+ }
+]

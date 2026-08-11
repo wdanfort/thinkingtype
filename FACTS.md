@@ -290,3 +290,69 @@ red -1.0, gray +4.0, highlight +5.3.
   JSONL logging, cross-vendor (OpenAI/Anthropic/Google).
 - gates_v2 and v0c ran within days of Fable 5 / GPT-5.6 Sol shipping (GA June 9 /
   July 9, 2026 respectively).
+
+## v2 update (July 27, 2026): real-resume hiring sim + reasoning traces
+
+Two runs answering reviewer "Kaizer" feedback. Both capture full model
+reasoning (the v0/gates runs stored only a bare Yes/No). Verified against the
+analysis CSVs under results/hrsim/hrsim_v1/ and results/sentences_reasoning_v1/.
+
+### hrsim_v1 — real resumes x font in a simulated HR screen
+
+Setup: 180 real resumes (Kaggle snehaanbhawal/resume-dataset, the LiveCareer
+corpus used by Wilson & Caliskan arXiv:2407.20371), 6 occupations, pseudonymized
+with fixed ambiguous names so font is the only varying factor; each paired with a
+junior and a senior job description (two difficulty strata) = 360 items; 6 arms
+(text + serif/sans/mono/Comic/OpenDyslexic); 4 models. 8,639/8,640 calls ok, 1
+Fable refusal. Est. spend ~$93.
+
+- Difficulty manipulation worked: junior accept ~87-92%, senior ~19-30%.
+- Modality drift is vendor-divergent (echoes gates_v1). Pooled delta accept
+  (image - text), resume-clustered 95% CIs:
+  - GPT-5.5: images harsher for EVERY font. Serif -3.1pp [-5.3,-1.1], OpenDyslexic
+    -2.8pp [-5.0,-0.8], mono -2.2pp, comic -1.9pp, sans -1.7pp. Concentrated in
+    senior stratum (serif -4.4pp [-7.8,-1.1]).
+  - Fable 5: images slightly lenient. Sans +2.2pp [0.3,4.4] sig; comic +1.7pp
+    [0,3.6]; others positive ns.
+  - Sol: mixed by font. Serif +2.2pp [0.8,4.2] sig, sans +1.7pp [0,3.6]; OD/mono
+    negative ns pooled.
+  - Sonnet 5: near-null pooled; senior-stratum sans +2.8pp [0.6,5.6] sig.
+- OpenDyslexic is never the favorable font (replicates the gates finding on real
+  resumes). Within-image (delta vs sans render, modality held constant),
+  OD <= sans in ALL FOUR models; significant for Sol (-2.2pp pooled [-4.2,-0.6];
+  senior -3.9pp [-6.7,-1.1]). Sol mono penalty also sig (-2.5pp [-4.2,-1.1]).
+- 265 decision flips vs text (about 3.1% of image records); direction is
+  model-specific (GPT-5.5 net-reject, Fable net-accept, Sol serif 100% toward
+  accept). ZERO genuine typography mentions in 8,640 reasoning traces (127
+  keyword hits all false positives, e.g. employer "La Fontaine Bleu" matching
+  "font"). Models re-weigh identical evidence with fluent content-based
+  justifications on both sides -- absorbed prior, not typography-as-cited-signal.
+
+### sentences_reasoning_v1 — does the effect survive reasoning?
+
+Re-asked the Track-1 "confident" dimension (highest presentation sensitivity in
+v0) with a Decision+Reasoning format, reusing cached sentence renders; 4 models;
+4,315/4,320 ok (5 Fable refusals, clustered on OD/Comic). Est. spend ~$23.
+
+- Reasoning does NOT attenuate the effect; for two models it grows. Confident-
+  dimension image-vs-text flip rate, bare-answer -> +reasoning (pooled over
+  variants): GPT-5.5 ~17%->~18% (flat), Fable ~19%->~18% (flat), Sonnet 5
+  ~15%->~26% (+11pp), Sol ~51%->~60% (+9pp). Caveat: the confident dimension
+  asks about information sufficiency and the reasoning prompt makes models more
+  equivocal generally, which can raise the base flip rate independent of
+  typography -- so read Sonnet/Sol as "effect at least as strong," not
+  "reasoning amplifies typography bias specifically." Headline: the sensitivity
+  is not an artifact of forcing a bare answer.
+- Models cite the presentation feature they can READ AS TEXT, never the one they
+  can only SEE. Across 4,315 traces: font/typeface/serif/mono/Comic/OD mentions
+  = 0; capitalization mentions = 17, EVERY one on the all-caps variant ("the
+  all-caps formatting also adds ambiguity"). All-caps is in the text stream, so
+  the model names it and reasons about it; font identity is purely visual, moves
+  the decision, and never surfaces in the stated reasons.
+
+### One-line synthesis for the writeup
+Across two independent datasets (synthetic sentences + real resumes) and four
+models, frontier LLMs change presentation-driven decisions without citing
+presentation -- and the effect is at least as strong when the model is required
+to explain itself. The one presentation feature they do cite (capitalization) is
+exactly the one legible in the text stream.

@@ -1,0 +1,62 @@
+# hrsim4 -- boundary-calibrated real-resume screening x typography.
+#
+# Corpus (loop 1) and JD calibration (loop 2) are already done and live on disk;
+# this file only describes what to run against them.
+#
+#   corpus       234 resumes, 6 occupations x 39, 14/14 QC gates pass
+#   calibration  per-occupation JD-fit rank tuned to a 40-60% accept rate
+#                (ENG 12, FIN 28, HC 4, IT 12, SALES 28, TEACHER 28)
+#   gate 3       59.4% of items are boundary-sensitive (>= 50% required)
+#
+# PILOT: Sonnet only, 1 repeat. Repeats buy little here -- the calibration logs
+# show ~95% agreement across up to 5 identical probes, so the variance is
+# between items, not within them. Spend goes to items and arms instead.
+
+run_tag: hrsim_v4
+seed: 42
+repeats: 1
+
+# Five typefaces + the three-rung Roboto ink ladder. The ladder brackets the
+# typefaces on measured ink coverage, which is what separates "how much ink is
+# on the page" from "which typeface it is".
+image_arms:
+  - T1_serif
+  - T3_sans
+  - T5_mono
+  - T7_comic
+  - A1_opendyslexic
+  - W1_roboto_light
+  - W2_roboto_regular
+  - W3_roboto_bold
+include_text_arm: true
+
+# "all" (234 items) or "sensitive" (139). Running all of them is what lets us
+# check whether JD-perturbation sensitivity predicts font sensitivity; if it
+# does, later runs can restrict and halve the cost.
+items: all
+
+corpus_dir: data/inputs/hrsim4
+calibration_dir: results/hrsim/hrsim_v4
+
+legs:
+  - name: sonnet5
+    provider: anthropic
+    model: claude-sonnet-5
+  # Added after the Sonnet pilot came back null. Sonnet was the LEAST
+  # presentation-sensitive model in hrsim_v1 (OpenDyslexic -0.8pp, ns); Sol was
+  # the only one where the effect cleared zero (-2.2pp [-4.2,-0.6]). So the
+  # Sonnet null replicates v1's Sonnet result rather than contradicting v1, and
+  # Sol is the model that actually tests the finding at a calibrated boundary.
+  - name: sol
+    provider: openai
+    model: gpt-5.6-sol
+  # - name: fable5
+  #   provider: anthropic
+  #   model: claude-fable-5
+
+inference:
+  temperature: null       # omit the parameter; reasoning-era models reject it
+  max_retries: 5
+  rate_limit_sleep: 1.5
+  concurrency: 6
+  openai_service_tier: default   # NOT "standard" -- the API rejects it (v1/v2 gotcha)

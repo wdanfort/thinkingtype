@@ -1,0 +1,44 @@
+# hrsim4 -- Kimi K3 (open weights, OpenAI-compatible endpoint).
+#
+# Served via Together AI. SET BEFORE RUNNING:
+#   OPENAI_COMPAT_BASE_URL=https://api.together.xyz/v1
+#   OPENAI_COMPAT_API_KEY=...
+#
+# `model` must match Together's model string exactly. Together generally mirrors
+# the HuggingFace repo path, but do not trust that -- the smoke test queries
+# /v1/models and fails with the closest matches if this string is wrong.
+# (To use Moonshot directly instead: provider `kimi`, model `kimi-k3`,
+#  MOONSHOT_API_KEY -- base URL is defaulted in the provider.)
+#
+# Calibration is model-specific: run the loop first, then point ranks_path at
+#   results/hrsim/hrsim_v4/cal_kimi/calibrated_ranks.csv
+#   .venv/bin/python scripts/hrsim4_calibrate_loop.py --calibrate \
+#       --model moonshotai/Kimi-K3 --provider openai_compatible --tag kimi --start-rank 40 --step 16
+# Until then this runs on the SONNET-calibrated items, which is the
+# fixed-item-set design -- valid, but report the achieved accept rate.
+
+run_tag: hrsim_v4_kimi
+seed: 42
+repeats: 1
+
+image_arms:
+  - T3_sans
+  - T7_comic
+  - A1_opendyslexic
+include_text_arm: true
+items: all
+
+corpus_dir: data/inputs/hrsim4
+calibration_dir: results/hrsim/hrsim_v4
+# ranks_path: results/hrsim/hrsim_v4/cal_kimi/calibrated_ranks.csv
+
+legs:
+  - name: kimi_k3
+    provider: openai_compatible
+    model: moonshotai/Kimi-K3
+
+inference:
+  temperature: null
+  max_retries: 5
+  rate_limit_sleep: 1.5
+  concurrency: 4

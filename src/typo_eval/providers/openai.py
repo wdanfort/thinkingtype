@@ -96,6 +96,49 @@ class OpenAIProvider(Provider):
         return resp.choices[0].message.content or ""
 
 
+    def infer_images(
+        self,
+        model: str,
+        temperature: float,
+        image_paths: list[str],
+        question: str,
+        system_prompt: str,
+        seed: int | None = None,
+    ) -> str:
+        """Multi-page variant: the question, then one labelled image per page.
+
+        hrsim4 runs 2-3 page resume documents; page order is significant.
+        """
+        if len(image_paths) == 1:
+            return self.infer_image(
+                model, temperature, image_paths[0], question, system_prompt, seed=seed
+            )
+        kwargs = {}
+        if seed is not None:
+            kwargs["seed"] = seed
+        if temperature is not None:
+            kwargs["temperature"] = temperature
+        if self.service_tier:
+            kwargs["service_tier"] = self.service_tier
+        content: list[dict] = [{"type": "text", "text": make_image_prompt(question)}]
+        for page_no, path in enumerate(image_paths, start=1):
+            content.append({"type": "text", "text": f"[Page {page_no} of {len(image_paths)}]"})
+            content.append({
+                "type": "image_url",
+                "image_url": {"url": _encode_image(path)},
+            })
+        resp = self.client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": content},
+            ],
+            **kwargs,
+        )
+        self._capture_usage(resp)
+        return resp.choices[0].message.content or ""
+
+
 def _encode_image(image_path: str) -> str:
     """Encode image to base64 data URL."""
     data = Path(image_path).read_bytes()

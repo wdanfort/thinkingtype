@@ -4,11 +4,17 @@ from typo_eval.providers.base import Provider
 from typo_eval.providers.openai import OpenAIProvider
 from typo_eval.providers.anthropic import AnthropicProvider
 from typo_eval.providers.google import GoogleProvider
+from typo_eval.providers.openai_compatible import (
+    KimiProvider,
+    OpenAICompatibleProvider,
+)
 
 PROVIDERS = {
     "openai": OpenAIProvider,
     "anthropic": AnthropicProvider,
     "google": GoogleProvider,
+    "kimi": KimiProvider,
+    "openai_compatible": OpenAICompatibleProvider,
 }
 
 
@@ -24,6 +30,8 @@ __all__ = [
     "OpenAIProvider",
     "AnthropicProvider",
     "GoogleProvider",
+    "KimiProvider",
+    "OpenAICompatibleProvider",
     "get_provider",
     "PROVIDERS",
 ]

@@ -1,0 +1,16 @@
+[PASS] resume_count: 234 resumes across 6 occupations
+[PASS] occupation_balance: {'ENGINEERING': 39, 'FINANCE': 39, 'HEALTHCARE': 39, 'INFORMATION-TECHNOLOGY': 39, 'SALES': 39, 'TEACHER': 39}
+[PASS] all_arms_rendered: min=8 max=8 expected=8
+[PASS] content_parity_across_arms: 0 resumes differ in text across arms
+[PASS] no_truncation: min_chars=1824 max_chars=6517
+[PASS] page_count_sane: {'A1_opendyslexic': 3.1, 'T1_serif': 1.97, 'T3_sans': 1.98, 'T5_mono': 2.6, 'T7_comic': 2.02, 'W1_roboto_light': 2.23, 'W2_roboto_regular': 2.3, 'W3_roboto_bold': 2.33}
+[PASS] reference_arm_is_1_2_pages: T3_sans pages: {1: 5, 2: 229}
+[PASS] unique_pseudonyms: 234 unique of 234
+[PASS] no_residual_defects: checked 6 patterns over 234 resumes
+[PASS] glyph_coverage_all_arms: all corpus characters render in all 8 arms
+[PASS] no_downscaling: max_w=1205 max_h=1560 threshold=1568
+[PASS] uniform_page_geometry: w=[np.int64(1205)] h=[np.int64(1560)]
+[PASS] ink_ladder_monotonic: {'W1_roboto_light': 0.0255, 'W2_roboto_regular': 0.0477, 'W3_roboto_bold': 0.0665}
+[PASS] ink_ladder_brackets_typefaces: {'ladder': [0.0255, 0.0665], 'typefaces': {'A1_opendyslexic': 0.0325, 'T1_serif': 0.0394, 'T3_sans': 0.0532, 'T5_mono': 0.0437, 'T7_comic': 0.0361}}
+
+14/14 gates pass

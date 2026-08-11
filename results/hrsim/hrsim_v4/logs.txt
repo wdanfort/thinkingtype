@@ -1,0 +1,13 @@
+2026-08-07 12:07:23,677 [INFO] hrsim4 sonnet5: 234 items x 9 arms x 1 repeats = 2106 cells (139 items boundary-sensitive)
+2026-08-07 12:07:23,678 [INFO] dry run -- nothing executed
+2026-08-07 12:07:36,140 [INFO] hrsim4 sonnet5: 234 items x 9 arms x 1 repeats = 2106 cells (139 items boundary-sensitive)
+2026-08-07 12:07:49,265 [INFO] leg sonnet5: 2106 cells planned, 0 already logged, 2106 to run
+2026-08-07 12:50:27,426 [INFO] leg complete: 2106/2106 records with a parsed decision
+2026-08-07 16:20:09,126 [INFO] hrsim4 sol: 234 items x 9 arms x 1 repeats = 2106 cells (139 items boundary-sensitive)
+2026-08-07 16:20:18,840 [INFO] leg sol: 2106 cells planned, 0 already logged, 2106 to run
+2026-08-07 16:41:01,871 [INFO] leg complete: 2106/2106 records with a parsed decision
+2026-08-07 21:17:08,771 [INFO] hrsim4 sol_recal: 234 items x 4 arms x 1 repeats = 936 cells (139 items boundary-sensitive)
+2026-08-07 21:17:08,772 [INFO] dry run -- nothing executed
+2026-08-07 21:17:25,984 [INFO] hrsim4 sol_recal: 234 items x 4 arms x 1 repeats = 936 cells (139 items boundary-sensitive)
+2026-08-07 21:17:32,095 [INFO] leg sol_recal: 936 cells planned, 0 already logged, 936 to run
+2026-08-07 21:27:44,043 [INFO] leg complete: 936/936 records with a parsed decision

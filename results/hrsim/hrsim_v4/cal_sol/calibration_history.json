@@ -1,0 +1,226 @@
+[
+ {
+  "iter": 1,
+  "ranks": {
+   "ENGINEERING": 40,
+   "FINANCE": 40,
+   "HEALTHCARE": 40,
+   "INFORMATION-TECHNOLOGY": 40,
+   "SALES": 40,
+   "TEACHER": 40
+  },
+  "rates": {
+   "ENGINEERING": 0.667,
+   "FINANCE": 0.667,
+   "HEALTHCARE": 0.513,
+   "INFORMATION-TECHNOLOGY": 0.615,
+   "SALES": 0.667,
+   "TEACHER": 0.59
+  },
+  "steps": {
+   "ENGINEERING": 16,
+   "FINANCE": 16,
+   "HEALTHCARE": 16,
+   "INFORMATION-TECHNOLOGY": 16,
+   "SALES": 16,
+   "TEACHER": 16
+  },
+  "calls": 234
+ },
+ {
+  "iter": 2,
+  "ranks": {
+   "ENGINEERING": 56,
+   "FINANCE": 56,
+   "HEALTHCARE": 40,
+   "INFORMATION-TECHNOLOGY": 56,
+   "SALES": 56,
+   "TEACHER": 40
+  },
+  "rates": {
+   "ENGINEERING": 0.513,
+   "FINANCE": 0.615,
+   "HEALTHCARE": 0.513,
+   "INFORMATION-TECHNOLOGY": 0.513,
+   "SALES": 0.718,
+   "TEACHER": 0.615
+  },
+  "steps": {
+   "ENGINEERING": 16,
+   "FINANCE": 16,
+   "HEALTHCARE": 16,
+   "INFORMATION-TECHNOLOGY": 16,
+   "SALES": 16,
+   "TEACHER": 16
+  },
+  "calls": 468
+ },
+ {
+  "iter": 3,
+  "ranks": {
+   "ENGINEERING": 56,
+   "FINANCE": 72,
+   "HEALTHCARE": 40,
+   "INFORMATION-TECHNOLOGY": 56,
+   "SALES": 72,
+   "TEACHER": 56
+  },
+  "rates": {
+   "ENGINEERING": 0.564,
+   "FINANCE": 0.667,
+   "HEALTHCARE": 0.538,
+   "INFORMATION-TECHNOLOGY": 0.564,
+   "SALES": 0.692,
+   "TEACHER": 0.615
+  },
+  "steps": {
+   "ENGINEERING": 16,
+   "FINANCE": 16,
+   "HEALTHCARE": 16,
+   "INFORMATION-TECHNOLOGY": 16,
+   "SALES": 16,
+   "TEACHER": 16
+  },
+  "calls": 702
+ },
+ {
+  "iter": 4,
+  "ranks": {
+   "ENGINEERING": 56,
+   "FINANCE": 88,
+   "HEALTHCARE": 40,
+   "INFORMATION-TECHNOLOGY": 56,
+   "SALES": 88,
+   "TEACHER": 72
+  },
+  "rates": {
+   "ENGINEERING": 0.487,
+   "FINANCE": 0.641,
+   "HEALTHCARE": 0.487,
+   "INFORMATION-TECHNOLOGY": 0.615,
+   "SALES": 0.744,
+   "TEACHER": 0.462
+  },
+  "steps": {
+   "ENGINEERING": 16,
+   "FINANCE": 16,
+   "HEALTHCARE": 16,
+   "INFORMATION-TECHNOLOGY": 16,
+   "SALES": 16,
+   "TEACHER": 16
+  },
+  "calls": 936
+ },
+ {
+  "iter": 5,
+  "ranks": {
+   "ENGINEERING": 56,
+   "FINANCE": 104,
+   "HEALTHCARE": 40,
+   "INFORMATION-TECHNOLOGY": 72,
+   "SALES": 104,
+   "TEACHER": 72
+  },
+  "rates": {
+   "ENGINEERING": 0.538,
+   "FINANCE": 0.692,
+   "HEALTHCARE": 0.513,
+   "INFORMATION-TECHNOLOGY": 0.359,
+   "SALES": 0.641,
+   "TEACHER": 0.436
+  },
+  "steps": {
+   "ENGINEERING": 16,
+   "FINANCE": 16,
+   "HEALTHCARE": 16,
+   "INFORMATION-TECHNOLOGY": 16,
+   "SALES": 16,
+   "TEACHER": 16
+  },
+  "calls": 1170
+ },
+ {
+  "iter": 6,
+  "ranks": {
+   "ENGINEERING": 56,
+   "FINANCE": 120,
+   "HEALTHCARE": 40,
+   "INFORMATION-TECHNOLOGY": 64,
+   "SALES": 120,
+   "TEACHER": 72
+  },
+  "rates": {
+   "ENGINEERING": 0.487,
+   "FINANCE": 0.667,
+   "HEALTHCARE": 0.487,
+   "INFORMATION-TECHNOLOGY": 0.487,
+   "SALES": 0.692,
+   "TEACHER": 0.436
+  },
+  "steps": {
+   "ENGINEERING": 16,
+   "FINANCE": 16,
+   "HEALTHCARE": 16,
+   "INFORMATION-TECHNOLOGY": 8,
+   "SALES": 16,
+   "TEACHER": 16
+  },
+  "calls": 1404
+ },
+ {
+  "iter": 7,
+  "ranks": {
+   "ENGINEERING": 56,
+   "FINANCE": 136,
+   "HEALTHCARE": 40,
+   "INFORMATION-TECHNOLOGY": 64,
+   "SALES": 136,
+   "TEACHER": 72
+  },
+  "rates": {
+   "ENGINEERING": 0.538,
+   "FINANCE": 0.538,
+   "HEALTHCARE": 0.538,
+   "INFORMATION-TECHNOLOGY": 0.538,
+   "SALES": 0.641,
+   "TEACHER": 0.436
+  },
+  "steps": {
+   "ENGINEERING": 16,
+   "FINANCE": 16,
+   "HEALTHCARE": 16,
+   "INFORMATION-TECHNOLOGY": 8,
+   "SALES": 16,
+   "TEACHER": 16
+  },
+  "calls": 1638
+ },
+ {
+  "iter": 8,
+  "ranks": {
+   "ENGINEERING": 56,
+   "FINANCE": 136,
+   "HEALTHCARE": 40,
+   "INFORMATION-TECHNOLOGY": 64,
+   "SALES": 152,
+   "TEACHER": 72
+  },
+  "rates": {
+   "ENGINEERING": 0.59,
+   "FINANCE": 0.615,
+   "HEALTHCARE": 0.538,
+   "INFORMATION-TECHNOLOGY": 0.538,
+   "SALES": 0.692,
+   "TEACHER": 0.462
+  },
+  "steps": {
+   "ENGINEERING": 16,
+   "FINANCE": 16,
+   "HEALTHCARE": 16,
+   "INFORMATION-TECHNOLOGY": 8,
+   "SALES": 16,
+   "TEACHER": 16
+  },
+  "calls": 1872
+ }
+]

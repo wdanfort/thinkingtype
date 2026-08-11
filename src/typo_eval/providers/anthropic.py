@@ -108,6 +108,57 @@ class AnthropicProvider(Provider):
         return ""
 
 
+    def infer_images(
+        self,
+        model: str,
+        temperature: float,
+        image_paths: list[str],
+        question: str,
+        system_prompt: str,
+        seed: int | None = None,
+    ) -> str:
+        """Multi-page variant: one image block per page, then the question.
+
+        Page order is the caller's order and is significant -- these are
+        document pages, not an unordered set. seed is ignored (no API support).
+        """
+        if len(image_paths) == 1:
+            return self.infer_image(
+                model, temperature, image_paths[0], question, system_prompt, seed=seed
+            )
+        kwargs = {}
+        if temperature is not None:
+            kwargs["temperature"] = temperature
+        content: list[dict] = []
+        for page_no, path in enumerate(image_paths, start=1):
+            # Label each page so the model reads them as one ordered document
+            # rather than several unrelated resumes.
+            content.append({"type": "text", "text": f"[Page {page_no} of {len(image_paths)}]"})
+            content.append({
+                "type": "image",
+                "source": {
+                    "type": "base64",
+                    "media_type": "image/png",
+                    "data": _encode_image_base64(path),
+                },
+            })
+        content.append({"type": "text", "text": make_image_prompt(question)})
+        resp = self.client.messages.create(
+            model=model,
+            max_tokens=1024,
+            **kwargs,
+            system=system_prompt,
+            messages=[{"role": "user", "content": content}],
+        )
+        self._capture_usage(resp)
+        if getattr(resp, "stop_reason", None) == "refusal":
+            return "[REFUSAL]"
+        for block in resp.content:
+            if getattr(block, "type", None) == "text":
+                return block.text
+        return ""
+
+
 def _encode_image_base64(image_path: str) -> str:
     """Encode image to base64 string."""
     data = Path(image_path).read_bytes()
