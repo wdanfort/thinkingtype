@@ -908,7 +908,7 @@ def main() -> None:
     run_parser.add_argument("--limit", type=int, help="Limit number of inference calls")
     run_parser.add_argument(
         "--provider",
-        choices=["openai", "anthropic", "google"],
+        choices=["openai", "anthropic", "google", "openai_compatible", "kimi"],
         default="openai",
         help="Inference provider",
     )
@@ -931,7 +931,7 @@ def main() -> None:
     # compare command
     compare_parser = subparsers.add_parser("compare", help="Compare multiple runs across providers/models")
     compare_parser.add_argument("--run-ids", nargs="+", help="Specific run IDs to compare")
-    compare_parser.add_argument("--provider", choices=["openai", "anthropic", "google"], help="Filter to specific provider")
+    compare_parser.add_argument("--provider", choices=["openai", "anthropic", "google", "openai_compatible", "kimi"], help="Filter to specific provider")
     compare_parser.add_argument("--model", help="Filter to models containing this substring")
 
     # gates commands (decision-gate experiment; use a gates config YAML)
@@ -944,7 +944,7 @@ def main() -> None:
         p = subparsers.add_parser(name, help=help_text)
         p.add_argument(
             "--provider",
-            choices=["openai", "anthropic", "google"],
+            choices=["openai", "anthropic", "google", "openai_compatible", "kimi"],
             required=True,
             help="Inference provider",
         )
@@ -959,7 +959,7 @@ def main() -> None:
     drift_parser.add_argument("--run-a", required=True, help="Baseline run tag or path")
     drift_parser.add_argument("--run-b", required=True, help="Comparison run tag or path")
     drift_parser.add_argument(
-        "--provider", choices=["openai", "anthropic", "google"],
+        "--provider", choices=["openai", "anthropic", "google", "openai_compatible", "kimi"],
         help="Restrict comparison to one provider",
     )
 
@@ -1032,7 +1032,7 @@ def main() -> None:
     all_parser.add_argument("--limit", type=int, help="Limit number of inference calls")
     all_parser.add_argument(
         "--provider",
-        choices=["openai", "anthropic", "google"],
+        choices=["openai", "anthropic", "google", "openai_compatible", "kimi"],
         default="openai",
         help="Inference provider",
     )

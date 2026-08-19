@@ -34,7 +34,12 @@ class OpenAICompatibleProvider(OpenAIProvider):
     name = "openai_compatible"
     env_prefix = "OPENAI_COMPAT"
     default_base_url: str | None = None
-    key_env_names: tuple = ()  # extra key vars accepted beyond <prefix>_API_KEY
+    # Extra key vars accepted beyond <prefix>_API_KEY. TOGETHER_API_KEY is here
+    # because Together is the host this provider is actually pointed at, and
+    # naming the key after the vendor is what everyone does by reflex -- the
+    # alternative is an "unset key" error while the key sits right there in
+    # .env under an obvious name. OPENAI_COMPAT_API_KEY still wins if both set.
+    key_env_names: tuple = ("TOGETHER_API_KEY",)
 
     def __init__(self) -> None:
         base_url = os.environ.get(f"{self.env_prefix}_BASE_URL") or self.default_base_url

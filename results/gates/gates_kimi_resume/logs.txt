@@ -1,0 +1,7 @@
+2026-08-15 01:16:31,293 [INFO] Calibration [openai_compatible]: 576 pending calls (0 already logged)
+2026-08-15 01:26:10,404 [INFO] Calibration [openai_compatible]: 576 pending calls (0 already logged)
+2026-08-15 01:34:27,703 [INFO] Calibration [openai_compatible]: 576 pending calls (0 already logged)
+2026-08-15 01:42:32,600 [WARNING] 1 calibration calls failed to parse
+2026-08-15 01:42:32,622 [INFO] resume: selected 20 items (4 in band), p_yes range [0.00, 1.00]
+2026-08-15 01:42:32,622 [INFO] Selection written to /data/home/kaiser/thinkingtype/results/gates/gates_kimi_resume/selection/selected_openai_compatible.csv
+2026-08-15 01:43:02,755 [INFO] Vision [openai_compatible]: 1080 pending calls (0 already logged)

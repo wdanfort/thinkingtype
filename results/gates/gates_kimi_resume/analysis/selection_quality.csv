@@ -1,0 +1,2 @@
+provider,gate,n_items,mean_p_text,min_p_text,max_p_text,n_in_band
+openai_compatible,resume,20,0.48125,0.0,1.0,4

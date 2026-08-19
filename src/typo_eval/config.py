@@ -95,6 +95,18 @@ class ProvidersConfig(BaseModel):
         model_text="gemini-1.5-pro",
         model_vision="gemini-1.5-pro",
     ))
+    # OpenAI-compatible hosts (Together, Fireworks, vLLM, ...). No model
+    # defaults: the model string is host-specific and a wrong guess surfaces as
+    # an auth-shaped error, so the config must name it explicitly. Base URL and
+    # key come from OPENAI_COMPAT_BASE_URL / OPENAI_COMPAT_API_KEY.
+    openai_compatible: ProviderConfig = Field(default_factory=lambda: ProviderConfig(
+        api_key_env="OPENAI_COMPAT_API_KEY",
+    ))
+    kimi: ProviderConfig = Field(default_factory=lambda: ProviderConfig(
+        api_key_env="MOONSHOT_API_KEY",
+        model_text="kimi-k3",
+        model_vision="kimi-k3",
+    ))
 
 
 class InferenceConfig(BaseModel):

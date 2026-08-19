@@ -1,0 +1,3 @@
+provider,gate,n_items,mean_delta_fav,ci_lo_fav,ci_hi_fav,sign_test_p
+openai_compatible,resume,20,-0.04166666666666667,-0.10833333333333335,0.008333333333333333,0.625
+openai_compatible,__all__,20,-0.04166666666666667,-0.10833333333333335,0.008333333333333333,0.625
